@@ -11,7 +11,62 @@ duplicates. ING is the only bank, but the code sits behind `IStatementParser`
 
 ## Known format (from a real export, Oct 2026)
 
-17 columns, newest first:
+Confirmed from the raw bytes of `Lista_transakcji_nr_<doc>_<ddmmyy>.csv`:
+
+- **Encoding:** Windows-1250, no BOM. **Delimiter:** `;`. **Line endings:** LF.
+- **Quoting is mixed.** Text fields are double-quoted *with padding spaces inside the quotes*
+  (`" JMP S.A. BIEDRONKA 6537  KRAKOW  PO "`, `" Płatność kartą …"`). Dates, amounts and
+  apostrophe-wrapped values (`'5624…'`, `'2026…'`) are bare. Empty fields are bare (`;;`).
+  Quoting of the bank, details, account and currency columns is unconfirmed; the parser must
+  accept either.
+- **Field counts:** header and data lines have **21 fields**, i.e. 17 named columns plus 4
+  trailing empty ones.
+- **Overall layout** (line numbers from a real 2+ year export; values below are fake):
+
+  ```
+   1  "Lista transakcji";;;;;"ING Bank Śląski S.A. ul. Sokolska 34, 40-086 Katowice www.ing.pl";;;…
+   2  "Dokument nr 0123456789_281026";
+   3  "Wygenerowany dnia: 2026-10-28, 12:36";;;…
+   4
+   5  "Dane Użytkownika:";
+   6  "<SURNAME NAMES , street, postcode city>";         ← PII: discard
+   7
+   8  "Wybrane rachunki:";
+   9  "KONTO Mobi pow.26 (PLN)";;"12 10…";                ← account name (currency);;number
+  10  "Otwarte Konto Oszczędnościowe (PLN)";;"74 1…";     ← one line per account
+  11
+  12  "Zastosowane kryteria wyboru";;;;;"Podsumowanie";;
+  13
+  14  "Zakres dat:";"2024-07-01 - 2026-10-28";"Typy transakcji:";"wszystkie"…
+  15
+  16  ;;;;;"Suma uznań (412):";398120,40;PLN;;…           ← credits: count and sum
+  17
+  18  ;;;;;"Suma obciążeń (2187):";402555,17;PLN;;…       ← debits: count and sum
+  19
+  20  "Data transakcji";"Data księgowania";…              ← header
+  21… data rows, newest first (credits + debits = number of data rows)
+      <blank>
+      <blank>
+      "Dokument ma charakter informacyjny, nie stanowi dowodu księgowego";   ← footer
+  ```
+
+  The parser locates the header by its **signature**, not by line number, and stops at the
+  first blank line after the data.
+
+  **What the preamble gives us:**
+  - **Accounts:** a name → account number map. The data rows' `Konto` column carries only the
+    name (without ` (PLN)`), so this map is how rows link to real account numbers. It also lets
+    us recognise **own transfers**: when the counterparty account is one of the user's own.
+  - **Date range:** stored on `ImportBatch`. It shows which period an import covers; that is
+    needed for gap detection between imports and for expiring pending rows reliably.
+  - **Suma uznań / obciążeń:** counts and sums give an integrity check. After parsing,
+    compare them and warn on a mismatch. The counts matched the row count in the real file,
+    so pending rows appear to be included in them; whether the *sums* include them is to
+    verify, so report a mismatch as a warning only until it's confirmed.
+  - **Discard:** the user's name and address. Not stored, not logged, not in error messages.
+    Keep only the document number and generation timestamp.
+
+Data rows have 17 named columns, newest first:
 
 ```
 0 Data transakcji          6 Szczegóły                  12 Kwota płatności w walucie
@@ -37,23 +92,37 @@ Quirks to handle (each one gets a test):
 | Phone transfer | Title `Telephone transfer +48… To X From Y` (English!) | `Kind = PhoneTransfer` |
 | Truncated country/city | `KRAKOW  PO`, `warszawa  P` | Handled by merchant normalization (plan 04) |
 | Foreign currency | cols 12–13 filled | `OriginalAmount` / `OriginalCurrency` |
+| Booking date before transaction date | Savings interest: transaction `2024-07-01`, booked `2024-06-30` | Allowed; no validation of `BookingDate >= TransactionDate` |
+| Own transfer on both accounts | −2000 on the current account, +2000 on savings | Both rows kept; linked as a pair, both `Przelew własny` |
 | Transaction id structure | `YYYY` + day-of-year (booking) + 2-digit channel + 9 digits | Use only as an opaque dedup key |
 
-**To verify against a raw file** (the sample was pasted, so the original bytes are unknown):
-the delimiter (`;` vs tab), the encoding (Windows-1250 vs UTF-8, BOM?), any metadata lines
-before the header, and the line endings. The parser must sniff all of these, and the fake data
-generator gets matching flags.
+The parser should still tolerate UTF-8 and CRLF (the file may be re-saved by Excel or a phone),
+but cp1250 + `;` + LF is the main path. Both variants get fixtures.
 
 ## Tasks
 
 - [ ] `IStatementParser`, `ParseResult`, `ImportedTransaction` in `Core`.
-- [ ] `IngCsvParser` in `Import.Ing`: encoding/delimiter detection, preamble skipping, header
-      signature check, position-based mapping, all quirks above. Streaming, no full-file load.
+- [ ] `IngCsvParser` in `Import.Ing`: encoding detection (cp1250 default, UTF-8 with or without
+      BOM), preamble skipping up to the header signature, a footer tolerated, position-based
+      mapping, all quirks above. Streaming, no full-file load.
+- [ ] A test asserting that preamble PII (the name and address line) appears nowhere in the
+      persisted entities, `RawRow` or logs.
+- [ ] **Accounts from the preamble:** parse the `Wybrane rachunki` lines, then upsert an
+      `Account` per entry (name, masked number, currency). A row whose `Konto` doesn't match
+      any listed account is a row error.
+- [ ] **Integrity check:** compare parsed credit/debit counts and sums with the `Suma uznań` /
+      `Suma obciążeń` lines; report the result on `ImportBatch`.
+- [ ] Store the `Zakres dat` range on `ImportBatch`. Warn when a new import leaves a gap after the
+      previous one ("Brak danych z okresu 03.09–10.09"; i.e. no data for that period).
+- [ ] Own-transfer pairing: a debit on account A whose counterparty account is account B, plus
+      the matching credit on B (same amount, same date ± 1 day) → link the two and mark both as
+      own transfers.
 - [ ] `Kind` detection from the `Szczegóły` code plus title patterns. Unknown codes →
       `Other`, logged once per import.
 - [ ] `MerchantHint` extraction for BLIK through a processor: last token of the title if it's
       a domain or URL. The processor list lives in config, not code.
-- [ ] **Balance check:** with newest-first rows, `Saldo[i] = Saldo[i+1] + Amount[i]`.
+- [ ] **Balance check, per account** (`Saldo` is the account's own running balance): with
+      newest-first rows, `Saldo[i] = Saldo[i+1] + Amount[i]`.
       Mismatches are reported as import warnings, never silently fixed.
 - [ ] **Dedup:**
   - Booked: unique `(AccountId, ExternalId)`.
@@ -73,7 +142,9 @@ generator gets matching flags.
 
 ## Acceptance criteria
 
-- `fake_ing.csv` imports with 0 errors, and the balance check passes.
+- `fake_ing.csv` imports with 0 errors, and both the per-account balance check and the
+  `Suma` totals check pass.
+- 2 600 rows (the size of a real 28-month export) import in under 2 s on the i3.
 - Importing the same file twice → 0 new rows.
 - The overlapping-exports fixture → no duplicates; every pending row in file A is either
   promoted by file B or still pending.
@@ -82,6 +153,15 @@ generator gets matching flags.
 
 ## Open questions
 
-- Does ING offer exports for multiple accounts in one file? (The `Konto` column suggests yes.)
-  If so, auto-create an `Account` per distinct value.
+- Exact quoting of the `Nazwa banku` / `Szczegóły` / `Konto` / currency columns; whether the
+  `Suma` sums include pending rows. These are verified by running the parser on a real file
+  locally (never committed).
+- `Szczegóły` codes and titles for savings interest and tax: the generator guesses
+  `ODSETKI` / `PODATEK`.
 - Credit card exports: same format? Out of scope until a sample exists.
+
+## Decided
+
+- Multiple accounts per file, all of the same bank (revised D10). The real export contained
+  the current and savings accounts together, and having both legs of own transfers makes
+  excluding them reliable.

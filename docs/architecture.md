@@ -115,3 +115,6 @@ encrypted, plus an off-site copy.
 | D7 | Google login first, Apple later | Sign in with Apple requires a paid developer account |
 | D8 | No Biedronka scraping | No public API, ToS risk, would require holding users' credentials; receipt upload is possible later |
 | D9 | PWA, not native | One codebase, mobile install without app stores |
+| D10 | ~~One account per file~~ → **multiple accounts per file, one bank** (revised) | The real ING export lists current and savings accounts together; both legs of own transfers make excluding them reliable |
+| D11 | P2P transfers are spending by default; can be recategorized, ruled by recipient account, split, or marked as reimbursements | Shared bills would otherwise overstate both spending and income |
+| D12 | Discard the preamble's user name and address on import | It's PII we don't need |

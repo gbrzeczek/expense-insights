@@ -55,5 +55,11 @@ not overwhelming.
 
 ## Open questions
 
-- Should P2P transfers to friends count as spending by default? (They're often shared bills.)
 - Weekly view, or monthly only? Default: monthly only.
+
+## Decided
+
+- The baseline is available from day one: a real first import covers 2+ years, so the "one
+  month only" empty state is an edge case, not the default experience.
+- P2P transfers count as spending by default and can be broken down; reimbursements offset
+  their category (D11, details in plan 04).
