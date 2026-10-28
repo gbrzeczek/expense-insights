@@ -1,0 +1,80 @@
+<section class="page" *transloco="let t">
+  <h1 class="page-title">{{ t('nav.account') }}</h1>
+
+  @if (session.user(); as user) {
+    <div class="card profile">
+      <p class="overline">{{ t('account.signedInAs') }}</p>
+      @if (user.displayName) {
+        <p class="profile__name">{{ user.displayName }}</p>
+      }
+      <p class="profile__email">{{ user.email }}</p>
+      <p class="support">{{ t('account.role.' + user.role) }}</p>
+      <button
+        class="button button--secondary profile__logout"
+        type="button"
+        [disabled]="pending() !== null"
+        (click)="logout()"
+      >
+        {{ t('account.logout') }}
+      </button>
+      @if (failed() === 'logout') {
+        <p class="support" role="alert">{{ t('account.logoutFailed') }}</p>
+      }
+    </div>
+
+    @if (session.isOwner()) {
+      <a class="card link-card" routerLink="/invitations">
+        <span class="link-card__text">
+          <span class="section-title">{{ t('account.invitations.title') }}</span>
+          <span class="support">{{ t('account.invitations.hint') }}</span>
+        </span>
+        <svg class="link-card__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8.6 16.6 13.2 12 8.6 7.4 10 6l6 6-6 6z" />
+        </svg>
+      </a>
+    }
+
+    <section class="danger" aria-labelledby="delete-account-title">
+      <h2 id="delete-account-title" class="section-title">{{ t('account.delete.title') }}</h2>
+      @if (session.isOwner()) {
+        <p class="support">{{ t('account.delete.owner') }}</p>
+      } @else {
+        <p class="support">{{ t('account.delete.text') }}</p>
+        @if (confirming()) {
+          <div class="card danger__confirm" role="group" aria-labelledby="delete-question">
+            <p id="delete-question" class="danger__question">{{ t('account.delete.question') }}</p>
+            <div class="danger__actions">
+              <button
+                class="button"
+                type="button"
+                [disabled]="pending() !== null"
+                (click)="deleteAccount()"
+              >
+                {{ t('account.delete.confirm') }}
+              </button>
+              <button
+                class="button button--secondary"
+                type="button"
+                [disabled]="pending() !== null"
+                (click)="confirming.set(false)"
+              >
+                {{ t('account.delete.cancel') }}
+              </button>
+            </div>
+            @if (failed() === 'delete') {
+              <p class="support" role="alert">{{ t('account.delete.failed') }}</p>
+            }
+          </div>
+        } @else {
+          <button
+            class="button button--secondary danger__start"
+            type="button"
+            (click)="confirming.set(true)"
+          >
+            {{ t('account.delete.start') }}
+          </button>
+        }
+      }
+    </section>
+  }
+</section>

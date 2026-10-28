@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { signIn } from './session';
 
 const batch = {
   id: '01a1',
@@ -24,6 +25,7 @@ const batch = {
 };
 
 test('imports a statement on a phone-sized screen', async ({ page }) => {
+  await signIn(page);
   let imported = false;
   await page.route('**/api/imports', async (route) => {
     if (route.request().method() === 'POST') {

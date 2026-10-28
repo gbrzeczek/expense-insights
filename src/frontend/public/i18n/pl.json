@@ -7,7 +7,8 @@
     "overview": "Przegląd",
     "transactions": "Transakcje",
     "categories": "Kategorie",
-    "import": "Import"
+    "import": "Import",
+    "account": "Konto"
   },
   "placeholder": {
     "comingSoon": "Ta sekcja jest w przygotowaniu."
@@ -147,5 +148,78 @@
       "loadError": "Nie udało się wczytać historii importów.",
       "importedAt": "Zaimportowano {{date}}"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Logowanie",
+      "intro": "Przegląd wydatków z wyciągów ING Banku Śląskiego. Dostęp mają tylko zaproszone osoby.",
+      "google": "Zaloguj się przez Google",
+      "googleAnother": "Zaloguj się innym kontem Google",
+      "privacy": "Logowanie odbywa się przez Google. Aplikacja nie zna Twojego hasła.",
+      "error": {
+        "noAccess": {
+          "title": "Brak dostępu",
+          "text": "To konto Google nie ma zaproszenia. Poproś właściciela aplikacji o zaproszenie albo zaloguj się innym kontem."
+        },
+        "failed": "Nie udało się zalogować. Spróbuj ponownie.",
+        "unavailable": "Logowanie przez Google nie jest jeszcze skonfigurowane na tym serwerze."
+      },
+      "dev": {
+        "title": "Logowanie deweloperskie",
+        "hint": "Tylko w trybie deweloperskim: zaloguj się jako zaproszony adres, bez Google.",
+        "email": "Adres e-mail",
+        "submit": "Zaloguj"
+      }
+    }
+  },
+  "account": {
+    "signedInAs": "Zalogowano jako",
+    "role": {
+      "owner": "Właściciel",
+      "user": "Użytkownik"
+    },
+    "logout": "Wyloguj się",
+    "logoutFailed": "Nie udało się wylogować. Spróbuj ponownie.",
+    "invitations": {
+      "title": "Zaproszenia",
+      "hint": "Zdecyduj, kto może się zalogować."
+    },
+    "delete": {
+      "title": "Usuwanie konta",
+      "text": "Usuwa konto i wszystkie Twoje dane: rachunki, transakcje i historię importów. Tego nie można cofnąć.",
+      "start": "Usuń konto",
+      "question": "Usunąć konto i wszystkie dane na zawsze?",
+      "confirm": "Tak, usuń wszystko",
+      "cancel": "Anuluj",
+      "failed": "Nie udało się usunąć konta. Spróbuj ponownie.",
+      "owner": "Konta właściciela nie można usunąć, bo zarządza zaproszeniami."
+    }
+  },
+  "invitations": {
+    "title": "Zaproszenia",
+    "back": "Konto",
+    "intro": "Zalogować się mogą tylko osoby z zaproszeniem. Wpisz adres konta Google osoby, którą chcesz zaprosić.",
+    "email": "Adres e-mail",
+    "placeholder": "np. anna@gmail.com",
+    "submit": "Zaproś",
+    "added": "Zaproszono {{email}}.",
+    "failure": {
+      "invalidEmail": "To nie jest poprawny adres e-mail.",
+      "alreadyInvited": "Ten adres ma już zaproszenie.",
+      "unknown": "Nie udało się zapisać zaproszenia. Spróbuj ponownie."
+    },
+    "list": {
+      "title": "Zaproszone osoby",
+      "loading": "Wczytywanie…",
+      "loadError": "Nie udało się wczytać zaproszeń."
+    },
+    "status": {
+      "owner": "Właściciel",
+      "accepted": "Zalogowano {{date}}",
+      "pending": "Czeka na pierwsze logowanie"
+    },
+    "revoke": "Cofnij",
+    "revokeLabel": "Cofnij zaproszenie dla {{email}}",
+    "revokeFailed": "Nie udało się cofnąć zaproszenia. Spróbuj ponownie."
   }
 }

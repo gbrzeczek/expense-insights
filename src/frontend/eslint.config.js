@@ -68,6 +68,7 @@ module.exports = defineConfig([
             'd',
             'accept',
             'aria-live',
+            'method',
           ],
         },
       ],
