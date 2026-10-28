@@ -1,6 +1,6 @@
 # 02 · ING import
 
-**Status:** Not started
+**Status:** In review
 
 ## Goal
 
@@ -101,46 +101,49 @@ but cp1250 + `;` + LF is the main path. Both variants get fixtures.
 
 ## Tasks
 
-- [ ] `IStatementParser`, `ParseResult`, `ImportedTransaction` in `Core`.
-- [ ] `IngCsvParser` in `Import.Ing`: encoding detection (cp1250 default, UTF-8 with or without
+- [x] `IStatementParser`, `ParseResult`, `ImportedTransaction` in `Core`.
+- [x] `IngCsvParser` in `Import.Ing`: encoding detection (cp1250 default, UTF-8 with or without
       BOM), preamble skipping up to the header signature, a footer tolerated, position-based
       mapping, all quirks above. Streaming, no full-file load.
-- [ ] A test asserting that preamble PII (the name and address line) appears nowhere in the
+- [x] A test asserting that preamble PII (the name and address line) appears nowhere in the
       persisted entities, `RawRow` or logs.
-- [ ] **Accounts from the preamble:** parse the `Wybrane rachunki` lines, then upsert an
+- [x] **Accounts from the preamble:** parse the `Wybrane rachunki` lines, then upsert an
       `Account` per entry (name, masked number, currency). A row whose `Konto` doesn't match
       any listed account is a row error.
-- [ ] **Integrity check:** compare parsed credit/debit counts and sums with the `Suma uznań` /
+- [x] **Integrity check:** compare parsed credit/debit counts and sums with the `Suma uznań` /
       `Suma obciążeń` lines; report the result on `ImportBatch`.
-- [ ] Store the `Zakres dat` range on `ImportBatch`. Warn when a new import leaves a gap after the
+- [x] Store the `Zakres dat` range on `ImportBatch`. Warn when a new import leaves a gap after the
       previous one ("Brak danych z okresu 03.09–10.09"; i.e. no data for that period).
-- [ ] Own-transfer pairing: a debit on account A whose counterparty account is account B, plus
+- [x] Own-transfer pairing: a debit on account A whose counterparty account is account B, plus
       the matching credit on B (same amount, same date ± 1 day) → link the two and mark both as
       own transfers.
-- [ ] `Kind` detection from the `Szczegóły` code plus title patterns. Unknown codes →
+- [x] `Kind` detection from the `Szczegóły` code plus title patterns. Unknown codes →
       `Other`, logged once per import.
-- [ ] `MerchantHint` extraction for BLIK through a processor: last token of the title if it's
+- [x] `MerchantHint` extraction for BLIK through a processor: last token of the title if it's
       a domain or URL. The processor list lives in config, not code.
-- [ ] **Balance check, per account** (`Saldo` is the account's own running balance): with
+- [x] **Balance check, per account** (`Saldo` is the account's own running balance): with
       newest-first rows, `Saldo[i] = Saldo[i+1] + Amount[i]`.
       Mismatches are reported as import warnings, never silently fixed.
-- [ ] **Dedup:**
+- [x] **Dedup:**
   - Booked: unique `(AccountId, ExternalId)`.
   - Whole file: SHA-256 of the file. Re-uploading the same file is a no-op with a friendly
         message.
-- [ ] **Pending → booked reconciliation:** when a booked card row arrives, look for a pending
+- [x] **Pending → booked reconciliation:** when a booked card row arrives, look for a pending
       transaction on the same account with the same amount, a `PurchaseDate`/`TransactionDate`
       within 0–5 days, and similar counterparty (trigram). If there's a match, promote it in
       place: keep the id, category and user edits. Pending rows that never get booked
       (after 14 days, missing from newer exports) are flagged as `Expired`, not deleted.
-- [ ] `ImportBatch` entity: file hash, row counts (new / updated / duplicate / error), warnings.
-- [ ] API: `POST /api/imports` (multipart, 5 MB limit) → batch summary; `GET /api/imports`.
-- [ ] Frontend: Import screen. Mobile file picker, upload progress, result summary card
+- [x] `ImportBatch` entity: file hash, row counts (new / updated / duplicate / error), warnings.
+- [x] API: `POST /api/imports` (multipart, 5 MB limit) → batch summary; `GET /api/imports`.
+- [x] Frontend: Import screen. Mobile file picker, upload progress, result summary card
       ("Dodano 42, zaktualizowano 3, pominięto 120 duplikatów"), row errors expandable.
-- [ ] Extend `test-data/generate_ing_csv.py` with an "overlapping exports" mode: two files with
+- [x] Extend `test-data/generate_ing_csv.py` with an "overlapping exports" mode: two files with
       overlapping date ranges, where pending rows in the first become booked in the second.
 
 ## Acceptance criteria
+
+All met; the speed targets were measured on an Apple-silicon Mac (Postgres in Docker), not yet on
+the i3: 2 600 rows in 0.6 s and 10 000 rows in 2.0 s (`ImportBenchmarkTests`, explicit).
 
 - `fake_ing.csv` imports with 0 errors, and both the per-account balance check and the
   `Suma` totals check pass.
@@ -161,6 +164,30 @@ but cp1250 + `;` + LF is the main path. Both variants get fixtures.
 - Credit card exports: same format? Out of scope until a sample exists.
 
 ## Decided
+
+- **Users before auth.** `User`, `IUserOwned`, `ICurrentUser` and the global query filter arrive here
+  because transactions need an owner; the initial migration seeds one owner
+  (`00000000-…-0001`) and every request runs as that user until plan 03 adds sign-in.
+- **Statement metadata is a parse result.** `ParseAsync` yields a `ParsedStatement` (accounts,
+  period, declared totals, document number) before the rows, plus `ParseWarning`s; file-level
+  problems throw `StatementFormatException` with a code.
+- **Own account numbers** are stored as a mask (`•••• 3863`) plus a SHA-256 hash of the digits; the
+  hash identifies the account on re-import and recognises own transfers. Counterparty account
+  numbers stay on the transaction (needed for rules per recipient in plan 04).
+- **Errors and warnings are codes with parameters** (`invalidAmount`, `periodGap`, …), worded in
+  the UI through i18n; they never contain the account holder's personal data.
+- **Pending matching** uses an in-memory trigram similarity that mirrors `pg_trgm` (threshold 0.3,
+  tested against Postgres), since the candidates are a handful of holds per account.
+- **Expiry:** a stored hold is expired when a newer export covers its date, doesn't contain it,
+  and ends more than 14 days after it. A pending row in a new file that matches an already booked
+  row (same account, amount, purchase date, similar counterparty) counts as a duplicate, so
+  importing an older export after a newer one creates no holds.
+- **Kinds:** `TR.KART` → Card, `TR.BLIK` → BlikOnline, `P.BLIK` → BlikP2P, `PRZELEW` → Transfer;
+  the title wins for card payments, BLIK payments and phone transfers (pending rows have no code).
+  `OwnTransfer` is set on import, when the counterparty account is one of the user's accounts.
+  `ODSETKI`/`PODATEK` map to `Other`; the `Przelew własny` category comes with plan 04.
+- **Upload** goes through `HttpClient` with the XHR backend (`withXhr()`), because the fetch
+  backend can't report upload progress.
 
 - Multiple accounts per file, all of the same bank (revised D10). The real export contained
   the current and savings accounts together, and having both legs of own transfers makes

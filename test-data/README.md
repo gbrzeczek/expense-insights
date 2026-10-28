@@ -13,8 +13,13 @@
 - `fake_ing.labels.csv`: the correct merchant and category for each data row of `fake_ing.csv`
   (same order), for measuring classifier accuracy.
 
+- `fake_ing_overlap_a.csv`, `fake_ing_overlap_b.csv` (+ labels): two exports of one fake history.
+  B starts 14 days before A ends, and the six pending holds at the end of A are booked in B with
+  their transaction ids. Used by the dedup and pending → booked import tests.
+
 ```bash
 python3 generate_ing_csv.py --months 6 --seed 42 --out fake_ing.csv
+python3 generate_ing_csv.py --months 2 --seed 10 --overlap --out fake_ing_overlap.csv
 python3 generate_ing_csv.py --encoding utf-8 --delimiter '\t' --no-preamble --out fake_ing_utf8.csv
 ```
 

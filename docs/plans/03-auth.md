@@ -25,7 +25,9 @@ isolation.
 
 - [ ] Google Cloud OAuth client (redirect URIs for localhost and the production host). Setup
       steps documented in `deploy/README.md`.
-- [ ] `User`, `ExternalLogin`, `Invitation` entities and migration.
+- [ ] `User`, `ExternalLogin`, `Invitation` entities and migration. `User` (with a seeded owner),
+      `IUserOwned`, `ICurrentUser` and the query filter already exist from plan 02; replace
+      `OwnerCurrentUser` in the API with the signed-in user and link the owner to their Google login.
 - [ ] Login/logout endpoints; `GET /api/me`.
 - [ ] Global query filter plus an **isolation test**: user A can't read, update or delete user B's
       transactions, through any endpoint (a parametrized integration test over all routes).

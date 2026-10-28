@@ -1,6 +1,6 @@
 # 01 · Foundation
 
-**Status:** In review
+**Status:** Done
 
 ## Goal
 
