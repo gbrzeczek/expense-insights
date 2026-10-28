@@ -10,7 +10,7 @@ public sealed class HealthEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task Health_ReturnsHealthy_WhenDatabaseIsReachable()
     {
-        using var client = _factory.CreateClient();
+        using var client = _factory.CreateAnonymousClient();
 
         using var response = await client.GetAsync(new Uri("/health", UriKind.Relative), CancellationToken);
 
@@ -21,11 +21,22 @@ public sealed class HealthEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task UnknownApiRoute_ReturnsProblemDetails()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
 
         using var response = await client.GetAsync(new Uri("/api/does-not-exist", UriKind.Relative), CancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
+
+    [Fact]
+    public async Task UnknownApiRoute_WithoutASession_IsUnauthorized()
+    {
+        using var client = _factory.CreateAnonymousClient();
+
+        using var response = await client.GetAsync(new Uri("/api/does-not-exist", UriKind.Relative), CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
     }
 

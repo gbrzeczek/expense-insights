@@ -8,6 +8,15 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasData(new User { Id = User.OwnerId, CreatedAt = new DateTimeOffset(2026, 10, 28, 0, 0, 0, TimeSpan.Zero) });
+        builder.Property(u => u.Email).HasMaxLength(320);
+        builder.Property(u => u.DisplayName).HasMaxLength(200);
+        builder.Property(u => u.Role).HasConversion<string>().HasMaxLength(16);
+
+        builder.HasData(new User
+        {
+            Id = User.OwnerId,
+            Role = UserRole.Owner,
+            CreatedAt = new DateTimeOffset(2026, 10, 28, 0, 0, 0, TimeSpan.Zero),
+        });
     }
 }

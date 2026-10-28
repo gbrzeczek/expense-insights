@@ -15,8 +15,6 @@ internal static class ImportEndpoints
         var imports = api.MapGroup("/imports");
 
         imports.MapPost("", UploadAsync)
-            // Plan 03 adds antiforgery (an XSRF cookie/header pair) for every state-changing request.
-            .DisableAntiforgery()
             // Room for the multipart envelope; the file itself is checked against MaxFileSize.
             .WithMetadata(new RequestSizeLimitAttribute(MaxFileSize + (64 * 1024)));
 
@@ -54,8 +52,7 @@ internal static class ImportEndpoints
         return Results.Ok(batches.Select(b => ImportBatchResponse.From(b, alreadyImported: false)));
     }
 
-    private static IResult Problem(int status, string code, string detail) =>
-        Results.Problem(statusCode: status, detail: detail, extensions: new Dictionary<string, object?> { ["code"] = code });
+    private static IResult Problem(int status, string code, string detail) => ApiProblem.Of(status, code, detail);
 }
 
 internal sealed record ImportBatchResponse(

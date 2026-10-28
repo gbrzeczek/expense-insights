@@ -1,8 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using ExpenseInsights.Api;
+using ExpenseInsights.Api.Auth;
 using ExpenseInsights.Core.Import;
-using ExpenseInsights.Core.Users;
 using ExpenseInsights.Import.Ing;
 using ExpenseInsights.Infrastructure;
 using ExpenseInsights.Infrastructure.Persistence;
@@ -10,7 +10,7 @@ using ExpenseInsights.Infrastructure.Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
-builder.Services.AddScoped<ICurrentUser, OwnerCurrentUser>();
+builder.AddAppAuth();
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddInfrastructure(
@@ -30,11 +30,19 @@ if (app.Configuration.GetValue("Database:MigrateOnStartup", defaultValue: true))
     await app.MigrateDatabaseAsync();
 }
 
+await app.SeedOwnerInvitationAsync();
+
 app.MapStaticAssets();
+
+app.UseAppAuth();
 
 app.MapHealthChecks("/health");
 
-var api = app.MapGroup("/api");
+// Everything under /api needs a signed-in user unless an endpoint says otherwise.
+var api = app.MapGroup("/api").RequireAuthorization();
+api.MapAuthEndpoints(app.Environment);
+api.MapMeEndpoints();
+api.MapInvitationEndpoints();
 api.MapImportEndpoints();
 api.MapFallback(() => Results.Problem(statusCode: StatusCodes.Status404NotFound));
 
