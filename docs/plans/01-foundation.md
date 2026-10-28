@@ -11,7 +11,7 @@ commit.
 ## Tasks
 
 ### Backend
-- [x] `src/backend/ExpenseInsights.sln` with projects `Api`, `Core`, `Infrastructure`,
+- [x] `src/backend/ExpenseInsights.slnx` with projects `Api`, `Core`, `Infrastructure`,
       `Import.Ing`, `Classification`, and matching `tests/*.Tests` (xUnit).
 - [x] `Directory.Build.props`: `net10.0`, nullable, `TreatWarningsAsErrors`, implicit usings,
       analyzers. `Directory.Packages.props` for central package management.

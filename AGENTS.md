@@ -41,7 +41,7 @@ source of truth for colours, typography, spacing, components and UX writing.
 ```
 src/
   backend/
-    ExpenseInsights.sln
+    ExpenseInsights.slnx             # XML solution format (.NET 9+)
     ExpenseInsights.Api/             # HTTP endpoints, auth, composition root
     ExpenseInsights.Core/            # domain model, application services (no infra deps)
     ExpenseInsights.Infrastructure/  # EF Core, Postgres, external services
