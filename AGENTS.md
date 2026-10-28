@@ -118,6 +118,10 @@ dotnet run --project src/backend/ExpenseInsights.Api    # http://localhost:5080,
 npm --prefix src/frontend start                         # http://localhost:4200, proxies /api and /health
 ```
 
+Sign-in: set `Auth:OwnerEmail` (and the Google client id/secret) with user-secrets as described in
+`deploy/README.md`. Without Google credentials, sign in with the Development-only dev login on the
+login page (any invited address; the owner's address is invited automatically).
+
 `npm start` listens on `0.0.0.0`, so a phone on the same LAN can open `http://<computer-ip>:4200`.
 The service worker only registers on `localhost` or HTTPS, so install/offline checks need one of
 those (HTTPS comes with the tunnel in plan 05).

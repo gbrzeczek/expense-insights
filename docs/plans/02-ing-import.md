@@ -1,6 +1,6 @@
 # 02 · ING import
 
-**Status:** In review
+**Status:** Done
 
 ## Goal
 
