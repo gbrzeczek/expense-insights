@@ -55,5 +55,9 @@ not overwhelming.
 
 ## Open questions
 
-- Should P2P transfers to friends count as spending by default? (They're often shared bills.)
 - Weekly view, or monthly only? Default: monthly only.
+
+## Decided
+
+- P2P transfers count as spending by default and can be broken down; reimbursements offset
+  their category (D11, details in plan 04).

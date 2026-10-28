@@ -11,7 +11,33 @@ duplicates. ING is the only bank, but the code sits behind `IStatementParser`
 
 ## Known format (from a real export, Oct 2026)
 
-17 columns, newest first:
+Confirmed from the raw bytes of `Lista_transakcji_nr_<doc>_<ddmmyy>.csv`:
+
+- **Encoding:** Windows-1250, no BOM. **Delimiter:** `;`. **Line endings:** LF.
+- Values are double-quoted (`"…"`); empty fields are bare (`;;`).
+- **A preamble comes before the header.** Lines seen so far:
+
+  ```
+  "Lista transakcji";;;;;"ING Bank Śląski S.A. ul. Sokolska 34, 40-086 Katowice www.ing.pl";;;…
+  "Dokument nr 0123456789_281026";
+  "Wygenerowany dnia: 2026-10-28, 12:36";;;…
+  <blank>
+  "Dane Użytkownika:";
+  "<SURNAME NAME , street, postcode city>";      ← PII: never store or log
+  <blank>
+  "Wybrane rachunki:";
+  "KONTO Mobi …                                  ← rest unknown
+  ```
+
+  The parser locates the header by its **signature** (`"Data transakcji";"Data księgowania";…`),
+  not by a fixed line number. From the preamble it may keep only the document number and the
+  generation timestamp, for `ImportBatch`. **The user's name and address must be discarded:**
+  not stored, not logged, not included in error messages.
+
+Still unknown: the preamble lines after `Wybrane rachunki:`, whether there's a footer
+(e.g. totals) after the data, and whether data rows always quote every non-empty value.
+
+Data rows have 17 columns, newest first:
 
 ```
 0 Data transakcji          6 Szczegóły                  12 Kwota płatności w walucie
@@ -39,16 +65,20 @@ Quirks to handle (each one gets a test):
 | Foreign currency | cols 12–13 filled | `OriginalAmount` / `OriginalCurrency` |
 | Transaction id structure | `YYYY` + day-of-year (booking) + 2-digit channel + 9 digits | Use only as an opaque dedup key |
 
-**To verify against a raw file** (the sample was pasted, so the original bytes are unknown):
-the delimiter (`;` vs tab), the encoding (Windows-1250 vs UTF-8, BOM?), any metadata lines
-before the header, and the line endings. The parser must sniff all of these, and the fake data
-generator gets matching flags.
+The parser should still tolerate UTF-8 and CRLF (the file may be re-saved by Excel or a phone),
+but cp1250 + `;` + LF is the main path. Both variants get fixtures.
 
 ## Tasks
 
 - [ ] `IStatementParser`, `ParseResult`, `ImportedTransaction` in `Core`.
-- [ ] `IngCsvParser` in `Import.Ing`: encoding/delimiter detection, preamble skipping, header
-      signature check, position-based mapping, all quirks above. Streaming, no full-file load.
+- [ ] `IngCsvParser` in `Import.Ing`: encoding detection (cp1250 default, UTF-8 with or without
+      BOM), preamble skipping up to the header signature, a footer tolerated, position-based
+      mapping, all quirks above. Streaming, no full-file load.
+- [ ] A test asserting that preamble PII (the name and address line) appears nowhere in the
+      persisted entities, `RawRow` or logs.
+- [ ] **Single account:** if the `Konto` column has more than one distinct value, reject the
+      file with a clear message ("Obsługiwany jest plik z jednym rachunkiem", meaning only
+      single-account files are supported). Multi-account support is backlog.
 - [ ] `Kind` detection from the `Szczegóły` code plus title patterns. Unknown codes →
       `Other`, logged once per import.
 - [ ] `MerchantHint` extraction for BLIK through a processor: last token of the title if it's
@@ -82,6 +112,10 @@ generator gets matching flags.
 
 ## Open questions
 
-- Does ING offer exports for multiple accounts in one file? (The `Konto` column suggests yes.)
-  If so, auto-create an `Account` per distinct value.
+- The rest of the preamble and a possible footer: needs a redacted look at a real file.
 - Credit card exports: same format? Out of scope until a sample exists.
+
+## Decided
+
+- One account per file for now (decision D10). The model already has `Account`, so
+  multi-account support later is a parser change only.

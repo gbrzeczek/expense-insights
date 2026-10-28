@@ -2,6 +2,9 @@
 """Generate a fake ING Bank Śląski CSV export for testing.
 
 Mirrors the quirks seen in a real export:
+  - Windows-1250, ';'-delimited, LF line endings, no BOM
+  - a preamble before the header (bank info, document number, generation time,
+    user's name/address, selected accounts), which parsers must skip
   - 17 columns, duplicated "Waluta" header names
   - newest-first ordering, running "Saldo po transakcji" (includes holds)
   - pending card payments (blokady): no booking date, no transaction id,
@@ -16,7 +19,11 @@ accuracy can be measured.
 
 Usage:
   python3 generate_ing_csv.py --months 6 --seed 42 --out fake_ing.csv
-  python3 generate_ing_csv.py --encoding cp1250 --delimiter ';'
+  python3 generate_ing_csv.py --encoding utf-8 --delimiter '\\t' --no-preamble  # as pasted from a spreadsheet
+
+Unverified (guessed): whether data rows are double-quoted (we quote non-empty
+fields, like the preamble), the preamble lines after "Wybrane rachunki:", and
+whether the file has a footer.
 """
 import argparse
 import csv
@@ -34,6 +41,8 @@ HEADER = [
 ]
 
 OWNER = "JAN PAWEŁ KOWALSKI"
+OWNER_PREAMBLE = "KOWALSKI JAN PAWEŁ , UL. FAŁSZYWA 1 00-001 WARSZAWA"
+DOCUMENT_NO = "0123456789"
 ACCOUNT_NAME = "KONTO Mobi pow.26"
 CARD = "4111xx1234"
 CARD_ACQUIRER = "'1915031/19730 '"
@@ -220,14 +229,36 @@ def to_rows(rng, txs, opening_balance):
     return rows, labels
 
 
+def preamble(end):
+    """Lines before the header, matching the real export's byte layout."""
+    return [
+        '"Lista transakcji";;;;;"ING Bank Śląski S.A. ul. Sokolska 34, 40-086 Katowice www.ing.pl"' + ";" * 15,
+        f'"Dokument nr {DOCUMENT_NO}_{end:%d%m%y}";',
+        f'"Wygenerowany dnia: {end:%Y-%m-%d}, 12:36"' + ";" * 20,
+        "",
+        '"Dane Użytkownika:";',
+        f'"{OWNER_PREAMBLE}";',
+        "",
+        '"Wybrane rachunki:";',
+        f'"{ACCOUNT_NAME}";',  # TODO: real line layout after this point is unknown
+        "",
+    ]
+
+
+def quote_row(row, delimiter):
+    """Quote non-empty fields, leave empty ones bare (as in the real preamble)."""
+    return delimiter.join(f'"{v.replace(chr(34), chr(34) * 2)}"' if v else "" for v in row)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--months", type=int, default=6)
     p.add_argument("--end", type=date.fromisoformat, default=date(2026, 10, 28), help="export date")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--opening-balance", type=float, default=18000.0)
-    p.add_argument("--delimiter", default="\t", help="'\\t' (as pasted) or ';'")
-    p.add_argument("--encoding", default="utf-8", help="utf-8 or cp1250")
+    p.add_argument("--delimiter", default=";", help="';' (real export) or '\\t' (as pasted)")
+    p.add_argument("--encoding", default="cp1250", help="cp1250 (real export) or utf-8")
+    p.add_argument("--no-preamble", action="store_true", help="omit the lines before the header")
     p.add_argument("--out", default="fake_ing.csv")
     args = p.parse_args()
     if args.delimiter == "\\t":
@@ -241,10 +272,10 @@ def main():
     txs = finalize(rng, generate(rng, start, args.end), args.end)
     rows, labels = to_rows(rng, txs, args.opening_balance)
 
+    lines = [] if args.no_preamble else preamble(args.end)
+    lines += [quote_row(r, args.delimiter) for r in [HEADER, *rows]]
     with open(args.out, "w", encoding=args.encoding, newline="") as f:
-        w = csv.writer(f, delimiter=args.delimiter, quoting=csv.QUOTE_MINIMAL, lineterminator="\r\n")
-        w.writerow(HEADER)
-        w.writerows(rows)
+        f.write("\n".join(lines) + "\n")
 
     labels_path = args.out.rsplit(".", 1)[0] + ".labels.csv"
     with open(labels_path, "w", encoding="utf-8", newline="") as f:
