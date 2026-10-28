@@ -63,5 +63,83 @@
       "fieldPlaceholder": "e.g. Biedronka",
       "fieldHint": "Shop name, title or amount."
     }
+  },
+  "import": {
+    "intro": "Upload a CSV transaction history exported from Moje ING. Overlapping periods are fine: the same transactions are never added twice.",
+    "pick": "Choose a CSV file",
+    "pickAnother": "Choose another file",
+    "hint": "An ING Bank Śląski export, up to 5 MB.",
+    "uploading": "Uploading {{name}}",
+    "processing": "Processing {{name}}…",
+    "progressLabel": "Upload progress",
+    "failure": {
+      "fileMissing": "No file was chosen.",
+      "fileTooLarge": "The file is larger than 5 MB. Export a shorter period.",
+      "unsupportedFormat": "The file wasn't recognised. Upload a CSV exported from ING Bank Śląski.",
+      "headerNotFound": "The file has no ING transaction list. Check that it is a CSV export.",
+      "headerMismatch": "The columns differ from an ING export. Export the file again, without editing it in a spreadsheet.",
+      "unknown": "The file couldn't be imported. Please try again."
+    },
+    "result": {
+      "overline": "Import result",
+      "summary": "Added {{added}}, updated {{updated}}, skipped {{duplicates}}.",
+      "duplicates": {
+        "one": "{{count}} duplicate",
+        "other": "{{count}} duplicates"
+      },
+      "alreadyImported": "This file was already imported on {{date}}.",
+      "alreadyImportedHint": "Nothing was changed.",
+      "period": "period {{from}}–{{to}}",
+      "expired": {
+        "one": "{{count}} card hold was missing from the newer statement and is marked as expired.",
+        "other": "{{count}} card holds were missing from the newer statement and are marked as expired."
+      },
+      "totals": {
+        "passed": "The number and sum of transactions match the statement summary.",
+        "failed": "The number or sum of transactions differs from the statement summary.",
+        "notAvailable": "The statement has no summary to compare with."
+      },
+      "balance": {
+        "passed": "The balances after each transaction add up.",
+        "failed": "Some balances after transactions don't add up.",
+        "notAvailable": "The statement has no balances to check."
+      },
+      "warnings": "Notes",
+      "errors": {
+        "one": "Error in {{count}} row",
+        "other": "Errors in {{count}} rows"
+      }
+    },
+    "warnings": {
+      "periodGap": "No data for {{from}}–{{to}}. Upload a statement that covers those days.",
+      "balanceMismatch": "Row {{line}} ({{account}}): balance {{actual}}, but the previous transaction gives {{expected}}.",
+      "totalsCountMismatch": {
+        "credits": "Credits: the statement says {{expected}}, {{actual}} were read.",
+        "debits": "Debits: the statement says {{expected}}, {{actual}} were read."
+      },
+      "totalsSumMismatch": {
+        "credits": "Sum of credits: the statement says {{expected}}, {{actual}} was read.",
+        "debits": "Sum of debits: the statement says {{expected}}, {{actual}} was read."
+      },
+      "unknownDetailsCode": "Unknown transaction type “{{value}}” (from row {{line}}). These transactions have the type “other”.",
+      "other": "Row {{line}}: worth checking."
+    },
+    "errors": {
+      "fieldCount": "Row {{line}}: wrong number of columns.",
+      "invalidDate": "Row {{line}}: invalid date “{{value}}”.",
+      "invalidAmount": "Row {{line}}: invalid amount “{{value}}”.",
+      "missingAmount": "Row {{line}}: no amount.",
+      "missingCurrency": "Row {{line}}: no currency.",
+      "missingTransactionId": "Row {{line}}: a booked transaction without a number.",
+      "unknownAccount": "Row {{line}}: the account “{{account}}” isn't in the statement's account list.",
+      "other": "Row {{line}}: the row couldn't be read."
+    },
+    "history": {
+      "title": "Earlier imports",
+      "loading": "Loading…",
+      "empty": "There are no imports yet.",
+      "loadError": "The import history couldn't be loaded.",
+      "importedAt": "Imported {{date}}"
+    }
   }
 }

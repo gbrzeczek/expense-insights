@@ -19,18 +19,28 @@ export class MoneyPipe implements PipeTransform {
     currency = 'PLN',
     sign: MoneySign = 'auto',
   ): string {
-    if (amount === null || amount === undefined || amount === '') {
-      return '';
-    }
-    const value = typeof amount === 'string' ? Number(amount) : amount;
-    if (!Number.isFinite(value)) {
-      return '';
-    }
-    const symbol = getCurrencySymbol(currency, 'narrow', this.locale);
-    const formatted = formatCurrency(value, this.locale, symbol, currency, '1.2-2');
-    if (formatted.startsWith('-')) {
-      return MINUS + formatted.slice(1);
-    }
-    return sign === 'always' && value > 0 ? `+${formatted}` : formatted;
+    return formatMoney(amount, this.locale, currency, sign);
   }
+}
+
+/** The pipe's formatting, for code that builds text outside a template. */
+export function formatMoney(
+  amount: number | string | null | undefined,
+  locale: string,
+  currency = 'PLN',
+  sign: MoneySign = 'auto',
+): string {
+  if (amount === null || amount === undefined || amount === '') {
+    return '';
+  }
+  const value = typeof amount === 'string' ? Number(amount) : amount;
+  if (!Number.isFinite(value)) {
+    return '';
+  }
+  const symbol = getCurrencySymbol(currency, 'narrow', locale);
+  const formatted = formatCurrency(value, locale, symbol, currency, '1.2-2');
+  if (formatted.startsWith('-')) {
+    return MINUS + formatted.slice(1);
+  }
+  return sign === 'always' && value > 0 ? `+${formatted}` : formatted;
 }

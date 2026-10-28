@@ -65,6 +65,12 @@ public sealed partial class StatementImporter(
             ImportedAt = now,
             RowCount = parsed.Rows.Count + parsed.Errors.Count,
         };
+        // A gap comes first: it is the one warning the user can act on right away.
+        if (await FindGapAsync(parser.BankId, statement.PeriodStart, ct) is { } gap)
+        {
+            batch.Warnings.Add(gap);
+        }
+
         batch.Warnings.AddRange(parsed.Warnings);
 
         var (totals, totalsIssues) = StatementChecks.CheckTotals(statement, parsed.Rows);
@@ -73,10 +79,6 @@ public sealed partial class StatementImporter(
         batch.BalanceCheck = balances;
         batch.Warnings.AddRange(totalsIssues);
         batch.Warnings.AddRange(balanceIssues);
-        if (await FindGapAsync(parser.BankId, statement.PeriodStart, ct) is { } gap)
-        {
-            batch.Warnings.Add(gap);
-        }
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
         db.ImportBatches.Add(batch);

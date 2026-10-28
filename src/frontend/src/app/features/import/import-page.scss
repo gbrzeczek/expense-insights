@@ -1,0 +1,125 @@
+.page {
+  display: grid;
+  gap: var(--card-gap);
+  max-width: 720px;
+}
+
+.page__header {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.upload {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+.upload__pick {
+  width: 100%;
+  font-size: var(--text-body);
+
+  .upload__input:focus-visible + & {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.upload__pick--busy {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.upload__icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: currentcolor;
+}
+
+.upload__progress {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.upload__status {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.upload__name {
+  overflow-wrap: anywhere;
+}
+
+.upload__bar {
+  width: 100%;
+  height: 6px;
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft);
+  overflow: hidden;
+
+  &::-webkit-progress-bar {
+    background: var(--color-accent-soft);
+  }
+
+  &::-webkit-progress-value {
+    background: var(--color-accent);
+    border-radius: var(--radius-pill);
+    transition: width var(--duration-base) var(--ease);
+  }
+
+  &::-moz-progress-bar {
+    background: var(--color-accent);
+    border-radius: var(--radius-pill);
+  }
+}
+
+.upload__error {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--text-support);
+  line-height: var(--leading-support);
+  font-weight: var(--weight-medium);
+
+  .upload__icon {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+  }
+}
+
+.history {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+.history__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--border);
+}
+
+.history__item {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) 0;
+  border-bottom: var(--border);
+}
+
+.history__name {
+  font-weight: var(--weight-medium);
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .upload__pick {
+    width: auto;
+  }
+}

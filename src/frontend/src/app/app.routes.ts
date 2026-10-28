@@ -9,7 +9,11 @@ export const routes: Routes = [
   { path: 'overview', title: 'nav.overview', loadComponent: placeholder },
   { path: 'transactions', title: 'nav.transactions', loadComponent: placeholder },
   { path: 'categories', title: 'nav.categories', loadComponent: placeholder },
-  { path: 'import', title: 'nav.import', loadComponent: placeholder },
+  {
+    path: 'import',
+    title: 'nav.import',
+    loadComponent: () => import('./features/import/import-page').then((m) => m.ImportPage),
+  },
   ...(isDevMode()
     ? [
         {

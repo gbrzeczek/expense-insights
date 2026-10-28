@@ -1,0 +1,104 @@
+<section class="page" *transloco="let t">
+  <header class="page__header">
+    <h1 class="page-title">{{ t('nav.import') }}</h1>
+    <p class="support">{{ t('import.intro') }}</p>
+  </header>
+
+  <div class="card upload">
+    <input
+      #picker
+      id="statement-file"
+      class="upload__input visually-hidden"
+      type="file"
+      [accept]="accept"
+      [disabled]="isBusy()"
+      (change)="onFileSelected(picker)"
+    />
+    <label
+      for="statement-file"
+      class="button upload__pick"
+      [class.upload__pick--busy]="isBusy()"
+      [attr.aria-disabled]="isBusy()"
+    >
+      <svg class="upload__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M11 16V7.8l-3.3 3.3-1.4-1.4L12 4l5.7 5.7-1.4 1.4L13 7.8V16zM5 20v-5h2v3h10v-3h2v5z"
+        />
+      </svg>
+      {{ t(state().kind === 'idle' ? 'import.pick' : 'import.pickAnother') }}
+    </label>
+    <p class="support">{{ t('import.hint') }}</p>
+
+    @if (uploading(); as s) {
+      <div class="upload__progress" role="status">
+        <p class="support upload__status">
+          <span class="upload__name">{{ t('import.uploading', { name: s.name }) }}</span>
+          <span class="numeric">{{ s.percent }}%</span>
+        </p>
+        <progress
+          class="upload__bar"
+          [value]="s.percent"
+          [max]="100"
+          [attr.aria-label]="t('import.progressLabel')"
+        ></progress>
+      </div>
+    } @else if (processing(); as s) {
+      <div class="upload__progress" role="status">
+        <p class="support upload__status">
+          <span class="upload__name">{{ t('import.processing', { name: s.name }) }}</span>
+        </p>
+        <progress
+          class="upload__bar"
+          [value]="100"
+          [max]="100"
+          [attr.aria-label]="t('import.progressLabel')"
+        ></progress>
+      </div>
+    } @else if (failure(); as code) {
+      <p class="upload__error" role="alert">
+        <svg class="upload__icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M7 3h2v6H7zm0 8h2v2H7z" />
+        </svg>
+        {{ t('import.failure.' + code) }}
+      </p>
+    }
+  </div>
+
+  @if (result(); as batch) {
+    <app-import-result [batch]="batch" />
+  }
+
+  <section class="history" aria-labelledby="import-history-title">
+    <h2 id="import-history-title" class="section-title">{{ t('import.history.title') }}</h2>
+    @if (history.error()) {
+      <p class="support" role="alert">{{ t('import.history.loadError') }}</p>
+    } @else if (history.isLoading() && history.value().length === 0) {
+      <p class="support">{{ t('import.history.loading') }}</p>
+    } @else if (history.value().length === 0) {
+      <p class="support">{{ t('import.history.empty') }}</p>
+    } @else {
+      <ul class="history__list">
+        @for (b of history.value(); track b.id) {
+          <li class="history__item">
+            <p class="history__name">{{ b.fileName }}</p>
+            <p class="support numeric">
+              {{
+                t('import.history.importedAt', { date: b.importedAt | date: 'dd.MM.yyyy, HH:mm' })
+              }}
+              @if (b.periodStart && b.periodEnd) {
+                ·
+                {{
+                  t('import.result.period', {
+                    from: b.periodStart | displayDate,
+                    to: b.periodEnd | displayDate,
+                  })
+                }}
+              }
+            </p>
+            <p class="support numeric">{{ b | importSummary }}</p>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</section>

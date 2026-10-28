@@ -63,5 +63,89 @@
       "fieldPlaceholder": "np. Biedronka",
       "fieldHint": "Nazwa sklepu, tytuł lub kwota."
     }
+  },
+  "import": {
+    "intro": "Wgraj plik CSV z historią transakcji wyeksportowany z Moje ING. Możesz wgrywać nakładające się okresy: te same transakcje nie zostaną dodane dwa razy.",
+    "pick": "Wybierz plik CSV",
+    "pickAnother": "Wybierz kolejny plik",
+    "hint": "Eksport z ING Banku Śląskiego, do 5 MB.",
+    "uploading": "Wysyłanie pliku {{name}}",
+    "processing": "Przetwarzanie pliku {{name}}…",
+    "progressLabel": "Postęp wysyłania",
+    "failure": {
+      "fileMissing": "Nie wybrano pliku.",
+      "fileTooLarge": "Plik jest większy niż 5 MB. Wyeksportuj krótszy okres.",
+      "unsupportedFormat": "Nie rozpoznano pliku. Wgraj plik CSV wyeksportowany z ING Banku Śląskiego.",
+      "headerNotFound": "W pliku nie ma listy transakcji ING. Sprawdź, czy to eksport w formacie CSV.",
+      "headerMismatch": "Kolumny w pliku różnią się od eksportu ING. Wyeksportuj plik ponownie, bez zmian w arkuszu.",
+      "unknown": "Nie udało się zaimportować pliku. Spróbuj ponownie."
+    },
+    "result": {
+      "overline": "Wynik importu",
+      "summary": "Dodano {{added}}, zaktualizowano {{updated}}, pominięto {{duplicates}}.",
+      "duplicates": {
+        "one": "{{count}} duplikat",
+        "few": "{{count}} duplikaty",
+        "many": "{{count}} duplikatów",
+        "other": "{{count}} duplikatu"
+      },
+      "alreadyImported": "Ten plik został już zaimportowany {{date}}.",
+      "alreadyImportedHint": "Nic nie zmieniono.",
+      "period": "okres {{from}}–{{to}}",
+      "expired": {
+        "one": "{{count}} blokada karty nie pojawiła się w nowszym wyciągu i została oznaczona jako wygasła.",
+        "few": "{{count}} blokady karty nie pojawiły się w nowszym wyciągu i zostały oznaczone jako wygasłe.",
+        "many": "{{count}} blokad karty nie pojawiło się w nowszym wyciągu i zostało oznaczonych jako wygasłe.",
+        "other": "{{count}} blokady karty nie pojawiły się w nowszym wyciągu i zostały oznaczone jako wygasłe."
+      },
+      "totals": {
+        "passed": "Liczba i suma transakcji zgadzają się z podsumowaniem wyciągu.",
+        "failed": "Liczba lub suma transakcji różni się od podsumowania wyciągu.",
+        "notAvailable": "Wyciąg nie ma podsumowania do porównania."
+      },
+      "balance": {
+        "passed": "Salda po transakcjach się zgadzają.",
+        "failed": "Salda po niektórych transakcjach się nie zgadzają.",
+        "notAvailable": "Wyciąg nie podaje sald do sprawdzenia."
+      },
+      "warnings": "Uwagi",
+      "errors": {
+        "one": "Błąd w {{count}} wierszu",
+        "few": "Błędy w {{count}} wierszach",
+        "many": "Błędy w {{count}} wierszach",
+        "other": "Błędy w {{count}} wiersza"
+      }
+    },
+    "warnings": {
+      "periodGap": "Brak danych z okresu {{from}}–{{to}}. Wgraj wyciąg obejmujący te dni.",
+      "balanceMismatch": "Wiersz {{line}} ({{account}}): saldo {{actual}}, a z poprzedniej transakcji wynika {{expected}}.",
+      "totalsCountMismatch": {
+        "credits": "Uznania: wyciąg podaje {{expected}}, wczytano {{actual}}.",
+        "debits": "Obciążenia: wyciąg podaje {{expected}}, wczytano {{actual}}."
+      },
+      "totalsSumMismatch": {
+        "credits": "Suma uznań: wyciąg podaje {{expected}}, wczytano {{actual}}.",
+        "debits": "Suma obciążeń: wyciąg podaje {{expected}}, wczytano {{actual}}."
+      },
+      "unknownDetailsCode": "Nieznany rodzaj transakcji „{{value}}” (od wiersza {{line}}). Takie transakcje mają rodzaj „inne”.",
+      "other": "Wiersz {{line}}: uwaga do sprawdzenia."
+    },
+    "errors": {
+      "fieldCount": "Wiersz {{line}}: nieprawidłowa liczba kolumn.",
+      "invalidDate": "Wiersz {{line}}: nieprawidłowa data „{{value}}”.",
+      "invalidAmount": "Wiersz {{line}}: nieprawidłowa kwota „{{value}}”.",
+      "missingAmount": "Wiersz {{line}}: brak kwoty.",
+      "missingCurrency": "Wiersz {{line}}: brak waluty.",
+      "missingTransactionId": "Wiersz {{line}}: zaksięgowana transakcja bez numeru.",
+      "unknownAccount": "Wiersz {{line}}: konta „{{account}}” nie ma na liście rachunków w wyciągu.",
+      "other": "Wiersz {{line}}: nie udało się odczytać wiersza."
+    },
+    "history": {
+      "title": "Poprzednie importy",
+      "loading": "Wczytywanie…",
+      "empty": "Nie ma jeszcze żadnych importów.",
+      "loadError": "Nie udało się wczytać historii importów.",
+      "importedAt": "Zaimportowano {{date}}"
+    }
   }
 }
