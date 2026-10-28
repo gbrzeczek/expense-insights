@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/dist/
+**/.angular/
+**/TestResults/
+**/playwright-report/
+**/test-results/
+**/*.csv
+**/.env
+.git/
+.github/
+docs/
+test-data/
+deploy/
+src/backend/tests/

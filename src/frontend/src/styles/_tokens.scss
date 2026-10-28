@@ -1,0 +1,162 @@
+// Warm Paper Finance design tokens (docs/design-system.md). Components use only these custom
+// properties: no raw colours, font sizes or spacing values.
+
+@mixin light {
+  --color-bg: #f3ebdd;
+  --color-surface: #faf5eb;
+  --color-surface-raised: #fff9f0;
+  --color-ink: #302d29;
+  --color-ink-muted: #71695e;
+  // Large, nonessential captions only (3.5:1 on bg).
+  --color-ink-subtle: #837b70;
+  --color-border: #d7cdbe;
+  // Olive is 4.25:1 on bg: use it for fills, icons and indicators, not for small text on bg.
+  --color-accent: #657451;
+  --color-accent-hover: #4e5c3c;
+  --color-accent-soft: #e2e7d8;
+  // Olive for text and links on bg/surface (6.1 / 6.6:1).
+  --color-accent-text: #4e5c3c;
+  --color-on-accent: #fff9f0;
+  --color-focus: #4d685c;
+  --shadow-overlay: 0 8px 24px rgb(48 45 41 / 8%);
+
+  // Category colours. They carry no meaning beyond "different category".
+  --chart-1: #657451; // olive
+  --chart-2: #a96f52; // muted terracotta
+  --chart-3: #647d89; // slate blue
+  --chart-4: #a5803e; // ochre, darkened from #b28b45 to reach 3:1 on surface (3.4)
+  --chart-5: #8d7285; // plum
+  --chart-6: #938a7d; // gray neutral
+  --chart-grid: #e6dccd;
+}
+
+// Dark variant ("lamp-lit paper"): not part of the v1.1 spec, derived from it. Same roles,
+// warm charcoal surfaces, lightened olive and chart hues.
+@mixin dark {
+  --color-bg: #1e1b17;
+  --color-surface: #26221d;
+  --color-surface-raised: #2e2924;
+  --color-ink: #ede5d8;
+  --color-ink-muted: #b0a696;
+  --color-ink-subtle: #968c7e;
+  --color-border: #3e3830;
+  --color-accent: #a9b88f;
+  --color-accent-hover: #bdcaa6;
+  --color-accent-soft: #353d2b;
+  --color-accent-text: #a9b88f;
+  --color-on-accent: #1e1b17;
+  --color-focus: #9ec2b0;
+  --shadow-overlay: 0 8px 24px rgb(0 0 0 / 35%);
+
+  --chart-1: #a9b88f;
+  --chart-2: #d29a7c;
+  --chart-3: #93aab5;
+  --chart-4: #d2ae6c;
+  --chart-5: #b79aae;
+  --chart-6: #b3aa9c;
+  --chart-grid: #37312a;
+}
+
+:root {
+  color-scheme: light dark;
+
+  // Typography
+  --font-ui: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-editorial: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, 'Times New Roman', serif;
+
+  --text-display: clamp(2.25rem, 1.75rem + 2vw, 3.25rem); // 36–52px overview headline, serif
+  --text-page: clamp(1.75rem, 1.5rem + 1vw, 2.25rem); // 28–36px page headings
+  --text-section: clamp(1.125rem, 1.05rem + 0.3vw, 1.375rem); // 18–22px
+  --text-body: 1rem; // 16px
+  --text-support: 0.875rem; // 14px
+  --text-meta: 0.75rem; // 12px overlines
+  --text-balance: clamp(2.25rem, 1.9rem + 1.5vw, 3rem); // 36–48px primary amounts
+  --text-amount: 0.9375rem; // 15px table amounts
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  --leading-display: 1.1;
+  --leading-heading: 1.2;
+  --leading-section: 1.3;
+  --leading-body: 1.55;
+  --leading-support: 1.45;
+  --tracking-display: -0.005em;
+  --tracking-heading: 0;
+  --tracking-balance: -0.035em;
+  --tracking-meta: 0.08em;
+
+  // Spacing: 4px base
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  // Layout
+  --content-max: 1240px;
+  --gutter: 16px; // 16–20 mobile, 24–32 tablet, 32–48 desktop (set in base styles)
+  --section-gap: var(--space-8); // 32–48 mobile, 48–72 desktop
+  --card-padding: 20px; // 20–24 mobile, 24–32 desktop
+  --card-gap: var(--space-4);
+  --touch-target: 44px;
+  --nav-height: 64px;
+  --sidenav-width: 248px;
+
+  // Shape
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-button: 10px;
+  --radius-pill: 999px;
+  --border: 1px solid var(--color-border);
+
+  // Motion
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  @include light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  @include dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 28px;
+    --card-padding: 24px;
+    --card-gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 40px;
+    --section-gap: var(--space-16);
+    --card-padding: 28px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}

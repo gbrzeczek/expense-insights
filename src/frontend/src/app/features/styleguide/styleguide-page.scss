@@ -1,0 +1,177 @@
+.guide {
+  display: grid;
+  gap: var(--section-gap);
+}
+
+.guide__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  .support {
+    margin-top: var(--space-1);
+  }
+}
+
+.guide__section {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.guide__label {
+  margin-top: var(--space-2);
+}
+
+// --- Theme switch ---------------------------------------------------------------------------
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border: var(--border);
+  border-radius: var(--radius-button);
+  background: var(--color-surface);
+}
+
+.segmented__option {
+  min-height: 38px;
+  min-width: var(--touch-target);
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink-muted);
+  font: inherit;
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    color var(--duration-fast) var(--ease);
+
+  &:hover {
+    color: var(--color-ink);
+  }
+
+  &[aria-checked='true'] {
+    background: var(--color-accent-soft);
+    color: var(--color-ink);
+  }
+}
+
+// --- Sample overview ------------------------------------------------------------------------
+
+.overview__intro {
+  display: grid;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+
+.overview__month {
+  text-transform: capitalize;
+}
+
+.overview__grid {
+  display: grid;
+  gap: var(--card-gap);
+}
+
+.card__title {
+  margin-bottom: var(--space-6);
+}
+
+.card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: var(--color-accent-text);
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+@media (min-width: 1024px) {
+  // 12-column grid: summary + insight on top, breakdown and recent below.
+  .overview__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .overview__summary {
+    grid-column: span 5;
+  }
+  .overview__insight {
+    grid-column: span 7;
+  }
+  .overview__categories {
+    grid-column: span 5;
+  }
+  .overview__recent {
+    grid-column: span 7;
+  }
+}
+
+// --- Specimens ------------------------------------------------------------------------------
+
+.type {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.type__balance {
+  font-size: var(--text-balance);
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-balance);
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.swatch {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.swatch__chip {
+  height: 56px;
+  border: var(--border);
+  border-radius: var(--radius-control);
+}
+
+.swatch__name {
+  font-size: var(--text-meta);
+  color: var(--color-ink-muted);
+}
+
+.controls {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 560px;
+}
+
+.controls__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

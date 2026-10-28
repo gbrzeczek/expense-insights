@@ -18,6 +18,8 @@ summaries and insights.
   the optional local LLM.
 
 Read `docs/architecture.md` and the relevant plan in `docs/plans/` before starting work.
+For any UI work, also read `docs/design-system.md` (**Warm Paper Finance**): it is the
+source of truth for colours, typography, spacing, components and UX writing.
 
 ## Stack
 
@@ -47,6 +49,7 @@ src/
     ExpenseInsights.Classification/  # rules, similarity, ML, LLM fallback
     tests/
       ExpenseInsights.*.Tests/
+      ExpenseInsights.Testing/       # shared test helpers (Testcontainers Postgres fixture)
   frontend/                          # Angular PWA
 test-data/                           # FAKE data + generator only
 docs/
@@ -55,7 +58,6 @@ docs/
 deploy/                              # docker-compose, tunnel config, backup scripts
 ```
 
-Until plan 01 is done, only `docs/` and `test-data/` exist.
 
 ## Hard rules
 
@@ -82,13 +84,18 @@ Until plan 01 is done, only `docs/` and `test-data/` exist.
 ## Conventions
 
 - Code, identifiers, comments, commits and docs are in **English**. UI text is in Polish via
-  i18n keys (`transactions.list.empty`, etc.).
+  i18n keys (`transactions.list.empty`, etc.). URL routes, query parameters, CSS classes and
+  i18n keys are English too (`/transactions`, not `/transakcje`); only displayed values are Polish.
 - Format Polish locale explicitly (`pl-PL`): `1 234,56 zł`, `28.10.2026`.
 - Prefer small, boring solutions. Add a dependency only when it clearly earns its place;
   mention it in the PR description.
 - Backend: nullable enabled, warnings as errors, file-scoped namespaces, `sealed` by default.
 - Frontend: standalone components, signals for state, `OnPush`, no NgModules. Design for a
   360 px width first; touch targets ≥ 44 px; no hover-only interactions.
+- Styling: only design tokens from `src/frontend/src/styles/_tokens.scss` (no raw hex values or
+  ad-hoc font sizes in components). Serif (`--font-editorial`) only for rare headings; every
+  amount uses the UI sans with tabular numerals. Never mark expenses as bad with red; show
+  direction with signs, words or icons, not colour alone.
 - Tests: every parser quirk gets a test. Parser and classification tests run against
   `test-data/fake_ing.csv`; classification accuracy is measured against
   `test-data/fake_ing.labels.csv`.
@@ -98,7 +105,56 @@ Until plan 01 is done, only `docs/` and `test-data/` exist.
 
 ## Commands
 
-Filled in by plan 01. Until then:
+Prerequisites: .NET SDK 10 (`src/backend/global.json`), Node 24 (`src/frontend/.nvmrc`), and a
+Docker engine (Docker Desktop, Rancher Desktop with the moby engine, or Docker on Linux). Docker
+is needed for the dev database and for the backend integration tests.
+
+### Dev stack
+
+```bash
+cp deploy/.env.example deploy/.env    # optional; the defaults match appsettings.Development.json
+docker compose -f deploy/docker-compose.yml up -d db
+dotnet run --project src/backend/ExpenseInsights.Api    # http://localhost:5080, migrates on start
+npm --prefix src/frontend start                         # http://localhost:4200, proxies /api and /health
+```
+
+`npm start` listens on `0.0.0.0`, so a phone on the same LAN can open `http://<computer-ip>:4200`.
+The service worker only registers on `localhost` or HTTPS, so install/offline checks need one of
+those (HTTPS comes with the tunnel in plan 05).
+
+### Backend (`src/backend`)
+
+```bash
+dotnet build                     # warnings are errors
+dotnet test                      # unit + Testcontainers integration tests (needs Docker)
+dotnet tool restore              # once, for dotnet-ef
+dotnet ef migrations add <Name> -p ExpenseInsights.Infrastructure -s ExpenseInsights.Api -o Persistence/Migrations
+```
+
+Tests run on Microsoft.Testing.Platform (xUnit v3); `global.json` opts `dotnet test` into it.
+
+### Frontend (`src/frontend`)
+
+```bash
+npm ci
+npm run lint                     # ESLint, including the "no hardcoded template text" i18n rule
+npm run format:check             # Prettier (npm run format to fix)
+npm test                         # Vitest
+npm run build                    # production build into dist/
+npx playwright install chromium  # once
+npm run e2e                      # Playwright smoke test at 390×844 (starts ng serve)
+```
+
+The design system's style guide is at `http://localhost:4200/styleguide` (dev builds only).
+
+### Production image
+
+```bash
+docker compose -f deploy/docker-compose.yml --profile api up -d --build   # db + api on :8080
+docker build -t expense-insights .                                         # image only
+```
+
+### Test data
 
 ```bash
 python3 test-data/generate_ing_csv.py --months 6 --seed 42 --out test-data/fake_ing.csv

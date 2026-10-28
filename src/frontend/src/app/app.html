@@ -1,0 +1,28 @@
+<div class="shell" *transloco="let t">
+  <nav class="nav" [attr.aria-label]="t('nav.label')">
+    <span class="nav__brand">{{ t('app.name') }}</span>
+    <ul class="nav__list">
+      @for (item of navItems; track item.path) {
+        <li>
+          <a
+            class="nav__link"
+            [routerLink]="item.path"
+            routerLinkActive="nav__link--active"
+            ariaCurrentWhenActive="page"
+          >
+            <span class="nav__icon-wrap">
+              <svg class="nav__icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path [attr.d]="item.icon" />
+              </svg>
+            </span>
+            <span class="nav__label">{{ t(item.labelKey) }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

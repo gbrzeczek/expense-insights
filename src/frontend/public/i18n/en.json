@@ -1,0 +1,67 @@
+{
+  "app": {
+    "name": "Expenses"
+  },
+  "nav": {
+    "label": "Main navigation",
+    "overview": "Overview",
+    "transactions": "Transactions",
+    "categories": "Categories",
+    "import": "Import"
+  },
+  "placeholder": {
+    "comingSoon": "This section is coming soon."
+  },
+  "summary": {
+    "change": {
+      "up": "{{percent}} more than {{period}}",
+      "down": "{{percent}} less than {{period}}",
+      "same": "the same as {{period}}"
+    }
+  },
+  "styleguide": {
+    "title": "Style guide",
+    "intro": "A preview of Warm Paper Finance on fictional sample data.",
+    "theme": {
+      "label": "Theme",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "overview": {
+      "heading": "Sample overview",
+      "overline": "Overview",
+      "spentLabel": "Spent in October",
+      "previousPeriod": "in September",
+      "insightOverline": "Observation",
+      "insightHeadline": "Restaurant spending was {{percent}} lower than in September.",
+      "insightEvidence": "{{current}} compared with {{previous}}. Full months, excluding own transfers.",
+      "insightAction": "See transactions",
+      "byCategory": "Spending by category",
+      "recent": "Recent transactions",
+      "seeAll": "See all"
+    },
+    "typography": {
+      "heading": "Typography",
+      "display": "October in numbers",
+      "page": "Transactions",
+      "section": "Spending by category",
+      "body": "Body text: calm, factual and concise. Amounts always use the sans-serif with tabular numerals.",
+      "support": "Supporting text: 14 px, muted colour.",
+      "overline": "Summary"
+    },
+    "colors": {
+      "heading": "Colours",
+      "charts": "Category colours"
+    },
+    "controls": {
+      "heading": "Controls",
+      "primary": "Import statement",
+      "secondary": "Cancel",
+      "disabled": "Unavailable",
+      "fieldLabel": "Search transactions",
+      "fieldPlaceholder": "e.g. Biedronka",
+      "fieldHint": "Shop name, title or amount."
+    }
+  }
+}
