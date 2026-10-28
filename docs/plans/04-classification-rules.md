@@ -27,6 +27,7 @@ tiers (plans 07 and 08) are measured with.
 | Przelewy do osób | P2P out, not yet broken down | yes (see below) |
 | Inne | | yes |
 | *Wynagrodzenie / Przychody* | salary, P2P in | income |
+| *Odsetki* | savings interest (net of the interest tax row) | income |
 | *Zwroty* | refunds | offsets the original category |
 | *Przelew własny* | own accounts, savings | excluded |
 
@@ -65,7 +66,9 @@ to this list.
       A null user means a global rule.
 - [ ] Global seed rules for the top ~150 Polish merchants and chains (a hand-maintained JSON
       file in the repo).
-- [ ] Rules for transfers: own name in counterparty → `Przelew własny`; positive card
+- [ ] Rules for transfers: counterparty account is one of the user's own accounts (from the
+      import preamble), or the pair is linked by the importer → `Przelew własny` (the own
+      name in the counterparty is only a fallback); positive card
       amount → `Zwroty`; outgoing P2P → `Przelewy do osób`; incoming P2P → income.
 - [ ] `MatchType.CounterpartyAccount` rules (person or recipient by account number).
 - [ ] A reimbursement flag on incoming transactions (`OffsetsCategoryId`), respected by the
@@ -80,6 +83,11 @@ to this list.
       categories as chips** plus "Więcej…".
 - [ ] After a correction, a snackbar offers "Zastosuj do wszystkich: Biedronka (23)" to apply it
       to all transactions from the merchant. This creates a user rule and reclassifies.
+- [ ] **First-import onboarding: review by merchant, not by transaction.** A real first
+      import is ~2 600 rows over 2+ years. Group the unclassified rows by merchant key, sorted
+      by count × total amount ("BIEDRONKA · 412 transakcji · 23 140 zł"). One tap labels the
+      whole group and creates a rule. Show a progress bar ("78% wydatków skategoryzowanych";
+      i.e. 78% of spending categorized), measured by amount rather than by count.
 - [ ] "Do sprawdzenia" ("needs review") queue: low-confidence items, reviewable one by one
       with large buttons (swipe gestures are optional).
 - [ ] Category management: rename, hide, add subcategory.
