@@ -1,13 +1,23 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using ExpenseInsights.Api;
+using ExpenseInsights.Core.Import;
+using ExpenseInsights.Core.Users;
+using ExpenseInsights.Import.Ing;
 using ExpenseInsights.Infrastructure;
 using ExpenseInsights.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
+builder.Services.AddScoped<ICurrentUser, OwnerCurrentUser>();
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddInfrastructure(
     builder.Configuration.GetConnectionString("Default")
         ?? throw new InvalidOperationException("Connection string 'Default' is not configured."));
+builder.Services.AddSingleton(builder.Configuration.GetSection(IngParserOptions.Section).Get<IngParserOptions>() ?? new());
+builder.Services.AddSingleton<IStatementParser, IngCsvParser>();
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
 
 var app = builder.Build();
@@ -25,6 +35,7 @@ app.MapStaticAssets();
 app.MapHealthChecks("/health");
 
 var api = app.MapGroup("/api");
+api.MapImportEndpoints();
 api.MapFallback(() => Results.Problem(statusCode: StatusCodes.Status404NotFound));
 
 // Client-side routes of the Angular app. The shell must always be revalidated so a new
