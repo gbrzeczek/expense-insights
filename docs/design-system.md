@@ -252,6 +252,7 @@ body { background: var(--color-bg); color: var(--color-ink); font-family: var(--
 | Summary card, insight card, transaction row, category breakdown | `src/frontend/src/app/shared/ui/` |
 | Money (`1 234,56 zł`, typographic minus, optional `+`) and date (`28.10.2026`) pipes | `src/frontend/src/app/shared/format/` |
 | Living style guide on fictional data (dev builds only) | `/styleguide` → `src/frontend/src/app/features/styleguide/` |
+| App icon and favicon (three category bars on paper); PNG/ICO are generated with `npm run icons` | `src/frontend/branding/*.svg`, `src/frontend/public/favicon.svg` |
 
 Fonts are self-hosted from npm (`@fontsource-variable/inter`, `@fontsource-variable/source-serif-4`
 with the optical-size axis; Latin Extended covers Polish diacritics), so the PWA works offline and makes no

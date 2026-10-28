@@ -143,6 +143,7 @@ npm test                         # Vitest
 npm run build                    # production build into dist/
 npx playwright install chromium  # once
 npm run e2e                      # Playwright smoke test at 390×844 (starts ng serve)
+npm run icons                    # re-render PWA icons + favicon.ico from branding/*.svg
 ```
 
 The design system's style guide is at `http://localhost:4200/styleguide` (dev builds only).
