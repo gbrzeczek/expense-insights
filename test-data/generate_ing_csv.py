@@ -28,6 +28,9 @@ accuracy can be measured.
 Usage:
   python3 generate_ing_csv.py --months 6 --seed 42 --out fake_ing.csv
   python3 generate_ing_csv.py --encoding utf-8 --delimiter '\\t' --no-preamble  # as pasted from a spreadsheet
+  python3 generate_ing_csv.py --months 2 --seed 10 --overlap --out fake_ing_overlap.csv
+      # two exports, fake_ing_overlap_a.csv and fake_ing_overlap_b.csv: B starts before A ends,
+      # and the pending holds at the end of A are booked in B (same transaction ids)
 
 Unverified (guessed): quoting of "Nazwa banku", "Szczegóły", "Konto" and
 currency columns; header quoting; whether the "Suma" totals include pending
@@ -36,7 +39,7 @@ holds (we include them); interest/tax titles on the savings account.
 import argparse
 import csv
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, timedelta
 
 HEADER = [
@@ -134,6 +137,7 @@ class Tx:
     channel: str = "97"
     fx: tuple | None = None
     account: str = MAIN_ACCOUNT
+    tx_id: str = ""  # preassigned in --overlap mode so both exports agree
 
 
 def card_tx(rng, d, cp, cat, merchant, amount, fx=None):
@@ -226,7 +230,9 @@ def to_rows(rng, txs, balances):
         balances[t.account] = round(balances[t.account] + t.amount, 2)
         pending = t.book_date is None
         tx_id = ""
-        if not pending:
+        if not pending and t.tx_id:
+            tx_id = t.tx_id
+        elif not pending:
             tx_id = f"'{t.book_date:%Y}{t.book_date.timetuple().tm_yday:03d}{t.channel}{rng.randint(0, 10**9 - 1):09d}'"
         amt = fmt_amount(t.amount)
         fx_amt, fx_cur = (fmt_amount(t.fx[0]), t.fx[1]) if t.fx else ("", "")
@@ -297,6 +303,7 @@ def main():
     p.add_argument("--delimiter", default=";", help="';' (real export) or '\\t' (as pasted)")
     p.add_argument("--encoding", default="cp1250", help="cp1250 (real export) or utf-8")
     p.add_argument("--no-preamble", action="store_true", help="omit preamble/footer and quotes (spreadsheet paste)")
+    p.add_argument("--overlap", action="store_true", help="write two overlapping exports (<out>_a, <out>_b)")
     p.add_argument("--out", default="fake_ing.csv")
     args = p.parse_args()
     if args.delimiter == "\\t":
@@ -305,28 +312,53 @@ def main():
     rng = random.Random(args.seed)
     global MAIN_NRB, SAVINGS_NRB, RENT_NRB
     MAIN_NRB, SAVINGS_NRB, RENT_NRB = fake_nrb(rng), fake_nrb(rng), fake_nrb(rng)
-
+    opening = {MAIN_ACCOUNT: args.opening_balance, SAVINGS_ACCOUNT: args.savings_balance}
     start = args.end - timedelta(days=30 * args.months)
-    txs = finalize(generate(rng, start, args.end), args.end)
-    rows, labels = to_rows(rng, txs, {MAIN_ACCOUNT: args.opening_balance, SAVINGS_ACCOUNT: args.savings_balance})
 
+    if args.overlap:
+        write_overlapping(args, rng, start, opening)
+        return
+
+    txs = finalize(generate(rng, start, args.end), args.end)
+    rows, labels = to_rows(rng, txs, opening)
+    write_export(args, args.out, start, args.end, txs, rows, labels)
+
+
+def write_export(args, out, start, end, txs, rows, labels):
     if args.no_preamble:
         lines = [args.delimiter.join(r) for r in [HEADER, *rows]]
     else:
-        lines = preamble(start, args.end, txs)
+        lines = preamble(start, end, txs)
         lines.append(format_line(HEADER, args.delimiter, set(range(len(HEADER)))))
         lines += [format_line(r, args.delimiter, QUOTED_COLUMNS) for r in rows]
         lines += FOOTER
-    with open(args.out, "w", encoding=args.encoding, newline="") as f:
+    with open(out, "w", encoding=args.encoding, newline="") as f:
         f.write("\n".join(lines) + "\n")
 
-    labels_path = args.out.rsplit(".", 1)[0] + ".labels.csv"
+    labels_path = out.rsplit(".", 1)[0] + ".labels.csv"
     with open(labels_path, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, delimiter=";")
         w.writerow(["row", "tx_date", "tx_id", "amount", "account", "kind", "status", "merchant", "category"])
         w.writerows([[i + 1, *l] for i, l in enumerate(labels)])
 
-    print(f"{len(rows)} rows -> {args.out}, labels -> {labels_path}")
+    print(f"{len(rows)} rows -> {out}, labels -> {labels_path}")
+
+
+def write_overlapping(args, rng, start, opening):
+    """Two exports of one history: A ends 10 days before B, and B starts 14 days before A ends."""
+    full = generate(rng, start, args.end)
+    full.sort(key=lambda t: (t.tx_date, t.book_date))
+    for t in full:  # one id per transaction, shared by both exports
+        t.tx_id = f"'{t.book_date:%Y}{t.book_date.timetuple().tm_yday:03d}{t.channel}{rng.randint(0, 10**9 - 1):09d}'"
+    end_a = args.end - timedelta(days=10)
+    start_b = end_a - timedelta(days=14)
+    stem = args.out.rsplit(".", 1)[0]
+    for suffix, (lo, hi) in (("a", (start, end_a)), ("b", (start_b, args.end))):
+        txs = finalize([replace(t) for t in full if lo <= t.tx_date <= hi], hi)
+        balances = {a: round(b + sum(t.amount for t in full if t.account == a and t.tx_date < lo), 2)
+                    for a, b in opening.items()}
+        rows, labels = to_rows(rng, txs, balances)
+        write_export(args, f"{stem}_{suffix}.csv", lo, hi, txs, rows, labels)
 
 
 if __name__ == "__main__":

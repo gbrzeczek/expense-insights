@@ -132,6 +132,8 @@ dotnet ef migrations add <Name> -p ExpenseInsights.Infrastructure -s ExpenseInsi
 ```
 
 Tests run on Microsoft.Testing.Platform (xUnit v3); `global.json` opts `dotnet test` into it.
+Import speed benchmarks are explicit tests (skipped by default and in CI):
+`dotnet test --project tests/ExpenseInsights.Infrastructure.Tests -c Release -- --explicit only`.
 
 ### Frontend (`src/frontend`)
 
@@ -159,4 +161,8 @@ docker build -t expense-insights .                                         # ima
 
 ```bash
 python3 test-data/generate_ing_csv.py --months 6 --seed 42 --out test-data/fake_ing.csv
+python3 test-data/generate_ing_csv.py --months 2 --seed 10 --overlap --out test-data/fake_ing_overlap.csv
 ```
+
+The second command writes two overlapping exports (`fake_ing_overlap_a.csv`, `_b.csv`) for the
+dedup and pending → booked tests.

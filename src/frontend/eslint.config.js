@@ -66,6 +66,8 @@ module.exports = defineConfig([
             'aria-controls',
             'viewBox',
             'd',
+            'accept',
+            'aria-live',
           ],
         },
       ],

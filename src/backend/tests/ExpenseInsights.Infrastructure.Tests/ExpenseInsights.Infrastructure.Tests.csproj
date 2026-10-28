@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ExpenseInsights.Infrastructure\ExpenseInsights.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\ExpenseInsights.Import.Ing\ExpenseInsights.Import.Ing.csproj" />
     <ProjectReference Include="..\ExpenseInsights.Testing\ExpenseInsights.Testing.csproj" />
   </ItemGroup>
 

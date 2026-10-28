@@ -36,8 +36,15 @@ public interface IStatementParser
 }
 ```
 
-`ParseResult` is either an `ImportedTransaction` or a row-level `ParseError` (line number and
-reason). One bad row never fails the whole import.
+`ParseResult` is one of: `ParsedStatement` (always first: the statement's accounts, period,
+declared totals and document number), `ParsedTransaction` (an `ImportedTransaction`), a row-level
+`ParseError`, or a `ParseWarning`. Errors and warnings are an `ImportIssue`: a code plus
+parameters (line, value, amounts, dates) that the UI words through i18n. One bad row never fails
+the whole import; a file that can't be read at all throws `StatementFormatException` with a code.
+
+`StatementImporter` (Infrastructure) is the bank-agnostic pipeline: SHA-256 file dedup, parser
+detection, account upsert, totals and balance checks, period-gap warning, dedup by
+`(AccountId, ExternalId)`, pending → booked promotion, expiry, and own-transfer pairing.
 
 `ImportedTransaction` is the **bank-agnostic** model everything downstream uses:
 
@@ -119,3 +126,5 @@ encrypted, plus an off-site copy.
 | D11 | P2P transfers are spending by default; can be recategorized, ruled by recipient account, split, or marked as reimbursements | Shared bills would otherwise overstate both spending and income |
 | D12 | Discard the preamble's user name and address on import | It's PII we don't need |
 | D13 | Warm Paper Finance design system (`docs/design-system.md`), self-hosted Inter + Source Serif 4, no component library for now | Calm, editorial, trustworthy look; fonts bundled so the PWA works offline and makes no third-party requests |
+| D14 | `User` + `ICurrentUser` + query filter from plan 02, with a seeded owner until sign-in (plan 03) | Transactions need an owner from the first import; hard rule 7 applies from day one |
+| D15 | The user's own account numbers are stored only as a mask and a SHA-256 hash | Enough to identify accounts and recognise own transfers without keeping the numbers |

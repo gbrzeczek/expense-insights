@@ -4,4 +4,8 @@
     <ProjectReference Include="..\ExpenseInsights.Core\ExpenseInsights.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="ExpenseInsights.Import.Ing.Tests" />
+  </ItemGroup>
+
 </Project>

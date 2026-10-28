@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <!-- No tests yet: don't fail on "zero tests ran" (exit code 8). Remove with the first test. -->
-    <TestingPlatformCommandLineArguments>$(TestingPlatformCommandLineArguments) --ignore-exit-code 8</TestingPlatformCommandLineArguments>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +10,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ExpenseInsights.Import.Ing\ExpenseInsights.Import.Ing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Generated fake exports only (see test-data/README.md). -->
+    <None Include="..\..\..\..\test-data\*.csv" LinkBase="test-data" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

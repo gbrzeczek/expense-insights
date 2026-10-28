@@ -14,4 +14,9 @@
     <PackageReference Include="xunit.v3.extensibility.core" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Generated fake exports only (see test-data/README.md); copied into every referencing test project. -->
+    <None Include="..\..\..\..\test-data\*.csv" LinkBase="test-data" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

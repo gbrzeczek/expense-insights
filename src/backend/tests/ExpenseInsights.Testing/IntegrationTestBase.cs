@@ -8,7 +8,7 @@ public abstract class IntegrationTestBase(PostgresFixture postgres) : IClassFixt
 {
     protected PostgresFixture Postgres { get; } = postgres;
 
-    protected AppDbContext CreateDbContext() => Postgres.CreateDbContext();
+    protected AppDbContext CreateDbContext(Guid? userId = null) => Postgres.CreateDbContext(userId);
 
     protected static CancellationToken CancellationToken => TestContext.Current.CancellationToken;
 }
