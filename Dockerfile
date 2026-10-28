@@ -18,13 +18,14 @@ COPY src/backend/ExpenseInsights.Core/ExpenseInsights.Core.csproj ExpenseInsight
 COPY src/backend/ExpenseInsights.Infrastructure/ExpenseInsights.Infrastructure.csproj ExpenseInsights.Infrastructure/
 COPY src/backend/ExpenseInsights.Import.Ing/ExpenseInsights.Import.Ing.csproj ExpenseInsights.Import.Ing/
 COPY src/backend/ExpenseInsights.Classification/ExpenseInsights.Classification.csproj ExpenseInsights.Classification/
-RUN --mount=type=cache,target=/root/.nuget/packages dotnet restore ExpenseInsights.Api/ExpenseInsights.Api.csproj
+# Packages stay in this layer (no cache mount): with a CI layer cache the restore layer can be
+# reused while a cache mount starts empty, which breaks `publish --no-restore`.
+RUN dotnet restore ExpenseInsights.Api/ExpenseInsights.Api.csproj
 COPY src/backend/ ./
 # Copied before publish so the static assets manifest (MapStaticAssets) includes the SPA files
 # and pre-compresses them.
 COPY --from=frontend /src/dist/expense-insights/browser/ ExpenseInsights.Api/wwwroot/
-RUN --mount=type=cache,target=/root/.nuget/packages \
-    dotnet publish ExpenseInsights.Api/ExpenseInsights.Api.csproj -c Release -o /app --no-restore
+RUN dotnet publish ExpenseInsights.Api/ExpenseInsights.Api.csproj -c Release -o /app --no-restore
 
 # --- Runtime ------------------------------------------------------------------
 # Chiseled (distroless, non-root) with ICU and tzdata for pl-PL culture support.
