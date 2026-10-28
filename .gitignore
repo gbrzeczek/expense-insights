@@ -1,0 +1,46 @@
+# --- Bank data safety net -------------------------------------------------
+# Real exports must never be committed. Only generated fake data in test-data/.
+*.csv
+*.CSV
+!test-data/*.csv
+*.xlsx
+*.pdf
+
+# --- .NET -----------------------------------------------------------------
+bin/
+obj/
+*.user
+*.suo
+.vs/
+TestResults/
+*.trx
+coverage*/
+
+# --- Node / Angular -------------------------------------------------------
+node_modules/
+dist/
+.angular/
+coverage/
+playwright-report/
+test-results/
+
+# --- Local env / secrets --------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pfx
+appsettings.*.local.json
+
+# --- Models / data volumes ------------------------------------------------
+models/
+*.gguf
+*.onnx
+pgdata/
+backups/
+
+# --- Editors / OS ---------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+__pycache__/

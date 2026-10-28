@@ -1,0 +1,259 @@
+#!/usr/bin/env python3
+"""Generate a fake ING Bank Śląski CSV export for testing.
+
+Mirrors the quirks seen in a real export:
+  - 17 columns, duplicated "Waluta" header names
+  - newest-first ordering, running "Saldo po transakcji" (includes holds)
+  - pending card payments (blokady): no booking date, no transaction id,
+    amount in the "Kwota blokady" column instead of "Kwota transakcji"
+  - apostrophe-wrapped ids/account numbers, stray leading/trailing spaces
+  - BLIK e-commerce paid through intermediaries (PayU, Cashbill...), with the
+    real shop only visible at the end of the title
+  - transaction id = YYYY + day-of-year(booking) + 2-digit channel + 9 digits
+
+Also writes a ground-truth labels file (one row per data row) so classifier
+accuracy can be measured.
+
+Usage:
+  python3 generate_ing_csv.py --months 6 --seed 42 --out fake_ing.csv
+  python3 generate_ing_csv.py --encoding cp1250 --delimiter ';'
+"""
+import argparse
+import csv
+import random
+from dataclasses import dataclass, field
+from datetime import date, timedelta
+
+HEADER = [
+    "Data transakcji", "Data księgowania", "Dane kontrahenta", "Tytuł",
+    "Nr rachunku", "Nazwa banku", "Szczegóły", "Nr transakcji",
+    "Kwota transakcji (waluta rachunku)", "Waluta",
+    "Kwota blokady/zwolnienie blokady", "Waluta",
+    "Kwota płatności w walucie", "Waluta",
+    "Konto", "Saldo po transakcji", "Waluta",
+]
+
+OWNER = "JAN PAWEŁ KOWALSKI"
+ACCOUNT_NAME = "KONTO Mobi pow.26"
+CARD = "4111xx1234"
+CARD_ACQUIRER = "'1915031/19730 '"
+
+# (counterparty template, category, canonical merchant, amount range, weekly freq)
+# {n} = store number. Odd spacing is intentional — it matches real exports.
+CARD_MERCHANTS = [
+    ("JMP S.A. BIEDRONKA {n}  KRAKOW  PO", "Spożywcze", "Biedronka", (12, 160), 2.5),
+    ("LIDL KAMIENSKIEGO  KRAKOW  POL", "Spożywcze", "Lidl", (20, 220), 0.8),
+    ("ZABKA Z{n} K.1  KRAKOW  POL", "Spożywcze", "Żabka", (6, 45), 1.5),
+    ("KAUFLAND 01 KRAKOW  KRAKOW  POL", "Spożywcze", "Kaufland", (40, 260), 0.3),
+    (" MCDONALDS 0{n}  KRAKOW  POL ", "Restauracje", "McDonald's", (18, 70), 0.4),
+    ("STARBUCKS KRAKOW GAL  KRAKOW  POL", "Restauracje", "Starbucks", (14, 40), 0.3),
+    ("ORLEN STACJA NR {n}  KRAKOW  POL", "Transport", "Orlen", (80, 320), 0.4),
+    ("BOLT.EU/R/{n}  Tallinn  EST", "Transport", "Bolt", (14, 55), 0.4),
+    (" ZNANYLEKARZ SPOLKA Z O  warszawa  P ", "Zdrowie", "ZnanyLekarz", (150, 450), 0.05),
+    ("APTEKA DOZ {n}  KRAKOW  POL", "Zdrowie", "Apteka DOZ", (9, 120), 0.3),
+    ("CASTORAMA KRAKOW 4  KRAKOW 30964 PO", "Dom i ogród", "Castorama", (15, 400), 0.15),
+    ("IKEA KRAKOW  KRAKOW  POL", "Dom i ogród", "IKEA", (30, 700), 0.08),
+    ("PEPCO {n} KRAKOW 14  KRAKOW  POL", "Dom i ogród", "Pepco", (10, 90), 0.2),
+    ("ROSSMANN {n}  KRAKOW  POL", "Drogeria", "Rossmann", (12, 150), 0.4),
+    (" Bershka.com               Arteixo ", "Odzież i obuwie", "Bershka", (60, 350), 0.05),
+    ("RESERVED BONARKA  KRAKOW  POL", "Odzież i obuwie", "Reserved", (40, 300), 0.08),
+    (" MEDIAEXPERT  WEGRZCE  POL ", "Elektronika", "Media Expert", (30, 900), 0.05),
+    (" DECATHLON KRAKOW PL  KRAKOW  POL ", "Sport i hobby", "Decathlon", (25, 400), 0.1),
+    (" Zielony Parapet  Krakow  POL ", "Sport i hobby", "Zielony Parapet", (30, 200), 0.05),
+    # Deliberately ambiguous — the classifier should struggle here.
+    ("{n} KRAKOW ZAKOPIAN  KRAKOW  POL", "Inne", "?", (8, 130), 0.2),
+    ("P.H.U. ANNA NOWAK  KRAKOW  POL", "Inne", "?", (10, 80), 0.1),
+]
+
+# BLIK e-commerce: (intermediary, shop shown in title, category, canonical, range, weekly freq)
+BLIK_SHOPS = [
+    ("PayU S.A. Grunwaldzka 186 Poznan", "allegro.pl", "Zakupy online", "Allegro", (20, 400), 0.5),
+    ("Cashbill eComm Sobieskiego 2 Katowice", "doci.pl", "Zdrowie", "Doci", (4, 30), 0.1),
+    ("PayPro SA Pastelowa 8 Poznan", "koleo.pl", "Transport", "Koleo", (25, 120), 0.15),
+    ("PayU S.A. Grunwaldzka 186 Poznan", "pyszne.pl", "Restauracje", "Pyszne.pl", (35, 110), 0.4),
+    ("Zielone Sklepy Marta Wiśniewska ul. Polna, nr 3, lok. 2 Wieliczka", "https://zielone-sklepy.pl",
+     "Zakupy online", "Zielone Sklepy", (60, 300), 0.05),
+]
+
+# (day of month, counterparty, title, category, amount, foreign fx (amt, cur) or None)
+SUBSCRIPTIONS = [
+    (5, " NETFLIX.COM  Los Gatos  NLD ", "Subskrypcje", "Netflix", -49.00),
+    (12, "Spotify P2B7C1D9E4  Stockholm  SWE", "Subskrypcje", "Spotify", -23.99),
+    (18, "GOOGLE *YouTubePremium  g.co/helppay#  POL", "Subskrypcje", "YouTube Premium", -29.99),
+]
+
+FRIENDS = ["Anna Nowak", "Piotr Wiśniewski", "Katarzyna Zielińska", "Michał Wójcik", "Tomasz Lewandowski"]
+BANKS = ["ALIOR Centrala", "mBank S.A.", "PKO BP S.A.", "Santander Bank Polska S.A.", "ING Bank Śląski S.A."]
+
+
+def fake_nrb(rng):
+    """Random Polish NRB (26 digits) with a valid IBAN checksum."""
+    bban = "".join(str(rng.randint(0, 9)) for _ in range(24))
+    num = int(bban + "252100")  # "PL" -> 25 21, then "00"
+    return f"{98 - num % 97:02d}{bban}"
+
+
+def fmt_amount(x):
+    return f"{x:.2f}".replace(".", ",")
+
+
+@dataclass
+class Tx:
+    tx_date: date
+    book_date: date | None
+    counterparty: str
+    title: str
+    category: str
+    merchant: str
+    kind: str
+    amount: float
+    account_no: str = ""
+    bank: str = ""
+    details: str = ""
+    channel: str = "97"
+    fx: tuple | None = None
+    seq: int = field(default=0)
+
+
+def card_tx(rng, d, cp, cat, merchant, amount, fx=None):
+    book = d + timedelta(days=rng.choice([0, 1, 2, 2, 3]))
+    title = f"Płatność kartą {d:%d.%m.%Y} Nr karty {CARD}"
+    return Tx(d, book, cp, title, cat, merchant, "card", amount,
+              account_no=CARD_ACQUIRER, details="TR.KART  ", channel=rng.choice(["97", "99"]), fx=fx)
+
+
+def generate(rng, start, end):
+    txs = []
+    stores = {i: rng.randint(1000, 9999) for i in range(len(CARD_MERCHANTS))}
+    d = start
+    while d <= end:
+        for i, (tpl, cat, merchant, (lo, hi), weekly) in enumerate(CARD_MERCHANTS):
+            if rng.random() < weekly / 7:
+                # Big chains: several stores, mostly the same 2-3.
+                n = stores[i] + rng.choice([0, 0, 0, 7, 113])
+                txs.append(card_tx(rng, d, tpl.format(n=n), cat, merchant, -round(rng.uniform(lo, hi), 2)))
+        for cp, shop, cat, merchant, (lo, hi), weekly in BLIK_SHOPS:
+            if rng.random() < weekly / 7:
+                ref = rng.randint(10**10, 10**11 - 1)
+                txs.append(Tx(d, d, cp, f"Płatność BLIK {d:%d.%m.%Y} Nr transakcji {ref} {shop}",
+                              cat, merchant, "blik", -round(rng.uniform(lo, hi), 2),
+                              details="TR.BLIK  ", channel="64"))
+        for day, cp, cat, merchant, amount in SUBSCRIPTIONS:
+            if d.day == day:
+                txs.append(card_tx(rng, d, cp, cat, merchant, amount))
+        if d.day == 10:
+            txs.append(Tx(d, d, " ACME SOFTWARE SP. Z O.O. UL. DŁUGA 1 31-147 KRAKÓW ",
+                          f"WYNAGRODZENIE ZA {(d.replace(day=1) - timedelta(days=1)):%m/%Y}",
+                          "Wynagrodzenie", "ACME Software", "transfer_in", round(rng.uniform(9800, 10400), 2),
+                          account_no=f"'{fake_nrb(rng)} '", bank="mBank S.A.", details="PRZELEW  ", channel="06"))
+        if d.day == 11:
+            txs.append(Tx(d, d, f" {OWNER} ", "Przelew własny - oszczędności", "Przelew własny", "Własne konto",
+                          "own_transfer", -2000.00, account_no=f"'{SAVINGS_NRB} '",
+                          bank="ING Bank Śląski S.A.", details="PRZELEW  ", channel="97"))
+        if d.day == 1:
+            txs.append(Tx(d, d, " SPÓŁDZIELNIA MIESZKANIOWA PODGÓRZE UL. WIELICKA 2 KRAKÓW ",
+                          f"CZYNSZ {d:%m/%Y} LOK. 15", "Rachunki", "Czynsz", "transfer_out", -742.18,
+                          account_no=f"'{RENT_NRB} '", bank="PKO BP S.A.", details="PRZELEW  ", channel="97"))
+        if d.day == 20:
+            txs.append(Tx(d, d, " TAURON SPRZEDAŻ SP. Z O.O. ", f"Faktura P/{rng.randint(10**7, 10**8)}/{d:%m}/{d:%Y}",
+                          "Rachunki", "Tauron", "transfer_out", -round(rng.uniform(110, 240), 2),
+                          account_no=f"'{fake_nrb(rng)} '", bank="PKO BP S.A.", details="PRZELEW  ", channel="97"))
+        if rng.random() < 0.6 / 7:  # phone transfer to a friend
+            friend = rng.choice(FRIENDS)
+            phone = f"+48xxxxxx{rng.randint(100, 999)}"
+            txs.append(Tx(d, d, f" {friend} ",
+                          f"Telephone transfer {phone} Phone transfer To {friend} From {OWNER}",
+                          "Przelewy do znajomych", friend, "p2p_out", -float(rng.choice([20, 35, 50, 93, 120, 150])),
+                          account_no=f"'{fake_nrb(rng)} '", bank=rng.choice(BANKS), details="PRZELEW  "))
+        if rng.random() < 0.4 / 7:  # incoming BLIK from a friend
+            friend = rng.choice(FRIENDS)
+            txs.append(Tx(d, d, f" {friend} ", rng.choice([" Zakupy", "pizza", " za bilety", "Zwrot :)"]),
+                          "Przelewy od znajomych", friend, "p2p_in", round(rng.uniform(10, 120), 2),
+                          account_no=f"'{fake_nrb(rng)} '", bank=rng.choice(BANKS), details="P.BLIK  ", channel="64"))
+        if rng.random() < 0.05 / 7:  # refund for a card purchase
+            txs.append(card_tx(rng, d, " ZALANDO SE  Berlin  DEU ", "Zwroty", "Zalando", round(rng.uniform(80, 300), 2)))
+        if rng.random() < 0.05 / 7:  # foreign-currency card payment
+            eur = round(rng.uniform(5, 60), 2)
+            txs.append(card_tx(rng, d, " LIDL DIENSTLEISTUNG  Berlin  DEU ", "Spożywcze", "Lidl",
+                               -round(eur * 4.27, 2), fx=(-eur, "EUR")))
+        d += timedelta(days=1)
+    return txs
+
+
+def finalize(rng, txs, end):
+    # Anything booked after the export date is still a pending hold.
+    for t in txs:
+        if t.book_date and t.book_date > end:
+            t.book_date = None
+            t.title = t.title.replace("Płatność kartą ", "Płatność kartą  ")  # real exports add a space
+    txs.sort(key=lambda t: (t.tx_date, t.book_date or date.max))
+    for i, t in enumerate(txs):
+        t.seq = i
+    return txs
+
+
+def to_rows(rng, txs, opening_balance):
+    balance = opening_balance
+    rows, labels = [], []
+    for t in txs:
+        balance = round(balance + t.amount, 2)
+        pending = t.book_date is None
+        tx_id = ""
+        if not pending:
+            tx_id = f"'{t.book_date:%Y}{t.book_date.timetuple().tm_yday:03d}{t.channel}{rng.randint(0, 10**9 - 1):09d}'"
+        amt = fmt_amount(t.amount)
+        fx_amt, fx_cur = (fmt_amount(t.fx[0]), t.fx[1]) if t.fx else ("", "")
+        rows.append([
+            t.tx_date.isoformat(), "" if pending else t.book_date.isoformat(),
+            t.counterparty, t.title,
+            "" if pending else t.account_no, "" if pending else t.bank,
+            "" if pending else t.details, tx_id,
+            "" if pending else amt, "" if pending else "PLN",
+            amt if pending else "", "PLN" if pending else "",
+            fx_amt, fx_cur,
+            ACCOUNT_NAME, fmt_amount(balance), "PLN",
+        ])
+        labels.append([t.tx_date.isoformat(), tx_id.strip("'"), fmt_amount(t.amount),
+                       t.kind, "pending" if pending else "booked", t.merchant, t.category])
+    rows.reverse()
+    labels.reverse()
+    return rows, labels
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--months", type=int, default=6)
+    p.add_argument("--end", type=date.fromisoformat, default=date(2026, 10, 28), help="export date")
+    p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--opening-balance", type=float, default=18000.0)
+    p.add_argument("--delimiter", default="\t", help="'\\t' (as pasted) or ';'")
+    p.add_argument("--encoding", default="utf-8", help="utf-8 or cp1250")
+    p.add_argument("--out", default="fake_ing.csv")
+    args = p.parse_args()
+    if args.delimiter == "\\t":
+        args.delimiter = "\t"
+
+    rng = random.Random(args.seed)
+    global SAVINGS_NRB, RENT_NRB
+    SAVINGS_NRB, RENT_NRB = fake_nrb(rng), fake_nrb(rng)
+
+    start = args.end - timedelta(days=30 * args.months)
+    txs = finalize(rng, generate(rng, start, args.end), args.end)
+    rows, labels = to_rows(rng, txs, args.opening_balance)
+
+    with open(args.out, "w", encoding=args.encoding, newline="") as f:
+        w = csv.writer(f, delimiter=args.delimiter, quoting=csv.QUOTE_MINIMAL, lineterminator="\r\n")
+        w.writerow(HEADER)
+        w.writerows(rows)
+
+    labels_path = args.out.rsplit(".", 1)[0] + ".labels.csv"
+    with open(labels_path, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, delimiter=";")
+        w.writerow(["row", "tx_date", "tx_id", "amount", "kind", "status", "merchant", "category"])
+        w.writerows([[i + 1, *l] for i, l in enumerate(labels)])
+
+    print(f"{len(rows)} rows -> {args.out}, labels -> {labels_path}")
+
+
+if __name__ == "__main__":
+    main()

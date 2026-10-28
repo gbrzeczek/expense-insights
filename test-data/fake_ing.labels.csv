@@ -1,0 +1,323 @@
+row;tx_date;tx_id;amount;kind;status;merchant;category
+1;2026-10-28;;-38,99;card;pending;Starbucks;Restauracje
+2;2026-10-28;;-67,25;card;pending;Biedronka;Spożywcze
+3;2026-10-27;;-22,10;card;pending;Żabka;Spożywcze
+4;2026-10-26;;-138,87;card;pending;Orlen;Transport
+5;2026-10-26;202630197546425072;-26,35;card;booked;Żabka;Spożywcze
+6;2026-10-24;202630097684364101;-31,15;card;booked;Biedronka;Spożywcze
+7;2026-10-24;202629997135271742;-247,70;card;booked;Kaufland;Spożywcze
+8;2026-10-22;202629699615481841;-48,81;card;booked;McDonald's;Restauracje
+9;2026-10-21;202629699971059887;-155,95;card;booked;Biedronka;Spożywcze
+10;2026-10-20;202629397207892029;-141,91;transfer_out;booked;Tauron;Rachunki
+11;2026-10-20;202629397902780078;-28,39;card;booked;Lidl;Spożywcze
+12;2026-10-19;202629264847629428;-94,92;blik;booked;Pyszne.pl;Restauracje
+13;2026-10-18;202629397636607029;-29,99;card;booked;YouTube Premium;Subskrypcje
+14;2026-10-18;202629399072525321;-165,24;card;booked;Lidl;Spożywcze
+15;2026-10-17;202629299765899399;-104,64;card;booked;Orlen;Transport
+16;2026-10-17;202629199639064402;-168,75;card;booked;Kaufland;Spożywcze
+17;2026-10-15;202629199013194760;-87,99;card;booked;Biedronka;Spożywcze
+18;2026-10-15;202629099110262182;-132,99;card;booked;Rossmann;Drogeria
+19;2026-10-15;202628999115971195;105,67;card;booked;Zalando;Zwroty
+20;2026-10-14;202628999206675241;-87,87;card;booked;Biedronka;Spożywcze
+21;2026-10-13;202628899631159790;-27,88;card;booked;?;Inne
+22;2026-10-13;202628899352395271;-151,23;card;booked;Lidl;Spożywcze
+23;2026-10-12;202628599555353112;-23,99;card;booked;Spotify;Subskrypcje
+24;2026-10-12;202628597487561211;-44,73;card;booked;Lidl;Spożywcze
+25;2026-10-11;202628497027887311;-2000,00;own_transfer;booked;Własne konto;Przelew własny
+26;2026-10-10;202628597840663765;-613,87;card;booked;IKEA;Dom i ogród
+27;2026-10-10;202628597725609063;-100,81;card;booked;Biedronka;Spożywcze
+28;2026-10-10;202628306698921553;9827,31;transfer_in;booked;ACME Software;Wynagrodzenie
+29;2026-10-08;202628299364660414;-181,10;card;booked;Kaufland;Spożywcze
+30;2026-10-07;202628299108746345;-66,23;card;booked;McDonald's;Restauracje
+31;2026-10-07;202628297664893749;-68,93;card;booked;Biedronka;Spożywcze
+32;2026-10-05;202628197665946168;-49,00;card;booked;Netflix;Subskrypcje
+33;2026-10-05;202627999944826411;-33,87;card;booked;Biedronka;Spożywcze
+34;2026-10-05;202627864459675039;16,09;p2p_in;booked;Michał Wójcik;Przelewy od znajomych
+35;2026-10-03;202627899853801568;-99,02;card;booked;Biedronka;Spożywcze
+36;2026-10-02;202627899498440715;-155,69;card;booked;Biedronka;Spożywcze
+37;2026-10-01;202627697412230991;-48,04;card;booked;Bolt;Transport
+38;2026-10-01;202627497486846620;-93,00;p2p_out;booked;Michał Wójcik;Przelewy do znajomych
+39;2026-10-01;202627497011388692;-742,18;transfer_out;booked;Czynsz;Rachunki
+40;2026-09-30;202627599670023660;-32,21;card;booked;Żabka;Spożywcze
+41;2026-09-28;202627497708373286;-26,56;card;booked;Lidl;Spożywcze
+42;2026-09-28;202627164845544638;-27,44;blik;booked;Doci;Zdrowie
+43;2026-09-28;202627197643789670;-52,71;card;booked;McDonald's;Restauracje
+44;2026-09-26;202627199928338655;-42,33;card;booked;?;Inne
+45;2026-09-26;202627197250302083;-106,16;card;booked;Biedronka;Spożywcze
+46;2026-09-25;202627099441423859;-116,97;card;booked;Orlen;Transport
+47;2026-09-25;202627099807414505;-223,61;card;booked;Kaufland;Spożywcze
+48;2026-09-25;202627099662822951;-38,46;card;booked;Żabka;Spożywcze
+49;2026-09-25;202626899102896950;-80,04;card;booked;Rossmann;Drogeria
+50;2026-09-23;202626899431303909;-128,04;card;booked;Rossmann;Drogeria
+51;2026-09-23;202626664409584709;-93,89;blik;booked;Allegro;Zakupy online
+52;2026-09-22;202626799912604654;-37,56;card;booked;Bolt;Transport
+53;2026-09-22;202626797316664467;-117,35;card;booked;Biedronka;Spożywcze
+54;2026-09-21;202626464056052697;12,42;p2p_in;booked;Piotr Wiśniewski;Przelewy od znajomych
+55;2026-09-20;202626597600498762;-24,01;card;booked;Starbucks;Restauracje
+56;2026-09-20;202626397059904013;-202,21;transfer_out;booked;Tauron;Rachunki
+57;2026-09-19;202626264727529296;56,83;p2p_in;booked;Michał Wójcik;Przelewy od znajomych
+58;2026-09-18;202626499109336534;-34,13;card;booked;Żabka;Spożywcze
+59;2026-09-18;202626197070641753;-29,99;card;booked;YouTube Premium;Subskrypcje
+60;2026-09-18;202626199463683590;-38,03;card;booked;Biedronka;Spożywcze
+61;2026-09-17;202626397672361249;-126,06;card;booked;Orlen;Transport
+62;2026-09-17;202626297655775616;-29,25;card;booked;Żabka;Spożywcze
+63;2026-09-16;202626199323702101;-75,08;card;booked;Biedronka;Spożywcze
+64;2026-09-16;202625997058829061;-17,85;card;booked;?;Inne
+65;2026-09-16;202625999474506277;-27,76;card;booked;Bolt;Transport
+66;2026-09-15;202626099861556586;-148,68;card;booked;Lidl;Spożywcze
+67;2026-09-15;202625899986893059;-79,47;card;booked;Rossmann;Drogeria
+68;2026-09-15;202625899066574389;-52,33;card;booked;Kaufland;Spożywcze
+69;2026-09-14;202625997136940518;-153,21;card;booked;Biedronka;Spożywcze
+70;2026-09-13;202625664840360006;-174,75;blik;booked;Zielone Sklepy;Zakupy online
+71;2026-09-13;202625664069823516;-7,94;blik;booked;Doci;Zdrowie
+72;2026-09-13;202625664744493568;-268,09;blik;booked;Allegro;Zakupy online
+73;2026-09-12;202625897910202507;-17,77;card;booked;Bolt;Transport
+74;2026-09-12;202625799955720128;-23,99;card;booked;Spotify;Subskrypcje
+75;2026-09-12;202625597336381228;-111,57;card;booked;Biedronka;Spożywcze
+76;2026-09-11;202625697405224939;-162,07;card;booked;Castorama;Dom i ogród
+77;2026-09-11;202625699035802499;-99,75;card;booked;Lidl;Spożywcze
+78;2026-09-11;202625497984314571;-2000,00;own_transfer;booked;Własne konto;Przelew własny
+79;2026-09-10;202625697065162109;-18,07;card;booked;?;Inne
+80;2026-09-10;202625306091842179;9866,93;transfer_in;booked;ACME Software;Wynagrodzenie
+81;2026-09-09;202625497134031298;-37,29;card;booked;Bolt;Transport
+82;2026-09-09;202625497621626156;-6,29;card;booked;Żabka;Spożywcze
+83;2026-09-09;202625499479378686;-74,77;card;booked;Biedronka;Spożywcze
+84;2026-09-08;202625164671463117;-33,04;blik;booked;Koleo;Transport
+85;2026-09-07;202625299102725681;-269,44;card;booked;Castorama;Dom i ogród
+86;2026-09-07;202625064820444599;-65,31;blik;booked;Pyszne.pl;Restauracje
+87;2026-09-06;202625199470867440;-31,33;card;booked;Żabka;Spożywcze
+88;2026-09-05;202625197665254520;-117,51;card;booked;Biedronka;Spożywcze
+89;2026-09-05;202625097644207194;-49,00;card;booked;Netflix;Subskrypcje
+90;2026-09-04;202624999832954653;-16,79;card;booked;Żabka;Spożywcze
+91;2026-09-04;202624764078287411;-165,77;blik;booked;Allegro;Zakupy online
+92;2026-09-03;202624797254201569;-239,09;card;booked;Kaufland;Spożywcze
+93;2026-09-03;202624697852670321;-67,38;card;booked;Biedronka;Spożywcze
+94;2026-09-02;202624797557996830;-33,57;card;booked;McDonald's;Restauracje
+95;2026-09-01;202624597358187875;-214,50;card;booked;Orlen;Transport
+96;2026-09-01;202624497882222571;-742,18;transfer_out;booked;Czynsz;Rachunki
+97;2026-08-30;202624599058446836;-240,08;card;booked;Orlen;Transport
+98;2026-08-30;202624597893908879;-16,85;card;booked;Żabka;Spożywcze
+99;2026-08-30;202624497365933326;-79,15;card;booked;Biedronka;Spożywcze
+100;2026-08-29;202624297255936253;-158,34;card;booked;Lidl;Spożywcze
+101;2026-08-29;202624299508498927;-144,70;card;booked;Biedronka;Spożywcze
+102;2026-08-29;202624164115793020;-35,92;blik;booked;Pyszne.pl;Restauracje
+103;2026-08-29;202624199265379125;-30,73;card;booked;Żabka;Spożywcze
+104;2026-08-28;202624299268875123;-72,66;card;booked;Rossmann;Drogeria
+105;2026-08-28;202624097902488149;-188,39;card;booked;Orlen;Transport
+106;2026-08-26;202623897358954609;-20,00;p2p_out;booked;Tomasz Lewandowski;Przelewy do znajomych
+107;2026-08-26;202623899672481396;-109,23;card;booked;Biedronka;Spożywcze
+108;2026-08-24;202623797856009427;-34,86;card;booked;Żabka;Spożywcze
+109;2026-08-24;202623699636225068;-14,03;card;booked;Biedronka;Spożywcze
+110;2026-08-23;202623697025795071;-31,44;card;booked;Żabka;Spożywcze
+111;2026-08-23;202623697867646831;-86,27;card;booked;Biedronka;Spożywcze
+112;2026-08-21;202623697463801642;-393,61;card;booked;Decathlon;Sport i hobby
+113;2026-08-21;202623364515360022;25,22;p2p_in;booked;Katarzyna Zielińska;Przelewy od znajomych
+114;2026-08-21;202623364029928143;-76,72;blik;booked;Pyszne.pl;Restauracje
+115;2026-08-20;202623297103858858;-20,00;p2p_out;booked;Piotr Wiśniewski;Przelewy do znajomych
+116;2026-08-20;202623297671405073;-178,36;transfer_out;booked;Tauron;Rachunki
+117;2026-08-19;202623397672156679;-171,18;card;booked;Lidl;Spożywcze
+118;2026-08-19;202623299067478361;-152,89;card;booked;Castorama;Dom i ogród
+119;2026-08-19;202623197333725254;-33,35;card;booked;Żabka;Spożywcze
+120;2026-08-18;202623299353502263;-66,82;card;booked;Apteka DOZ;Zdrowie
+121;2026-08-18;202623097176610744;-29,99;card;booked;YouTube Premium;Subskrypcje
+122;2026-08-18;202623064211394879;-24,37;blik;booked;Doci;Zdrowie
+123;2026-08-18;202623097268418452;-201,77;card;booked;Kaufland;Spożywcze
+124;2026-08-17;202623099984616126;-25,57;card;booked;Bolt;Transport
+125;2026-08-17;202622964079929734;-47,13;blik;booked;Allegro;Zakupy online
+126;2026-08-16;202623197455073531;-34,75;card;booked;Starbucks;Restauracje
+127;2026-08-16;202622899740397560;-24,30;card;booked;Żabka;Spożywcze
+128;2026-08-15;202622999242266216;-49,28;card;booked;Bolt;Transport
+129;2026-08-13;202622799791824663;-71,95;card;booked;Lidl;Spożywcze
+130;2026-08-12;202622699027242908;-20,24;card;booked;Żabka;Spożywcze
+131;2026-08-12;202622499867232189;-23,99;card;booked;Spotify;Subskrypcje
+132;2026-08-11;202622697613986637;-78,01;card;booked;Rossmann;Drogeria
+133;2026-08-11;202622599944998525;-211,60;card;booked;Lidl;Spożywcze
+134;2026-08-11;202622397087841636;-2000,00;own_transfer;booked;Własne konto;Przelew własny
+135;2026-08-11;202622364359387638;-19,11;blik;booked;Doci;Zdrowie
+136;2026-08-10;202622206208958898;10249,27;transfer_in;booked;ACME Software;Wynagrodzenie
+137;2026-08-09;202622499420755279;-138,85;card;booked;Rossmann;Drogeria
+138;2026-08-09;202622164005539736;-73,09;blik;booked;Koleo;Transport
+139;2026-08-09;202622197339562230;-77,20;card;booked;Lidl;Spożywcze
+140;2026-08-08;202622299481961364;-746,23;card;booked;Media Expert;Elektronika
+141;2026-08-07;202622199571671189;-490,80;card;booked;IKEA;Dom i ogród
+142;2026-08-07;202622097451038208;-15,93;card;booked;Żabka;Spożywcze
+143;2026-08-06;202622099986115359;-51,15;card;booked;Biedronka;Spożywcze
+144;2026-08-06;202621864298428319;-52,21;blik;booked;Pyszne.pl;Restauracje
+145;2026-08-06;202621897050427906;-21,03;card;booked;Żabka;Spożywcze
+146;2026-08-05;202621897241106805;-49,00;card;booked;Netflix;Subskrypcje
+147;2026-08-05;202621764774404381;-67,67;blik;booked;Koleo;Transport
+148;2026-08-04;202621999948975640;-23,37;card;booked;McDonald's;Restauracje
+149;2026-08-03;202621897046669835;-129,02;card;booked;Rossmann;Drogeria
+150;2026-08-03;202621899814993363;-27,51;card;booked;Żabka;Spożywcze
+151;2026-08-03;202621899555400377;-105,48;card;booked;Biedronka;Spożywcze
+152;2026-08-02;202621797388127434;-26,81;card;booked;Biedronka;Spożywcze
+153;2026-08-02;202621699532119301;-556,39;card;booked;IKEA;Dom i ogród
+154;2026-08-01;202621697500993686;-38,49;card;booked;McDonald's;Restauracje
+155;2026-08-01;202621397556515311;-742,18;transfer_out;booked;Czynsz;Rachunki
+156;2026-07-30;202621497730330709;-41,17;card;booked;McDonald's;Restauracje
+157;2026-07-30;202621197130693381;-150,00;p2p_out;booked;Anna Nowak;Przelewy do znajomych
+158;2026-07-29;202621197294243484;-43,10;card;booked;Bolt;Transport
+159;2026-07-29;202621064436879666;-178,05;blik;booked;Allegro;Zakupy online
+160;2026-07-29;202621099906604837;-10,65;card;booked;Żabka;Spożywcze
+161;2026-07-28;202621297464445061;-27,17;card;booked;Biedronka;Spożywcze
+162;2026-07-27;202620997346817822;-32,78;card;booked;Żabka;Spożywcze
+163;2026-07-26;202620999916824991;-27,58;card;booked;Żabka;Spożywcze
+164;2026-07-25;202620897055687254;-79,95;card;booked;Rossmann;Drogeria
+165;2026-07-25;202620899697964448;-586,02;card;booked;IKEA;Dom i ogród
+166;2026-07-24;202620697722735389;-138,08;card;booked;Biedronka;Spożywcze
+167;2026-07-23;202620799688232308;-40,89;card;booked;Żabka;Spożywcze
+168;2026-07-23;202620464458610676;111,24;p2p_in;booked;Piotr Wiśniewski;Przelewy od znajomych
+169;2026-07-22;202620699002099126;-109,66;card;booked;Apteka DOZ;Zdrowie
+170;2026-07-22;202620597487399464;-102,13;card;booked;Biedronka;Spożywcze
+171;2026-07-21;202620499948223480;-17,63;card;booked;Żabka;Spożywcze
+172;2026-07-21;202620264601419950;81,89;p2p_in;booked;Anna Nowak;Przelewy od znajomych
+173;2026-07-20;202620197730874965;-35,00;p2p_out;booked;Katarzyna Zielińska;Przelewy do znajomych
+174;2026-07-20;202620197271571930;-171,39;transfer_out;booked;Tauron;Rachunki
+175;2026-07-18;202620199659767702;-29,99;card;booked;YouTube Premium;Subskrypcje
+176;2026-07-18;202620199572241594;-198,17;card;booked;Reserved;Odzież i obuwie
+177;2026-07-18;202620097727711835;-77,43;card;booked;Rossmann;Drogeria
+178;2026-07-17;202620199744087852;-16,69;card;booked;Bolt;Transport
+179;2026-07-17;202619864024822227;-79,55;blik;booked;Pyszne.pl;Restauracje
+180;2026-07-17;202619897727974104;-101,54;card;booked;Biedronka;Spożywcze
+181;2026-07-16;202619999910175697;-39,83;card;booked;Żabka;Spożywcze
+182;2026-07-15;202619797205999029;-12,74;card;booked;Żabka;Spożywcze
+183;2026-07-13;202619599294557421;-61,11;card;booked;Lidl;Spożywcze
+184;2026-07-12;202619699839937450;-23,99;card;booked;Spotify;Subskrypcje
+185;2026-07-12;202619499782649192;-56,09;card;booked;McDonald's;Restauracje
+186;2026-07-12;202619497561652825;-51,25;card;booked;Biedronka;Spożywcze
+187;2026-07-11;202619597945969865;-66,04;card;booked;Rossmann;Drogeria
+188;2026-07-11;202619297244775738;-2000,00;own_transfer;booked;Własne konto;Przelew własny
+189;2026-07-10;202619497918563539;-90,36;card;booked;Biedronka;Spożywcze
+190;2026-07-10;202619106611928993;10086,79;transfer_in;booked;ACME Software;Wynagrodzenie
+191;2026-07-10;202619164278769656;-80,12;blik;booked;Pyszne.pl;Restauracje
+192;2026-07-10;202619197136827900;-16,39;card;booked;Żabka;Spożywcze
+193;2026-07-09;202619299069846182;-103,39;card;booked;?;Inne
+194;2026-07-09;202619299800982881;-76,11;card;booked;Biedronka;Spożywcze
+195;2026-07-09;202619197137703513;-54,56;card;booked;Lidl;Spożywcze
+196;2026-07-08;202619097631536919;-72,03;card;booked;Lidl;Spożywcze
+197;2026-07-07;202619099070180435;-47,04;card;booked;Biedronka;Spożywcze
+198;2026-07-06;202618997188472661;-129,16;card;booked;Rossmann;Drogeria
+199;2026-07-06;202618764606814705;-176,96;blik;booked;Allegro;Zakupy online
+200;2026-07-06;202618799647436843;-37,71;card;booked;Pepco;Dom i ogród
+201;2026-07-05;202618899732703812;-49,00;card;booked;Netflix;Subskrypcje
+202;2026-07-04;202618699721742994;-115,82;card;booked;Biedronka;Spożywcze
+203;2026-07-03;202618699607423317;-148,54;card;booked;Biedronka;Spożywcze
+204;2026-07-02;202618697793296383;-129,31;card;booked;Orlen;Transport
+205;2026-07-01;202618397708496105;-190,04;card;booked;Decathlon;Sport i hobby
+206;2026-07-01;202618297208059226;-742,18;transfer_out;booked;Czynsz;Rachunki
+207;2026-06-30;202618164592474835;-91,85;blik;booked;Zielone Sklepy;Zakupy online
+208;2026-06-30;202618199183048386;-185,91;card;booked;Orlen;Transport
+209;2026-06-29;202618399530440618;-84,44;card;booked;Biedronka;Spożywcze
+210;2026-06-27;202617999537220565;-158,27;card;booked;Kaufland;Spożywcze
+211;2026-06-27;202617999611068865;-7,20;card;booked;Żabka;Spożywcze
+212;2026-06-25;202617697297799667;-167,88;card;booked;IKEA;Dom i ogród
+213;2026-06-24;202617897934065444;-14,66;card;booked;Żabka;Spożywcze
+214;2026-06-24;202617564119127926;-28,58;blik;booked;Allegro;Zakupy online
+215;2026-06-24;202617597425294302;-41,79;card;booked;Apteka DOZ;Zdrowie
+216;2026-06-21;202617499685515551;-39,73;card;booked;Biedronka;Spożywcze
+217;2026-06-21;202617297881674615;-125,32;card;booked;Kaufland;Spożywcze
+218;2026-06-21;202617299210546588;-90,78;card;booked;Lidl;Spożywcze
+219;2026-06-20;202617499007661580;-29,55;card;booked;Bolt;Transport
+220;2026-06-20;202617399224504731;-18,18;card;booked;Apteka DOZ;Zdrowie
+221;2026-06-20;202617297650716503;-111,80;card;booked;Lidl;Spożywcze
+222;2026-06-20;202617197759101116;-93,00;p2p_out;booked;Katarzyna Zielińska;Przelewy do znajomych
+223;2026-06-20;202617197755965460;-230,75;transfer_out;booked;Tauron;Rachunki
+224;2026-06-20;202617164971207628;-107,11;blik;booked;Pyszne.pl;Restauracje
+225;2026-06-19;202617099529180636;-387,86;card;booked;Media Expert;Elektronika
+226;2026-06-19;202617097301459841;-38,72;card;booked;Żabka;Spożywcze
+227;2026-06-18;202617297039509449;-13,34;card;booked;Żabka;Spożywcze
+228;2026-06-18;202617199389767404;-29,99;card;booked;YouTube Premium;Subskrypcje
+229;2026-06-18;202616997530223017;-35,00;p2p_out;booked;Piotr Wiśniewski;Przelewy do znajomych
+230;2026-06-18;202616999251532545;-53,45;card;booked;Bolt;Transport
+231;2026-06-17;202617099237455513;-305,98;card;booked;Orlen;Transport
+232;2026-06-16;202616897770742117;-67,51;card;booked;Rossmann;Drogeria
+233;2026-06-16;202616797868028454;-39,21;card;booked;Bolt;Transport
+234;2026-06-14;202616564325535468;-77,53;blik;booked;Zielone Sklepy;Zakupy online
+235;2026-06-13;202616497671342645;-192,41;card;booked;Kaufland;Spożywcze
+236;2026-06-12;202616697658679095;-104,47;card;booked;?;Inne
+237;2026-06-12;202616599876474860;-111,45;card;booked;Lidl;Spożywcze
+238;2026-06-12;202616599096600815;-224,67;card;booked;Orlen;Transport
+239;2026-06-12;202616499205634099;-58,97;card;booked;McDonald's;Restauracje
+240;2026-06-12;202616397384207398;-23,99;card;booked;Spotify;Subskrypcje
+241;2026-06-11;202616599761495318;-16,57;card;booked;Żabka;Spożywcze
+242;2026-06-11;202616499989344304;-63,26;card;booked;Biedronka;Spożywcze
+243;2026-06-11;202616399730739665;-294,26;card;booked;Reserved;Odzież i obuwie
+244;2026-06-11;202616297301865849;-2000,00;own_transfer;booked;Własne konto;Przelew własny
+245;2026-06-10;202616499814348348;-12,65;card;booked;Żabka;Spożywcze
+246;2026-06-10;202616399021240400;-18,96;card;booked;Starbucks;Restauracje
+247;2026-06-10;202616106797945277;10208,45;transfer_in;booked;ACME Software;Wynagrodzenie
+248;2026-06-09;202616399237856110;-216,87;card;booked;Kaufland;Spożywcze
+249;2026-06-09;202616299010053768;-70,30;card;booked;Biedronka;Spożywcze
+250;2026-06-09;202616097477361628;-21,65;card;booked;Żabka;Spożywcze
+251;2026-06-08;202615997207222353;-150,00;p2p_out;booked;Michał Wójcik;Przelewy do znajomych
+252;2026-06-07;202616199397800553;-67,32;card;booked;McDonald's;Restauracje
+253;2026-06-07;202616199496812325;-118,65;card;booked;Biedronka;Spożywcze
+254;2026-06-06;202615999133964179;-148,47;card;booked;Lidl;Spożywcze
+255;2026-06-05;202615899009053121;-49,00;card;booked;Netflix;Subskrypcje
+256;2026-06-05;202615897748430400;-138,22;card;booked;Biedronka;Spożywcze
+257;2026-06-05;202615664871738456;-160,19;blik;booked;Allegro;Zakupy online
+258;2026-06-04;202615799824597047;-77,25;card;booked;Apteka DOZ;Zdrowie
+259;2026-06-04;202615564901025929;114,37;p2p_in;booked;Piotr Wiśniewski;Przelewy od znajomych
+260;2026-06-04;202615599190252696;-18,53;card;booked;Żabka;Spożywcze
+261;2026-06-03;202615597415270762;-7,44;card;booked;Żabka;Spożywcze
+262;2026-06-02;202615699384362791;-280,39;card;booked;Orlen;Transport
+263;2026-06-02;202615397645652639;-120,00;p2p_out;booked;Katarzyna Zielińska;Przelewy do znajomych
+264;2026-06-01;202615497888485748;-56,37;card;booked;?;Inne
+265;2026-06-01;202615497404131133;-11,40;card;booked;Żabka;Spożywcze
+266;2026-06-01;202615297872717220;-742,18;transfer_out;booked;Czynsz;Rachunki
+267;2026-05-31;202615497379025201;-232,81;card;booked;Kaufland;Spożywcze
+268;2026-05-30;202615397132516483;-119,00;card;booked;Apteka DOZ;Zdrowie
+269;2026-05-30;202615197721818558;-24,55;card;booked;Żabka;Spożywcze
+270;2026-05-30;202615097478004919;-50,00;p2p_out;booked;Piotr Wiśniewski;Przelewy do znajomych
+271;2026-05-29;202614964721139052;-264,97;blik;booked;Allegro;Zakupy online
+272;2026-05-29;202614997876234101;-34,62;card;booked;Biedronka;Spożywcze
+273;2026-05-28;202615199893443242;-21,05;card;booked;Bolt;Transport
+274;2026-05-28;202615097958392095;-76,56;card;booked;Biedronka;Spożywcze
+275;2026-05-27;202615097033229644;-51,12;card;booked;Lidl;Spożywcze
+276;2026-05-27;202614764578370314;-48,18;blik;booked;Pyszne.pl;Restauracje
+277;2026-05-26;202614897083239809;-77,09;card;booked;?;Inne
+278;2026-05-26;202614699699292052;-45,19;card;booked;Biedronka;Spożywcze
+279;2026-05-25;202614799696962892;-143,44;card;booked;Biedronka;Spożywcze
+280;2026-05-24;202614697941371246;-103,05;card;booked;Apteka DOZ;Zdrowie
+281;2026-05-23;202614699845362558;-889,15;card;booked;Media Expert;Elektronika
+282;2026-05-23;202614497087132846;-23,99;card;booked;Bolt;Transport
+283;2026-05-23;202614364577814249;-44,51;blik;booked;Pyszne.pl;Restauracje
+284;2026-05-22;202614499421756208;-42,90;card;booked;Żabka;Spożywcze
+285;2026-05-21;202614399818690821;-155,17;card;booked;Biedronka;Spożywcze
+286;2026-05-20;202614097525034746;-210,85;transfer_out;booked;Tauron;Rachunki
+287;2026-05-20;202614064755162274;-111,51;blik;booked;Koleo;Transport
+288;2026-05-19;202613997747850381;-141,11;card;booked;Biedronka;Spożywcze
+289;2026-05-18;202613999961286881;-29,99;card;booked;YouTube Premium;Subskrypcje
+290;2026-05-18;202613897596775664;-93,00;p2p_out;booked;Michał Wójcik;Przelewy do znajomych
+291;2026-05-17;202613999443630426;-30,28;card;booked;Żabka;Spożywcze
+292;2026-05-16;202613997186332886;-43,51;card;booked;Żabka;Spożywcze
+293;2026-05-16;202613899722313006;-192,92;card;booked;Orlen;Transport
+294;2026-05-15;202613797010284954;-43,69;card;booked;Lidl;Spożywcze
+295;2026-05-15;202613597967919194;-150,00;p2p_out;booked;Piotr Wiśniewski;Przelewy do znajomych
+296;2026-05-13;202613599004594803;-15,99;card;booked;?;Inne
+297;2026-05-13;202613397511669068;-93,00;p2p_out;booked;Katarzyna Zielińska;Przelewy do znajomych
+298;2026-05-12;202613497653679794;-23,99;card;booked;Spotify;Subskrypcje
+299;2026-05-12;202613497002198503;-29,08;card;booked;Pepco;Dom i ogród
+300;2026-05-12;202613497990266753;-15,35;card;booked;Starbucks;Restauracje
+301;2026-05-12;202613499694113197;-60,37;card;booked;Biedronka;Spożywcze
+302;2026-05-12;202613297143586927;-150,00;p2p_out;booked;Piotr Wiśniewski;Przelewy do znajomych
+303;2026-05-12;202613264742862979;-85,80;blik;booked;Pyszne.pl;Restauracje
+304;2026-05-11;202613497981419612;-21,19;card;booked;Żabka;Spożywcze
+305;2026-05-11;202613399017045236;-151,67;card;booked;Orlen;Transport
+306;2026-05-11;202613197352678285;-2000,00;own_transfer;booked;Własne konto;Przelew własny
+307;2026-05-10;202613006643722897;10344,11;transfer_in;booked;ACME Software;Wynagrodzenie
+308;2026-05-08;202613099493705781;-40,60;card;booked;McDonald's;Restauracje
+309;2026-05-08;202612999226155683;-490,19;card;booked;IKEA;Dom i ogród
+310;2026-05-07;202612899366822211;-37,88;card;booked;Bolt;Transport
+311;2026-05-07;202612764345356445;98,25;p2p_in;booked;Katarzyna Zielińska;Przelewy od znajomych
+312;2026-05-06;202612897711114540;-31,60;card;booked;Biedronka;Spożywcze
+313;2026-05-06;202612697264063487;-42,23;card;booked;Apteka DOZ;Zdrowie
+314;2026-05-05;202612597293145630;-49,00;card;booked;Netflix;Subskrypcje
+315;2026-05-04;202612497486102339;-48,28;card;booked;Bolt;Transport
+316;2026-05-03;202612399759945169;-29,90;card;booked;McDonald's;Restauracje
+317;2026-05-03;202612397808199028;-8,50;card;booked;Żabka;Spożywcze
+318;2026-05-02;202612497280633729;-36,89;card;booked;Żabka;Spożywcze
+319;2026-05-02;202612397682008471;-389,46;card;booked;Decathlon;Sport i hobby
+320;2026-05-02;202612264367901802;12,14;p2p_in;booked;Katarzyna Zielińska;Przelewy od znajomych
+321;2026-05-02;202612297732400367;-87,41;card;booked;Biedronka;Spożywcze
+322;2026-05-01;202612197949114340;-742,18;transfer_out;booked;Czynsz;Rachunki
