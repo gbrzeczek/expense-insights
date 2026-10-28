@@ -1,7 +1,9 @@
 name: CI
 
+# PRs are built via pull_request; push builds only main so a PR push doesn't run twice.
 on:
   push:
+    branches: [main]
   pull_request:
 
 permissions:
