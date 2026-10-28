@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/ExpenseInsights.Api.Tests/ExpenseInsights.Api.Tests.csproj" />
+    <Project Path="tests/ExpenseInsights.Classification.Tests/ExpenseInsights.Classification.Tests.csproj" />
+    <Project Path="tests/ExpenseInsights.Core.Tests/ExpenseInsights.Core.Tests.csproj" />
+    <Project Path="tests/ExpenseInsights.Import.Ing.Tests/ExpenseInsights.Import.Ing.Tests.csproj" />
+    <Project Path="tests/ExpenseInsights.Infrastructure.Tests/ExpenseInsights.Infrastructure.Tests.csproj" />
+    <Project Path="tests/ExpenseInsights.Testing/ExpenseInsights.Testing.csproj" />
+  </Folder>
+  <Project Path="ExpenseInsights.Api/ExpenseInsights.Api.csproj" />
+  <Project Path="ExpenseInsights.Classification/ExpenseInsights.Classification.csproj" />
+  <Project Path="ExpenseInsights.Core/ExpenseInsights.Core.csproj" />
+  <Project Path="ExpenseInsights.Import.Ing/ExpenseInsights.Import.Ing.csproj" />
+  <Project Path="ExpenseInsights.Infrastructure/ExpenseInsights.Infrastructure.csproj" />
+</Solution>

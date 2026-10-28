@@ -5,12 +5,12 @@ questions. Work through them roughly in order. Update the checklist and status a
 
 | # | Plan | Status | Depends on |
 |---|---|---|---|
-| 01 | [Foundation](01-foundation.md): solution, Angular PWA shell, Compose, CI | Not started | – |
+| 01 | [Foundation](01-foundation.md): solution, Angular PWA shell, Compose, CI | In review | – |
 | 02 | [ING import](02-ing-import.md): parser, normalization, dedup, pending → booked | Not started | 01 |
 | 03 | [Auth & users](03-auth.md): Google login, per-user data isolation | Not started | 01 |
 | 04 | [Rule-based classification & corrections](04-classification-rules.md) | Not started | 02, 03 |
 | 05 | [Deployment & ops](05-deployment.md): home server, tunnel, backups | Not started | 03 |
-| 06 | [Summaries & insights UX](06-insights-ux.md) | Not started (waiting for UX references) | 04 |
+| 06 | [Summaries & insights UX](06-insights-ux.md) | Not started (UX references: [design system](../design-system.md)) | 04 |
 | 07 | [Similarity & ML classification](07-classification-ml.md): kNN, embeddings, ML.NET | Not started | 04 |
 | 08 | [Local LLM fallback](08-local-llm.md) | Not started | 07, 16 GB RAM |
 

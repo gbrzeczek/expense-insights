@@ -1,6 +1,6 @@
 # 06 · Summaries & insights UX
 
-**Status:** Not started. **Waiting for UX references from the owner.**
+**Status:** Not started. UX references received: follow [`docs/design-system.md`](../design-system.md) (Warm Paper Finance); reuse the components in `src/frontend/src/app/shared/ui/`.
 
 ## Goal
 

@@ -1,0 +1,24 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{json,csproj,props,targets,xml,yml,yaml}]
+indent_size = 2
+
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_var_for_built_in_types = true:silent
+dotnet_style_qualification_for_field = false:warning
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_diagnostic.IDE0161.severity = warning
+# Sealed by default is a convention; CA1852 enforces it for internal types.
+dotnet_diagnostic.CA1852.severity = warning
+
+[**/Migrations/*.cs]
+generated_code = true

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Tab icon: bolder bars than branding/icon.svg so they survive 16 px; follows dark mode. -->
+  <style>
+    .paper { fill: #f3ebdd; stroke: #d7cdbe; }
+    .b1 { fill: #657451; }
+    .b2 { fill: #a96f52; }
+    .b3 { fill: #647d89; }
+    @media (prefers-color-scheme: dark) {
+      .paper { fill: #26221d; stroke: #3e3830; }
+      .b1 { fill: #a9b88f; }
+      .b2 { fill: #d29a7c; }
+      .b3 { fill: #93aab5; }
+    }
+  </style>
+  <rect class="paper" x="12" y="12" width="488" height="488" rx="104" stroke-width="24" />
+  <rect class="b1" x="88" y="88" width="336" height="88" rx="44" />
+  <rect class="b2" x="88" y="212" width="240" height="88" rx="44" />
+  <rect class="b3" x="88" y="336" width="152" height="88" rx="44" />
+</svg>

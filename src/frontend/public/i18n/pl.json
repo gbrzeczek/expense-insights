@@ -1,0 +1,67 @@
+{
+  "app": {
+    "name": "Wydatki"
+  },
+  "nav": {
+    "label": "Nawigacja główna",
+    "overview": "Przegląd",
+    "transactions": "Transakcje",
+    "categories": "Kategorie",
+    "import": "Import"
+  },
+  "placeholder": {
+    "comingSoon": "Ta sekcja jest w przygotowaniu."
+  },
+  "summary": {
+    "change": {
+      "up": "o {{percent}} więcej niż {{period}}",
+      "down": "o {{percent}} mniej niż {{period}}",
+      "same": "tyle samo co {{period}}"
+    }
+  },
+  "styleguide": {
+    "title": "Wzornik",
+    "intro": "Podgląd systemu Warm Paper Finance na przykładowych, fikcyjnych danych.",
+    "theme": {
+      "label": "Motyw",
+      "system": "Systemowy",
+      "light": "Jasny",
+      "dark": "Ciemny"
+    },
+    "overview": {
+      "heading": "Przykładowy przegląd",
+      "overline": "Przegląd",
+      "spentLabel": "Wydatki w październiku",
+      "previousPeriod": "we wrześniu",
+      "insightOverline": "Obserwacja",
+      "insightHeadline": "Wydatki na restauracje były o {{percent}} niższe niż we wrześniu.",
+      "insightEvidence": "{{current}} wobec {{previous}}. Porównanie pełnych miesięcy, bez przelewów własnych.",
+      "insightAction": "Zobacz transakcje",
+      "byCategory": "Wydatki według kategorii",
+      "recent": "Ostatnie transakcje",
+      "seeAll": "Zobacz wszystkie"
+    },
+    "typography": {
+      "heading": "Typografia",
+      "display": "Październik w liczbach",
+      "page": "Transakcje",
+      "section": "Wydatki według kategorii",
+      "body": "Tekst podstawowy: spokojny, rzeczowy i zwięzły. Kwoty zawsze w kroju bezszeryfowym z cyframi tabelarycznymi.",
+      "support": "Tekst pomocniczy: 14 px, stonowany kolor.",
+      "overline": "Podsumowanie"
+    },
+    "colors": {
+      "heading": "Kolory",
+      "charts": "Kolory kategorii"
+    },
+    "controls": {
+      "heading": "Kontrolki",
+      "primary": "Importuj wyciąg",
+      "secondary": "Anuluj",
+      "disabled": "Niedostępne",
+      "fieldLabel": "Szukaj transakcji",
+      "fieldPlaceholder": "np. Biedronka",
+      "fieldHint": "Nazwa sklepu, tytuł lub kwota."
+    }
+  }
+}

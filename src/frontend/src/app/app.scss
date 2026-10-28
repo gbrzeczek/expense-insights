@@ -1,0 +1,159 @@
+// Mobile first: bottom navigation; sticky side navigation from the desktop breakpoint.
+$desktop: 1024px;
+
+.shell {
+  min-height: 100dvh;
+}
+
+.content {
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter);
+  // Leave room for the fixed bottom bar and the iOS home indicator.
+  padding-bottom: calc(var(--nav-height) + var(--space-8) + env(safe-area-inset-bottom));
+}
+
+.nav {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-surface);
+  border-top: var(--border);
+}
+
+.nav__brand {
+  display: none;
+}
+
+.nav__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--nav-height);
+  min-width: var(--touch-target);
+  color: var(--color-ink-muted);
+  font-size: var(--text-meta);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--duration-fast) var(--ease);
+
+  &:hover {
+    color: var(--color-ink);
+  }
+
+  &:focus-visible {
+    outline-offset: -4px;
+    border-radius: var(--radius-card);
+  }
+}
+
+// Soft olive pill behind the icon; the label stays ink for contrast (olive text is too light).
+.nav__icon-wrap {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 28px;
+  border-radius: var(--radius-pill);
+  transition: background-color var(--duration-base) var(--ease);
+}
+
+.nav__icon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.nav__link--active {
+  color: var(--color-ink);
+
+  .nav__icon-wrap {
+    background: var(--color-accent-soft);
+  }
+
+  .nav__icon {
+    fill: var(--color-accent-text);
+  }
+}
+
+@media (min-width: $desktop) {
+  .shell {
+    display: grid;
+    grid-template-columns: var(--sidenav-width) minmax(0, 1fr);
+  }
+
+  .content {
+    padding: var(--space-12) var(--gutter) var(--space-16);
+  }
+
+  .nav {
+    position: sticky;
+    inset: 0 auto auto;
+    height: 100dvh;
+    padding: var(--space-8) var(--space-4);
+    background: var(--color-bg);
+    border-top: 0;
+    border-right: var(--border);
+  }
+
+  .nav__brand {
+    display: block;
+    padding: 0 var(--space-3) var(--space-8);
+    font-family: var(--font-editorial);
+    font-size: 1.625rem;
+    font-weight: var(--weight-medium);
+    line-height: 1;
+  }
+
+  .nav__list {
+    grid-auto-flow: row;
+    gap: var(--space-1);
+  }
+
+  .nav__link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    min-height: var(--touch-target);
+    padding: 0 var(--space-3);
+    border-radius: var(--radius-control);
+    font-size: var(--text-support);
+    transition:
+      color var(--duration-fast) var(--ease),
+      background-color var(--duration-fast) var(--ease);
+
+    &:hover {
+      background: var(--color-surface);
+    }
+  }
+
+  .nav__icon-wrap {
+    width: auto;
+    height: auto;
+  }
+
+  .nav__link--active {
+    background: var(--color-accent-soft);
+
+    &:hover {
+      background: var(--color-accent-soft);
+    }
+
+    .nav__icon-wrap {
+      background: transparent;
+    }
+  }
+}

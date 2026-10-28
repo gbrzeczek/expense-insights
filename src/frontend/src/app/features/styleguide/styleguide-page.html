@@ -1,0 +1,138 @@
+<div class="guide" *transloco="let t; prefix: 'styleguide'">
+  <header class="guide__header">
+    <div>
+      <h1 class="page-title">{{ t('title') }}</h1>
+      <p class="support">{{ t('intro') }}</p>
+    </div>
+    <div class="segmented" role="radiogroup" [attr.aria-label]="t('theme.label')">
+      @for (option of themes; track option) {
+        <button
+          type="button"
+          role="radio"
+          class="segmented__option"
+          [attr.aria-checked]="theme() === option"
+          (click)="setTheme(option)"
+        >
+          {{ t('theme.' + option) }}
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- Sample overview, in the mobile priority order from the design system. -->
+  <section class="guide__section" aria-labelledby="sg-overview">
+    <h2 id="sg-overview" class="visually-hidden">{{ t('overview.heading') }}</h2>
+
+    <div class="overview__intro">
+      <p class="overline">{{ t('overview.overline') }}</p>
+      <p class="display overview__month">{{ month }}</p>
+    </div>
+
+    <div class="overview__grid">
+      <app-summary-card
+        class="overview__summary"
+        [label]="t('overview.spentLabel')"
+        [amount]="spent"
+        [previousAmount]="spentPrevious"
+        [previousLabel]="t('overview.previousPeriod')"
+      />
+
+      <app-insight-card
+        class="overview__insight"
+        [overline]="t('overview.insightOverline')"
+        [headline]="t('overview.insightHeadline', { percent: insight().percent })"
+        [evidence]="
+          t('overview.insightEvidence', {
+            current: insight().current,
+            previous: insight().previous,
+          })
+        "
+      >
+        <button type="button" class="button button--secondary">
+          {{ t('overview.insightAction') }}
+        </button>
+      </app-insight-card>
+
+      <article class="card overview__categories">
+        <h3 class="section-title card__title">{{ t('overview.byCategory') }}</h3>
+        <app-category-breakdown [categories]="categories" />
+      </article>
+
+      <article class="card overview__recent">
+        <div class="card__head">
+          <h3 class="section-title">{{ t('overview.recent') }}</h3>
+          <a class="link" href="/transactions">{{ t('overview.seeAll') }}</a>
+        </div>
+        <div role="list">
+          @for (tx of transactions; track tx.date + tx.merchant) {
+            <app-transaction-row
+              role="listitem"
+              [merchant]="tx.merchant"
+              [date]="tx.date"
+              [category]="tx.category"
+              [colorIndex]="tx.colorIndex"
+              [amount]="tx.amount"
+            />
+          }
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="guide__section" aria-labelledby="sg-type">
+    <h2 id="sg-type" class="overline guide__label">{{ t('typography.heading') }}</h2>
+    <div class="card type">
+      <p class="display">{{ t('typography.display') }}</p>
+      <p class="page-title">{{ t('typography.page') }}</p>
+      <p class="section-title">{{ t('typography.section') }}</p>
+      <p>{{ t('typography.body') }}</p>
+      <p class="support">{{ t('typography.support') }}</p>
+      <p class="overline">{{ t('typography.overline') }}</p>
+      <p class="type__balance numeric">{{ spent | money }}</p>
+    </div>
+  </section>
+
+  <section class="guide__section" aria-labelledby="sg-colors">
+    <h2 id="sg-colors" class="overline guide__label">{{ t('colors.heading') }}</h2>
+    <ul class="swatches">
+      @for (token of colorTokens; track token) {
+        <li class="swatch">
+          <span class="swatch__chip" [style.background]="'var(' + token + ')'"></span>
+          <code class="swatch__name">{{ token }}</code>
+        </li>
+      }
+    </ul>
+    <h3 class="overline guide__label">{{ t('colors.charts') }}</h3>
+    <ul class="swatches">
+      @for (token of chartTokens; track token) {
+        <li class="swatch">
+          <span class="swatch__chip" [style.background]="'var(' + token + ')'"></span>
+          <code class="swatch__name">{{ token }}</code>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <section class="guide__section" aria-labelledby="sg-controls">
+    <h2 id="sg-controls" class="overline guide__label">{{ t('controls.heading') }}</h2>
+    <div class="card controls">
+      <div class="controls__buttons">
+        <button type="button" class="button">{{ t('controls.primary') }}</button>
+        <button type="button" class="button button--secondary">
+          {{ t('controls.secondary') }}
+        </button>
+        <button type="button" class="button" disabled>{{ t('controls.disabled') }}</button>
+      </div>
+      <label class="field">
+        <span class="field__label">{{ t('controls.fieldLabel') }}</span>
+        <input
+          class="field__input"
+          type="search"
+          [attr.placeholder]="t('controls.fieldPlaceholder')"
+          aria-describedby="sg-field-hint"
+        />
+        <span id="sg-field-hint" class="field__hint">{{ t('controls.fieldHint') }}</span>
+      </label>
+    </div>
+  </section>
+</div>

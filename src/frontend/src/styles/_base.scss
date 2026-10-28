@@ -1,0 +1,181 @@
+// Element defaults and a few global utility classes shared by all components.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: var(--weight-medium);
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+// --- Typography roles -----------------------------------------------------------------------
+
+.display {
+  font-family: var(--font-editorial);
+  font-size: var(--text-display);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+}
+
+.page-title {
+  font-family: var(--font-editorial);
+  font-size: var(--text-page);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.section-title {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-section);
+}
+
+.overline {
+  font-size: var(--text-meta);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-meta);
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.support {
+  font-size: var(--text-support);
+  line-height: var(--leading-support);
+  color: var(--color-ink-muted);
+}
+
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+// --- Surfaces ---------------------------------------------------------------------------
+
+.card {
+  background: var(--color-surface);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--card-padding);
+}
+
+// --- Controls ---------------------------------------------------------------------------
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-button);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font: inherit;
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease),
+    border-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    background: var(--color-accent-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.button--secondary {
+  background: transparent;
+  border-color: var(--color-border);
+  color: var(--color-ink);
+
+  &:hover {
+    background: var(--color-surface-raised);
+    border-color: var(--color-ink-subtle);
+  }
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.field__label {
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+}
+
+.field__input {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  transition: border-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    border-color: var(--color-ink-subtle);
+  }
+
+  &:focus-visible {
+    outline-offset: 0;
+    border-color: var(--color-focus);
+  }
+}
+
+.field__hint {
+  font-size: var(--text-support);
+  color: var(--color-ink-muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
