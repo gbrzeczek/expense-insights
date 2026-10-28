@@ -46,7 +46,7 @@ commit.
 
 - [x] `docker compose up` plus the documented run commands give a working shell on a phone over LAN.
       Verified over the LAN address (prod image on `:8080`, dev server on `:4200`).
-- [ ] CI is green; [x] one backend integration test hits real Postgres (Testcontainers:
+- [x] CI is green; one backend integration test hits real Postgres (Testcontainers:
       migrations + `pg_trgm`, `/health`, ProblemDetails).
 - [x] The Lighthouse PWA "installable" check passes. Lighthouse 12 dropped the PWA category, so
       this is checked with Chrome's own installability API (`Page.getInstallabilityErrors`):
