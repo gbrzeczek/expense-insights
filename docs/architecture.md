@@ -128,3 +128,7 @@ encrypted, plus an off-site copy.
 | D13 | Warm Paper Finance design system (`docs/design-system.md`), self-hosted Inter + Source Serif 4, no component library for now | Calm, editorial, trustworthy look; fonts bundled so the PWA works offline and makes no third-party requests |
 | D14 | `User` + `ICurrentUser` + query filter from plan 02, with a seeded owner until sign-in (plan 03) | Transactions need an owner from the first import; hard rule 7 applies from day one |
 | D15 | The user's own account numbers are stored only as a mask and a SHA-256 hash | Enough to identify accounts and recognise own transfers without keeping the numbers |
+| D16 | Google OIDC → our own cookie session (HttpOnly, SameSite=Lax), allow-list of invited emails; users keyed by GUID with `ExternalLogin(provider, subject)` | No tokens in JavaScript, no CORS (one origin); Apple can be added as another login |
+| D17 | Antiforgery for the SPA via Angular's `XSRF-TOKEN` cookie / `X-XSRF-TOKEN` header on every state-changing `/api` request | Built into both frameworks; SameSite=Lax alone doesn't cover every case |
+| D18 | Data Protection keys stored in Postgres (`DataProtectionKeys`) | Sessions survive restarts and redeploys; the keys are in the same backups, no extra volume |
+| D19 | Account deletion erases all of a user's rows (and their invitation); the owner's account can't be deleted | GDPR-style erasure of other people's bank records; the owner manages invitations |

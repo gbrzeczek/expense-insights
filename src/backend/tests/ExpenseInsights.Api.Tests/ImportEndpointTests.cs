@@ -18,7 +18,7 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task Upload_ImportsTheFile_AndTheSameFileAgainIsANoOp()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
         var file = TestData.Read("fake_ing.csv");
 
         using var first = await UploadAsync(client, file);
@@ -44,7 +44,7 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task Upload_ReportsRowErrorsAndWarningsAsCodes()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
         var bad = FakeIngExport.CardRow("2026-10-26", "-2,00", "'api-2'");
         var text = FakeIngExport.File("2026-10-01", "2026-10-28", FakeIngExport.CardRow("2026-10-27", "-1,00", "'api-1'"), bad)
             .Replace(bad, bad.Replace("-2,00", "-2,0x", StringComparison.Ordinal), StringComparison.Ordinal);
@@ -61,7 +61,7 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task Upload_RejectsAnUnknownFormat()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
 
         using var response = await UploadAsync(client, "Date,Amount\n2026-01-01,-3.50\n"u8.ToArray());
 
@@ -72,7 +72,7 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task Upload_RejectsFilesOver5MB()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
 
         using var response = await UploadAsync(client, new byte[(5 * 1024 * 1024) + 1]);
 
@@ -83,7 +83,7 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
     [Fact]
     public async Task Upload_WithoutAFile_IsABadRequest()
     {
-        using var client = _factory.CreateClient();
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
         using var content = new MultipartFormDataContent();
         content.Add(new StringContent("x"), "other");
 
@@ -91,6 +91,18 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("fileMissing", (await ReadAsync(response)).GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public async Task Upload_WithoutTheXsrfHeader_IsRejected()
+    {
+        using var client = await _factory.SignInNewUserAsync(CancellationToken);
+        client.DefaultRequestHeaders.Remove("X-XSRF-TOKEN");
+
+        using var response = await UploadAsync(client, TestData.Read("fake_ing.csv"));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal("antiforgery", (await ReadAsync(response)).GetProperty("code").GetString());
     }
 
     [Fact]

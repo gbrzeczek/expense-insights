@@ -1,0 +1,77 @@
+.page {
+  display: grid;
+  gap: var(--card-gap);
+  max-width: 720px;
+}
+
+.profile {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+}
+
+.profile__name {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-section);
+}
+
+.profile__email {
+  overflow-wrap: anywhere;
+}
+
+.profile__logout {
+  margin-top: var(--space-3);
+}
+
+.link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    border-color: var(--color-ink-subtle);
+  }
+}
+
+.link-card__text {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.link-card__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  fill: var(--color-ink-muted);
+}
+
+.danger {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: var(--border);
+}
+
+.danger__confirm {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.danger__question {
+  font-weight: var(--weight-medium);
+}
+
+.danger__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

@@ -2,19 +2,27 @@ using ExpenseInsights.Core.Accounts;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Core.Transactions;
 using ExpenseInsights.Core.Users;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseInsights.Infrastructure.Persistence;
 
-public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser currentUser) : DbContext(options)
+public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentUser currentUser) : DbContext(options), IDataProtectionKeyContext
 {
     public DbSet<User> Users => Set<User>();
+
+    public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
+
+    public DbSet<Invitation> Invitations => Set<Invitation>();
 
     public DbSet<Account> Accounts => Set<Account>();
 
     public DbSet<Transaction> Transactions => Set<Transaction>();
 
     public DbSet<ImportBatch> ImportBatches => Set<ImportBatch>();
+
+    /// <summary>ASP.NET Core Data Protection keys (auth cookie, antiforgery), so sessions survive restarts.</summary>
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
     /// <summary>Every <see cref="IUserOwned"/> query is filtered to this user (hard rule 7).</summary>
     public Guid CurrentUserId => currentUser.UserId;

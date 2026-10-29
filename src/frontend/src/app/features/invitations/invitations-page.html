@@ -1,0 +1,89 @@
+<section class="page" *transloco="let t">
+  <header class="page__header">
+    <a class="back" routerLink="/account">
+      <svg class="back__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.4 7.4 10.8 12l4.6 4.6L14 18l-6-6 6-6z" />
+      </svg>
+      {{ t('invitations.back') }}
+    </a>
+    <h1 class="page-title">{{ t('invitations.title') }}</h1>
+    <p class="support">{{ t('invitations.intro') }}</p>
+  </header>
+
+  <form class="card invite" (submit)="invite($event)">
+    <div class="field">
+      <label class="field__label" for="invite-email">{{ t('invitations.email') }}</label>
+      <input
+        id="invite-email"
+        class="field__input"
+        name="email"
+        type="email"
+        inputmode="email"
+        autocomplete="off"
+        required
+        [placeholder]="t('invitations.placeholder')"
+        [value]="email()"
+        [attr.aria-invalid]="failure() === 'invalidEmail'"
+        [attr.aria-describedby]="failure() ? 'invite-failure' : null"
+        (input)="email.set($any($event.target).value)"
+      />
+    </div>
+    <button class="button invite__submit" type="submit" [disabled]="saving()">
+      {{ t('invitations.submit') }}
+    </button>
+    <div class="invite__status" aria-live="polite">
+      @if (failure(); as code) {
+        <p id="invite-failure" class="support invite__failure">
+          {{ t('invitations.failure.' + code) }}
+        </p>
+      } @else if (added(); as address) {
+        <p class="support">{{ t('invitations.added', { email: address }) }}</p>
+      }
+    </div>
+  </form>
+
+  <section class="list" aria-labelledby="invitations-list-title">
+    <h2 id="invitations-list-title" class="section-title">{{ t('invitations.list.title') }}</h2>
+    @if (revokeFailed()) {
+      <p class="support" role="alert">{{ t('invitations.revokeFailed') }}</p>
+    }
+    @if (invitations.error()) {
+      <p class="support" role="alert">{{ t('invitations.list.loadError') }}</p>
+    } @else if (invitations.isLoading() && invitations.value().length === 0) {
+      <p class="support">{{ t('invitations.list.loading') }}</p>
+    } @else {
+      <ul class="list__items">
+        @for (invitation of invitations.value(); track invitation.id) {
+          <li class="list__item">
+            <span class="list__text">
+              <span class="list__email">{{ invitation.email }}</span>
+              <span class="support numeric">
+                @if (invitation.isOwner) {
+                  {{ t('invitations.status.owner') }}
+                } @else if (invitation.acceptedAt) {
+                  {{
+                    t('invitations.status.accepted', {
+                      date: invitation.acceptedAt | date: 'dd.MM.yyyy',
+                    })
+                  }}
+                } @else {
+                  {{ t('invitations.status.pending') }}
+                }
+              </span>
+            </span>
+            @if (!invitation.isOwner && !invitation.acceptedAt) {
+              <button
+                class="button button--secondary list__revoke"
+                type="button"
+                [attr.aria-label]="t('invitations.revokeLabel', { email: invitation.email })"
+                (click)="revoke(invitation)"
+              >
+                {{ t('invitations.revoke') }}
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</section>

@@ -1,0 +1,55 @@
+// A quiet, centred column on the paper canvas: one headline, one action.
+.login {
+  display: grid;
+  min-height: 100dvh;
+  padding: var(--space-12) var(--gutter) calc(var(--space-12) + env(safe-area-inset-bottom));
+  place-items: center;
+}
+
+.login__inner {
+  display: grid;
+  gap: var(--card-gap);
+  width: 100%;
+  max-width: 420px;
+}
+
+.login__header {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.login__mark {
+  width: 40px;
+  height: 40px;
+  fill: var(--color-accent);
+}
+
+.login__intro {
+  color: var(--color-ink-muted);
+}
+
+.login__card,
+.login__dev {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.login__notice {
+  display: grid;
+  gap: var(--space-1);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-ink);
+}
+
+.login__google {
+  width: 100%;
+  font-size: var(--text-body);
+}
+
+.login__dev {
+  .button {
+    justify-self: start;
+  }
+}

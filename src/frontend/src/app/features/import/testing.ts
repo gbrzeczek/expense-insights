@@ -1,12 +1,6 @@
-import { TranslocoTestingModule } from '@jsverse/transloco';
-import pl from '../../../../public/i18n/pl.json';
 import { ImportBatch } from './import.models';
 
-export const translocoTesting = TranslocoTestingModule.forRoot({
-  langs: { pl },
-  translocoConfig: { availableLangs: ['pl'], defaultLang: 'pl' },
-  preloadLangs: true,
-});
+export { text, translocoTesting } from '../../shared/testing';
 
 export function batch(overrides: Partial<ImportBatch> = {}): ImportBatch {
   return {
@@ -40,7 +34,3 @@ export const issue = {
   from: null,
   to: null,
 };
-
-export function text(el: Element | null | undefined): string {
-  return el?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
-}

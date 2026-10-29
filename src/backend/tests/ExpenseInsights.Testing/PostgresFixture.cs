@@ -44,6 +44,16 @@ public sealed class PostgresFixture : IAsyncLifetime
         return user.Id;
     }
 
+    /// <summary>Puts <paramref name="email"/> on the allow-list.</summary>
+    public async Task<Guid> InviteAsync(string email, CancellationToken ct)
+    {
+        await using var db = CreateDbContext();
+        var invitation = new Invitation { Id = Guid.CreateVersion7(), Email = Invitation.NormalizeEmail(email), CreatedAt = DateTimeOffset.UtcNow };
+        db.Invitations.Add(invitation);
+        await db.SaveChangesAsync(ct);
+        return invitation.Id;
+    }
+
     public async ValueTask InitializeAsync()
     {
         await _container.StartAsync();

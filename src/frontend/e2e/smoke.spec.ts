@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
+import { signIn } from './session';
 
 test('app shell works on a phone-sized screen', async ({ page }) => {
+  await signIn(page);
   await page.goto('/');
 
   await expect(page).toHaveURL(/\/overview$/);
@@ -12,7 +14,7 @@ test('app shell works on a phone-sized screen', async ({ page }) => {
   expect(navBox?.y).toBeGreaterThan(700); // bottom bar, not a side menu
 
   const links = nav.getByRole('link');
-  await expect(links).toHaveText(['Przegląd', 'Transakcje', 'Kategorie', 'Import']);
+  await expect(links).toHaveText(['Przegląd', 'Transakcje', 'Kategorie', 'Import', 'Konto']);
   for (const box of await Promise.all((await links.all()).map((l) => l.boundingBox()))) {
     expect(box?.height).toBeGreaterThanOrEqual(44);
   }

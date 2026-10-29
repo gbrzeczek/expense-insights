@@ -7,7 +7,8 @@
     "overview": "Overview",
     "transactions": "Transactions",
     "categories": "Categories",
-    "import": "Import"
+    "import": "Import",
+    "account": "Account"
   },
   "placeholder": {
     "comingSoon": "This section is coming soon."
@@ -141,5 +142,78 @@
       "loadError": "The import history couldn't be loaded.",
       "importedAt": "Imported {{date}}"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "intro": "An overview of spending from ING Bank Śląski statements. Only invited people have access.",
+      "google": "Sign in with Google",
+      "googleAnother": "Sign in with another Google account",
+      "privacy": "Sign-in goes through Google. The app never sees your password.",
+      "error": {
+        "noAccess": {
+          "title": "No access",
+          "text": "This Google account has no invitation. Ask the app's owner for one, or sign in with another account."
+        },
+        "failed": "Signing in didn't work. Please try again.",
+        "unavailable": "Google sign-in isn't set up on this server yet."
+      },
+      "dev": {
+        "title": "Developer sign-in",
+        "hint": "Development only: sign in as an invited address, without Google.",
+        "email": "Email address",
+        "submit": "Sign in"
+      }
+    }
+  },
+  "account": {
+    "signedInAs": "Signed in as",
+    "role": {
+      "owner": "Owner",
+      "user": "User"
+    },
+    "logout": "Sign out",
+    "logoutFailed": "Signing out didn't work. Please try again.",
+    "invitations": {
+      "title": "Invitations",
+      "hint": "Decide who can sign in."
+    },
+    "delete": {
+      "title": "Delete account",
+      "text": "Deletes the account and all your data: accounts, transactions and import history. This can't be undone.",
+      "start": "Delete account",
+      "question": "Delete the account and all data for good?",
+      "confirm": "Yes, delete everything",
+      "cancel": "Cancel",
+      "failed": "The account couldn't be deleted. Please try again.",
+      "owner": "The owner's account can't be deleted, because it manages invitations."
+    }
+  },
+  "invitations": {
+    "title": "Invitations",
+    "back": "Account",
+    "intro": "Only invited people can sign in. Enter the Google account address of the person you want to invite.",
+    "email": "Email address",
+    "placeholder": "e.g. anna@gmail.com",
+    "submit": "Invite",
+    "added": "Invited {{email}}.",
+    "failure": {
+      "invalidEmail": "This isn't a valid email address.",
+      "alreadyInvited": "This address is already invited.",
+      "unknown": "The invitation couldn't be saved. Please try again."
+    },
+    "list": {
+      "title": "Invited people",
+      "loading": "Loading…",
+      "loadError": "The invitations couldn't be loaded."
+    },
+    "status": {
+      "owner": "Owner",
+      "accepted": "Signed in {{date}}",
+      "pending": "Waiting for the first sign-in"
+    },
+    "revoke": "Revoke",
+    "revokeLabel": "Revoke the invitation for {{email}}",
+    "revokeFailed": "The invitation couldn't be revoked. Please try again."
   }
 }

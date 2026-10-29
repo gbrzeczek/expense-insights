@@ -1,0 +1,55 @@
+<main class="login" *transloco="let t">
+  <div class="login__inner">
+    <header class="login__header">
+      <svg class="login__mark" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z" />
+      </svg>
+      <h1 class="display">{{ t('app.name') }}</h1>
+      <p class="login__intro">{{ t('auth.login.intro') }}</p>
+    </header>
+
+    <section class="card login__card" [attr.aria-label]="t('auth.login.title')">
+      @switch (failure()) {
+        @case ('noAccess') {
+          <div class="login__notice" role="alert">
+            <h2 class="section-title">{{ t('auth.login.error.noAccess.title') }}</h2>
+            <p class="support">{{ t('auth.login.error.noAccess.text') }}</p>
+          </div>
+        }
+        @case ('failed') {
+          <p class="login__notice support" role="alert">{{ t('auth.login.error.failed') }}</p>
+        }
+        @case ('unavailable') {
+          <p class="login__notice support" role="alert">{{ t('auth.login.error.unavailable') }}</p>
+        }
+      }
+
+      <a class="button login__google" [href]="googleUrl()">
+        {{ t(failure() === 'noAccess' ? 'auth.login.googleAnother' : 'auth.login.google') }}
+      </a>
+      <p class="support">{{ t('auth.login.privacy') }}</p>
+    </section>
+
+    @if (devLogin) {
+      <form class="card login__dev" method="get" [action]="devLoginUrl">
+        <h2 class="section-title">{{ t('auth.login.dev.title') }}</h2>
+        <p class="support">{{ t('auth.login.dev.hint') }}</p>
+        <div class="field">
+          <label class="field__label" for="dev-email">{{ t('auth.login.dev.email') }}</label>
+          <input
+            id="dev-email"
+            class="field__input"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+          />
+        </div>
+        <input type="hidden" name="returnUrl" [value]="returnTo()" />
+        <button class="button button--secondary" type="submit">
+          {{ t('auth.login.dev.submit') }}
+        </button>
+      </form>
+    }
+  </div>
+</main>
