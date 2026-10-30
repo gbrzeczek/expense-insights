@@ -1,3 +1,4 @@
+using ExpenseInsights.Infrastructure.Classification;
 using ExpenseInsights.Infrastructure.Import;
 using ExpenseInsights.Infrastructure.Persistence;
 using ExpenseInsights.Infrastructure.Users;
@@ -17,6 +18,9 @@ public static class DependencyInjection
         services.AddScoped<StatementImporter>();
         services.AddScoped<UserSignIn>();
         services.AddScoped<AccountDeletion>();
+        services.AddScoped<TransactionClassifier>();
+        services.AddScoped<Corrections>();
+        services.AddSingleton<ClassificationRequests>();
         services.TryAddSingleton(TimeProvider.System);
 
         return services;

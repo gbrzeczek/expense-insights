@@ -1,4 +1,6 @@
+using ExpenseInsights.Core.Classification;
 using ExpenseInsights.Core.Users;
+using ExpenseInsights.Infrastructure.Classification;
 using ExpenseInsights.Infrastructure.Tests.Import;
 using ExpenseInsights.Infrastructure.Users;
 using ExpenseInsights.Testing;
@@ -18,6 +20,7 @@ public sealed class AccountDeletionTests(PostgresFixture postgres) : ImportTestB
         {
             await ImportAsync(user, "fake_ing.csv");
             await LinkAsync(user);
+            await AddClassificationDataAsync(user);
         }
 
         var keptBefore = await CountRowsAsync(kept);
@@ -40,6 +43,22 @@ public sealed class AccountDeletionTests(PostgresFixture postgres) : ImportTestB
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => new AccountDeletion(db, NullLogger<AccountDeletion>.Instance).DeleteCurrentUserAsync(CancellationToken));
         Assert.True(await db.Users.AnyAsync(u => u.Id == User.OwnerId, CancellationToken));
+    }
+
+    /// <summary>Categories, a rule, history (from classifying), a setting and a split, all of the user.</summary>
+    private async Task AddClassificationDataAsync(Guid userId)
+    {
+        await using var db = CreateDbContext(userId);
+        var classifier = new TransactionClassifier(db, TimeProvider.System);
+        await classifier.ClassifyAsync(null, CancellationToken);
+        var parent = new Category { Id = Guid.CreateVersion7(), Name = "Dom", ParentId = CategoryCatalog.Home.Id, Kind = CategoryKind.Spending, CreatedAt = DateTimeOffset.UtcNow };
+        var child = new Category { Id = Guid.CreateVersion7(), Name = "Kawa", ParentId = parent.Id, Kind = CategoryKind.Spending, CreatedAt = DateTimeOffset.UtcNow };
+        db.Categories.AddRange(parent, child);
+        db.CategorySettings.Add(new CategorySetting { Id = Guid.CreateVersion7(), CategoryId = CategoryCatalog.Other.Id, Name = "Różne", UpdatedAt = DateTimeOffset.UtcNow });
+        var transaction = await db.Transactions.FirstAsync(t => t.Amount < 0, CancellationToken);
+        db.TransactionSplits.Add(new TransactionSplit { Id = Guid.CreateVersion7(), TransactionId = transaction.Id, CategoryId = child.Id, Amount = transaction.Amount, Currency = transaction.Currency, CreatedAt = DateTimeOffset.UtcNow });
+        await db.SaveChangesAsync(CancellationToken);
+        await new Corrections(db, classifier, TimeProvider.System).LabelMerchantAsync("biedronka", child.Id, CancellationToken);
     }
 
     private async Task LinkAsync(Guid userId)

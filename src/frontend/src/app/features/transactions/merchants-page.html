@@ -1,0 +1,70 @@
+<section class="page" *transloco="let t">
+  <header class="page__header">
+    <a class="back" routerLink="/transactions">{{ t('transactions.back') }}</a>
+    <h1 class="page-title">{{ t('merchants.title') }}</h1>
+    <p class="support">{{ t('merchants.intro') }}</p>
+  </header>
+
+  @if (progress(); as p) {
+    <div class="card progress">
+      <p class="progress__headline">
+        <span class="numeric">{{ t('merchants.progress', { percent: percent() }) }}</span>
+      </p>
+      <progress
+        class="progress__bar"
+        [value]="percent()"
+        [max]="100"
+        [attr.aria-label]="t('merchants.progressLabel')"
+      ></progress>
+      <p class="support numeric">
+        {{
+          t('merchants.progressDetail', {
+            categorized: p.categorized | money: p.currency,
+            total: p.total | money: p.currency,
+          })
+        }}
+      </p>
+    </div>
+  }
+
+  @if (failed()) {
+    <p class="support" role="alert">{{ t('transactions.loadError') }}</p>
+  } @else if (review() === null) {
+    <p class="support" role="status">{{ t('transactions.loading') }}</p>
+  } @else if (review()!.groups.length === 0) {
+    <div class="card done">
+      <p class="section-title">{{ t('merchants.done') }}</p>
+      <a class="button button--secondary" routerLink="/transactions">{{
+        t('transactions.back')
+      }}</a>
+    </div>
+  } @else {
+    <ul class="groups">
+      @for (group of review()!.groups; track group.merchantKey + group.currency) {
+        <li class="group">
+          <button
+            type="button"
+            class="group__head"
+            [attr.aria-expanded]="open() === group.merchantKey"
+            (click)="toggle(group)"
+          >
+            <span class="group__name">{{ group.name }}</span>
+            <span class="support numeric">
+              {{ countText(group) }} · {{ group.total | money: group.currency }}
+            </span>
+          </button>
+          @if (open() === group.merchantKey) {
+            <div class="group__picker">
+              <p class="support">{{ t('merchants.pickHint') }}</p>
+              <app-category-picker
+                [suggestions]="suggestions(group)"
+                [disabled]="saving() !== null"
+                (picked)="label(group, $event)"
+              />
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,4 +1,5 @@
 using ExpenseInsights.Core.Accounts;
+using ExpenseInsights.Core.Classification;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Core.Transactions;
 using ExpenseInsights.Core.Users;
@@ -21,6 +22,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
 
     public DbSet<ImportBatch> ImportBatches => Set<ImportBatch>();
 
+    /// <summary>The global taxonomy plus the current user's own categories.</summary>
+    public DbSet<Category> Categories => Set<Category>();
+
+    public DbSet<CategorySetting> CategorySettings => Set<CategorySetting>();
+
+    public DbSet<MerchantRule> MerchantRules => Set<MerchantRule>();
+
+    public DbSet<ClassificationHistory> ClassificationHistory => Set<ClassificationHistory>();
+
+    public DbSet<TransactionSplit> TransactionSplits => Set<TransactionSplit>();
+
     /// <summary>ASP.NET Core Data Protection keys (auth cookie, antiforgery), so sessions survive restarts.</summary>
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
@@ -37,6 +49,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
         modelBuilder.Entity<Account>().HasQueryFilter(e => e.UserId == CurrentUserId);
         modelBuilder.Entity<Transaction>().HasQueryFilter(e => e.UserId == CurrentUserId);
         modelBuilder.Entity<ImportBatch>().HasQueryFilter(e => e.UserId == CurrentUserId);
+        modelBuilder.Entity<CategorySetting>().HasQueryFilter(e => e.UserId == CurrentUserId);
+        modelBuilder.Entity<MerchantRule>().HasQueryFilter(e => e.UserId == CurrentUserId);
+        modelBuilder.Entity<ClassificationHistory>().HasQueryFilter(e => e.UserId == CurrentUserId);
+        modelBuilder.Entity<TransactionSplit>().HasQueryFilter(e => e.UserId == CurrentUserId);
+
+        // Shared global rows (UserId null) plus the user's own.
+        modelBuilder.Entity<Category>().HasQueryFilter(e => e.UserId == null || e.UserId == CurrentUserId);
     }
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
@@ -65,6 +84,21 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
                 && entry.Entity.UserId != CurrentUserId)
             {
                 throw new InvalidOperationException($"A {entry.Metadata.ClrType.Name} of another user can't be saved.");
+            }
+        }
+
+        // Categories: a new one is the user's own; the global taxonomy only changes through migrations.
+        foreach (var entry in ChangeTracker.Entries<Category>())
+        {
+            if (entry.State == EntityState.Added && entry.Entity.UserId is null)
+            {
+                entry.Entity.UserId = CurrentUserId;
+            }
+
+            if (entry.State is EntityState.Added or EntityState.Modified or EntityState.Deleted
+                && entry.Entity.UserId != CurrentUserId)
+            {
+                throw new InvalidOperationException("Only the current user's own categories can be saved.");
             }
         }
     }

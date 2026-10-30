@@ -12,7 +12,10 @@ import { MoneyPipe } from '../format/money.pipe';
     <span class="row__main">
       <span class="row__merchant">{{ merchant() }}</span>
       <span class="row__meta support">
-        <span class="numeric">{{ date() | displayDate }}</span> · {{ category() }}
+        @if (date(); as d) {
+          <span class="numeric">{{ d | displayDate }}</span> ·
+        }
+        {{ category() }}
       </span>
     </span>
     <span class="row__amount numeric" [class.row__amount--income]="amount() > 0">
@@ -60,8 +63,8 @@ import { MoneyPipe } from '../format/money.pipe';
 })
 export class TransactionRow {
   readonly merchant = input.required<string>();
-  /** `yyyy-MM-dd` */
-  readonly date = input.required<string>();
+  /** `yyyy-MM-dd`; leave out in a list grouped by day. */
+  readonly date = input<string | null>(null);
   readonly category = input.required<string>();
   /** 1–6, see `--chart-n` tokens. */
   readonly colorIndex = input(6);

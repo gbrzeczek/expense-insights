@@ -1,0 +1,90 @@
+<section class="page" *transloco="let t">
+  <header class="page__header">
+    <h1 class="page-title">{{ t('nav.transactions') }}</h1>
+    <nav class="shortcuts" [attr.aria-label]="t('transactions.shortcuts')">
+      <a class="shortcut" routerLink="/transactions/review">
+        <span class="shortcut__title">{{ t('review.title') }}</span>
+        <span class="support">{{ t('transactions.reviewHint') }}</span>
+      </a>
+      <a class="shortcut" routerLink="/transactions/merchants">
+        <span class="shortcut__title">{{ t('merchants.title') }}</span>
+        <span class="support">{{ t('transactions.merchantsHint') }}</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="filters">
+    <div class="field">
+      <label class="field__label" for="transaction-search">{{ t('transactions.search') }}</label>
+      <input
+        #searchBox
+        id="transaction-search"
+        class="field__input"
+        type="search"
+        inputmode="search"
+        autocomplete="off"
+        [attr.placeholder]="t('transactions.searchPlaceholder')"
+        (input)="search(searchBox.value)"
+      />
+    </div>
+    <div class="chips" role="group" [attr.aria-label]="t('transactions.filterLabel')">
+      @for (f of filters; track f) {
+        <button
+          type="button"
+          class="chip"
+          [class.chip--active]="filter() === f"
+          [attr.aria-pressed]="filter() === f"
+          (click)="filter.set(f)"
+        >
+          {{ t('transactions.filter.' + f) }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (failed()) {
+    <p class="support" role="alert">{{ t('transactions.loadError') }}</p>
+  } @else if (!loading() && items().length === 0) {
+    <p class="card support empty">{{ t('transactions.empty.' + filter()) }}</p>
+  }
+
+  @for (day of days(); track day.date) {
+    <section class="day" [attr.aria-label]="day.date | displayDate">
+      <h2 class="overline day__date numeric">{{ day.date | displayDate }}</h2>
+      <ul class="day__list">
+        @for (item of day.items; track item.id) {
+          <li>
+            <button type="button" class="tx" (click)="openId.set(item.id)">
+              <app-transaction-row
+                [merchant]="item.merchant"
+                [category]="categoryText(item)"
+                [colorIndex]="categories.colorIndex(item.categoryId)"
+                [amount]="item.amount"
+                [currency]="item.currency"
+              />
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (loading()) {
+    <p class="support" role="status">{{ t('transactions.loading') }}</p>
+  } @else if (nextOffset() !== null) {
+    <div #sentinel class="more">
+      <button type="button" class="button button--secondary" (click)="more()">
+        {{ t('transactions.more') }}
+      </button>
+    </div>
+  }
+
+  @if (openId(); as id) {
+    <app-transaction-sheet
+      [transactionId]="id"
+      (corrected)="onCorrected($event)"
+      (changed)="replace($event)"
+      (closed)="openId.set(null)"
+    />
+  }
+</section>

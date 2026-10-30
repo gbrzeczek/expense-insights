@@ -9,10 +9,11 @@ public static class TrigramSimilarity
     /// <summary>The <c>pg_trgm.similarity_threshold</c> default.</summary>
     public const double DefaultThreshold = 0.3;
 
-    public static double Similarity(string a, string b)
+    public static double Similarity(string a, string b) => Similarity(Trigrams(a), Trigrams(b));
+
+    /// <summary>For comparing one string with many: build each side's trigrams once.</summary>
+    public static double Similarity(IReadOnlySet<string> left, IReadOnlySet<string> right)
     {
-        var left = Trigrams(a);
-        var right = Trigrams(b);
         if (left.Count == 0 || right.Count == 0)
         {
             return 0;
@@ -22,7 +23,7 @@ public static class TrigramSimilarity
         return (double)shared / (left.Count + right.Count - shared);
     }
 
-    private static HashSet<string> Trigrams(string text)
+    public static HashSet<string> Trigrams(string text)
     {
         var result = new HashSet<string>(StringComparer.Ordinal);
         var normalized = new string([.. text.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : ' ')]);

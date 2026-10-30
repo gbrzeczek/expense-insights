@@ -4,4 +4,8 @@
     <ProjectReference Include="..\ExpenseInsights.Core\ExpenseInsights.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="global-rules.json" LogicalName="ExpenseInsights.Classification.global-rules.json" />
+  </ItemGroup>
+
 </Project>

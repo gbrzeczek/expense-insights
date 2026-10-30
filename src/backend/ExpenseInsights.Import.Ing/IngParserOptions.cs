@@ -10,4 +10,8 @@ public sealed class IngParserOptions
     /// payments; for those, the real shop is the domain at the end of the title.
     /// </summary>
     public IReadOnlyList<string> PaymentProcessors { get; init; } = [];
+
+    /// <summary>The processors in <c>appsettings.json</c>, for tools that run without configuration.</summary>
+    public static IReadOnlyList<string> DefaultPaymentProcessors { get; } =
+        ["PayU", "Cashbill", "PayPro", "Przelewy24", "Tpay", "Autopay", "Dotpay"];
 }

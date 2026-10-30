@@ -22,8 +22,15 @@ public sealed partial class AccountDeletion(AppDbContext db, ILogger<AccountDele
         }
 
         await using var transaction = await db.Database.BeginTransactionAsync(ct);
-        // Children first: a transaction restricts deleting its import batch.
+        // Children first: a transaction restricts deleting its import batch and its categories.
+        await db.ClassificationHistory.Where(h => h.UserId == userId).ExecuteDeleteAsync(ct);
+        await db.TransactionSplits.Where(s => s.UserId == userId).ExecuteDeleteAsync(ct);
         await db.Transactions.Where(t => t.UserId == userId).ExecuteDeleteAsync(ct);
+        await db.MerchantRules.Where(r => r.UserId == userId).ExecuteDeleteAsync(ct);
+        await db.CategorySettings.Where(s => s.UserId == userId).ExecuteDeleteAsync(ct);
+        // Subcategories before their parents.
+        await db.Categories.Where(c => c.UserId == userId && c.ParentId != null).ExecuteDeleteAsync(ct);
+        await db.Categories.Where(c => c.UserId == userId).ExecuteDeleteAsync(ct);
         await db.ImportBatches.Where(b => b.UserId == userId).ExecuteDeleteAsync(ct);
         await db.Accounts.Where(a => a.UserId == userId).ExecuteDeleteAsync(ct);
         await db.Users.Where(u => u.Id == userId).ExecuteDeleteAsync(ct);

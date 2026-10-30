@@ -1,0 +1,123 @@
+<ng-container *transloco="let t">
+  <button
+    type="button"
+    class="sheet__backdrop"
+    [attr.aria-label]="t('transactions.sheet.close')"
+    (click)="closed.emit()"
+  ></button>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-heading">
+    <div class="sheet__handle" aria-hidden="true"></div>
+    @if (item(); as tx) {
+      <header class="sheet__header">
+        <div class="sheet__title">
+          <h2 id="sheet-heading" class="section-title" tabindex="-1" #heading>
+            {{ tx.merchant }}
+          </h2>
+          <p class="support numeric">
+            {{ tx.date | displayDate }}
+            @if (tx.status === 'pending') {
+              · {{ t('transactions.pending') }}
+            }
+          </p>
+        </div>
+        <p class="sheet__amount numeric">{{ tx.amount | money: tx.currency : 'always' }}</p>
+      </header>
+
+      <div class="sheet__section">
+        <p class="overline">{{ t('transactions.sheet.category') }}</p>
+        <p class="sheet__current">
+          @if (tx.categoryId) {
+            <span class="sheet__current-name">{{ categories.label(tx.categoryId, true) }}</span>
+          } @else {
+            <span class="sheet__current-name">{{ t('transactions.unclassified') }}</span>
+          }
+          @if (tx.needsReview) {
+            <span class="badge">{{ t('transactions.needsReview') }}</span>
+          }
+        </p>
+        @if (tx.reason) {
+          <p class="support">
+            {{ t('transactions.reason.' + tx.reason, { value: tx.reasonValue ?? '' }) }}
+          </p>
+        } @else if (tx.source === 'userCorrection') {
+          <p class="support">{{ t('transactions.reason.userCorrection') }}</p>
+        }
+        <p class="support">
+          {{ t(tx.categoryId ? 'transactions.sheet.pickHint' : 'transactions.sheet.pickFirst') }}
+        </p>
+        <app-category-picker
+          [suggestions]="detail()!.suggestions"
+          [current]="tx.categoryId"
+          [disabled]="saving()"
+          (picked)="pick($event)"
+        />
+      </div>
+
+      @if (tx.amount > 0) {
+        <div class="sheet__section field">
+          <label class="field__label" for="offsets">{{ t('transactions.sheet.offsets') }}</label>
+          <select
+            id="offsets"
+            class="field__input"
+            [disabled]="saving()"
+            (change)="setOffsets($any($event.target).value)"
+          >
+            <option value="" [selected]="!tx.offsetsCategoryId">
+              {{ t('transactions.sheet.offsetsNone') }}
+            </option>
+            @for (c of spending(); track c.id) {
+              <option [value]="c.id" [selected]="c.id === tx.offsetsCategoryId">
+                {{ categories.label(c.id, true) }}
+              </option>
+            }
+          </select>
+          <p class="field__hint">{{ t('transactions.sheet.offsetsHint') }}</p>
+        </div>
+      }
+
+      <details class="sheet__details">
+        <summary>{{ t('transactions.sheet.details') }}</summary>
+        <dl class="sheet__facts">
+          <dt>{{ t('transactions.sheet.title') }}</dt>
+          <dd>{{ detail()!.title || '—' }}</dd>
+          <dt>{{ t('transactions.sheet.counterparty') }}</dt>
+          <dd>{{ detail()!.counterpartyRaw || '—' }}</dd>
+          @if (detail()!.counterpartyAccount) {
+            <dt>{{ t('transactions.sheet.counterpartyAccount') }}</dt>
+            <dd class="numeric">{{ detail()!.counterpartyAccount }}</dd>
+          }
+          <dt>{{ t('transactions.sheet.account') }}</dt>
+          <dd>{{ detail()!.accountName }}</dd>
+          @if (detail()!.bookingDate) {
+            <dt>{{ t('transactions.sheet.bookingDate') }}</dt>
+            <dd class="numeric">{{ detail()!.bookingDate | displayDate }}</dd>
+          }
+          @if (detail()!.originalAmount !== null) {
+            <dt>{{ t('transactions.sheet.originalAmount') }}</dt>
+            <dd class="numeric">
+              {{ detail()!.originalAmount | money: detail()!.originalCurrency ?? 'PLN' }}
+            </dd>
+          }
+        </dl>
+        <p class="overline">{{ t('transactions.sheet.raw') }}</p>
+        <ol class="sheet__raw">
+          @for (field of detail()!.raw; track $index) {
+            @if (field.trim()) {
+              <li>{{ field }}</li>
+            }
+          }
+        </ol>
+      </details>
+    } @else if (failed()) {
+      <p class="support" role="alert">{{ t('transactions.sheet.loadError') }}</p>
+    } @else {
+      <p class="support" role="status">{{ t('transactions.loading') }}</p>
+    }
+    @if (failed() && item()) {
+      <p class="support" role="alert">{{ t('transactions.sheet.saveError') }}</p>
+    }
+    <button type="button" class="button button--secondary sheet__close" (click)="closed.emit()">
+      {{ t('transactions.sheet.close') }}
+    </button>
+  </section>
+</ng-container>

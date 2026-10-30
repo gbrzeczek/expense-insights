@@ -3,6 +3,10 @@ import { signIn } from './session';
 
 test('app shell works on a phone-sized screen', async ({ page }) => {
   await signIn(page);
+  await page.route('**/api/categories', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/transactions?**', (route) =>
+    route.fulfill({ json: { items: [], nextOffset: null } }),
+  );
   await page.goto('/');
 
   await expect(page).toHaveURL(/\/overview$/);

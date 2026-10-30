@@ -69,6 +69,388 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Key")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique()
+                        .HasFilter("\"Key\" IS NOT NULL");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("UserId", "ParentId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000001"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "groceries",
+                            Kind = "Spending",
+                            SortOrder = 10
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000002"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "restaurants",
+                            Kind = "Spending",
+                            SortOrder = 20
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000003"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "transport",
+                            Kind = "Spending",
+                            SortOrder = 30
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000004"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "health",
+                            Kind = "Spending",
+                            SortOrder = 40
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000005"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "beauty",
+                            Kind = "Spending",
+                            SortOrder = 50
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000006"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "home",
+                            Kind = "Spending",
+                            SortOrder = 60
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000007"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "clothing",
+                            Kind = "Spending",
+                            SortOrder = 70
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000008"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "electronics",
+                            Kind = "Spending",
+                            SortOrder = 80
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000009"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "leisure",
+                            Kind = "Spending",
+                            SortOrder = 90
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000010"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "subscriptions",
+                            Kind = "Spending",
+                            SortOrder = 100
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000011"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "bills",
+                            Kind = "Spending",
+                            SortOrder = 110
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000012"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "onlineShopping",
+                            Kind = "Spending",
+                            SortOrder = 120
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000013"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "transfersToPeople",
+                            Kind = "Spending",
+                            SortOrder = 130
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000014"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "other",
+                            Kind = "Spending",
+                            SortOrder = 140
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000015"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "salary",
+                            Kind = "Income",
+                            SortOrder = 150
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000016"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "transfersFromPeople",
+                            Kind = "Income",
+                            SortOrder = 160
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000017"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "otherIncome",
+                            Kind = "Income",
+                            SortOrder = 170
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000018"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "interest",
+                            Kind = "Income",
+                            SortOrder = 180
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000019"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "refunds",
+                            Kind = "Refund",
+                            SortOrder = 190
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000020"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "ownTransfer",
+                            Kind = "Excluded",
+                            SortOrder = 200
+                        });
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.CategorySetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId", "CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("CategorySettings");
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.ClassificationHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("Confidence")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid?>("PreviousCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("RuleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("TransactionId", "ChangedAt");
+
+                    b.ToTable("ClassificationHistory", (string)null);
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.MerchantRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Label")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("MatchType")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<string>("Pattern")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId", "MatchType", "Pattern")
+                        .IsUnique();
+
+                    b.ToTable("MerchantRules");
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.TransactionSplit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(14, 2)
+                        .HasColumnType("numeric(14,2)");
+
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("TransactionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TransactionSplits");
+                });
+
             modelBuilder.Entity("ExpenseInsights.Core.Import.ImportBatch", b =>
                 {
                     b.Property<Guid>("Id")
@@ -220,6 +602,31 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                     b.Property<DateOnly?>("BookingDate")
                         .HasColumnType("date");
 
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("ClassificationConfidence")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("ClassificationReason")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("ClassificationReasonValue")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("ClassificationRuleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClassificationSource")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<DateTimeOffset?>("ClassifiedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("CounterpartyAccount")
                         .HasColumnType("text");
 
@@ -257,6 +664,14 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                     b.Property<string>("MerchantHint")
                         .HasColumnType("text");
 
+                    b.Property<string>("MerchantKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid?>("OffsetsCategoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal?>("OriginalAmount")
                         .HasPrecision(14, 2)
                         .HasColumnType("numeric(14,2)");
@@ -289,6 +704,12 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.ComplexProperty(typeof(Dictionary<string, object>), "RawRow", "ExpenseInsights.Core.Transactions.Transaction.RawRow#RawRow", b1 =>
                         {
                             b1.IsRequired();
@@ -305,13 +726,23 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ClassificationRuleId");
+
                     b.HasIndex("ImportBatchId");
+
+                    b.HasIndex("OffsetsCategoryId");
 
                     b.HasIndex("OwnTransferPairId");
 
                     b.HasIndex("AccountId", "ExternalId")
                         .IsUnique()
                         .HasFilter("\"ExternalId\" IS NOT NULL");
+
+                    b.HasIndex("UserId", "CategoryId");
+
+                    b.HasIndex("UserId", "MerchantKey");
 
                     b.HasIndex("UserId", "TransactionDate");
 
@@ -450,6 +881,85 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.Category", b =>
+                {
+                    b.HasOne("ExpenseInsights.Core.Classification.Category", null)
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ExpenseInsights.Core.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.CategorySetting", b =>
+                {
+                    b.HasOne("ExpenseInsights.Core.Classification.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseInsights.Core.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.ClassificationHistory", b =>
+                {
+                    b.HasOne("ExpenseInsights.Core.Transactions.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseInsights.Core.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.MerchantRule", b =>
+                {
+                    b.HasOne("ExpenseInsights.Core.Classification.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseInsights.Core.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.TransactionSplit", b =>
+                {
+                    b.HasOne("ExpenseInsights.Core.Classification.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseInsights.Core.Transactions.Transaction", null)
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpenseInsights.Core.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ExpenseInsights.Core.Import.ImportBatch", b =>
                 {
                     b.HasOne("ExpenseInsights.Core.Users.User", null)
@@ -467,11 +977,26 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ExpenseInsights.Core.Classification.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ExpenseInsights.Core.Classification.MerchantRule", null)
+                        .WithMany()
+                        .HasForeignKey("ClassificationRuleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("ExpenseInsights.Core.Import.ImportBatch", null)
                         .WithMany()
                         .HasForeignKey("ImportBatchId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("ExpenseInsights.Core.Classification.Category", null)
+                        .WithMany()
+                        .HasForeignKey("OffsetsCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ExpenseInsights.Core.Transactions.Transaction", null)
                         .WithMany()

@@ -1,0 +1,131 @@
+<section class="page" *transloco="let t">
+  <header class="page__header">
+    <h1 class="page-title">{{ t('nav.categories') }}</h1>
+    <p class="support">{{ t('categoriesPage.intro') }}</p>
+  </header>
+
+  @if (failed()) {
+    <p class="support" role="alert">{{ t('categoriesPage.error') }}</p>
+  }
+
+  <ul class="tree">
+    @for (group of categories.tree(); track group.parent.id) {
+      <li class="node">
+        <ng-container
+          [ngTemplateOutlet]="row"
+          [ngTemplateOutletContext]="{ $implicit: group.parent, top: true }"
+        />
+        @if (group.children.length > 0) {
+          <ul class="children">
+            @for (child of group.children; track child.id) {
+              <li>
+                <ng-container
+                  [ngTemplateOutlet]="row"
+                  [ngTemplateOutletContext]="{ $implicit: child, top: false }"
+                />
+              </li>
+            }
+          </ul>
+        }
+        @if (isAdding(group.parent.id)) {
+          <form
+            class="inline-form"
+            (submit)="$event.preventDefault(); add(group.parent.id, newName.value)"
+          >
+            <label class="visually-hidden" [for]="'add-' + group.parent.id">
+              {{ t('categoriesPage.newName') }}
+            </label>
+            <input
+              #newName
+              class="field__input"
+              [id]="'add-' + group.parent.id"
+              [maxLength]="maxLength"
+              [attr.placeholder]="t('categoriesPage.newName')"
+            />
+            <button type="submit" class="button" [disabled]="saving()">
+              {{ t('categoriesPage.add') }}
+            </button>
+            <button type="button" class="button button--secondary" (click)="editing.set(null)">
+              {{ t('categoriesPage.cancel') }}
+            </button>
+          </form>
+        }
+      </li>
+    }
+  </ul>
+
+  <ng-template #row let-category let-top="top">
+    @if (isRenaming(category.id)) {
+      <form class="inline-form" (submit)="$event.preventDefault(); rename(category, renamed.value)">
+        <label class="visually-hidden" [for]="'rename-' + category.id">
+          {{ t('categoriesPage.name') }}
+        </label>
+        <input
+          #renamed
+          class="field__input"
+          [id]="'rename-' + category.id"
+          [maxLength]="maxLength"
+          [value]="categories.label(category.id)"
+        />
+        <button type="submit" class="button" [disabled]="saving()">
+          {{ t('categoriesPage.save') }}
+        </button>
+        <button type="button" class="button button--secondary" (click)="editing.set(null)">
+          {{ t('categoriesPage.cancel') }}
+        </button>
+      </form>
+    } @else {
+      <div class="row" [class.row--top]="top" [class.row--hidden]="category.hidden">
+        <span class="row__name">
+          {{ categories.label(category.id) }}
+          @if (category.hidden) {
+            <span class="support">{{ t('categoriesPage.hiddenMark') }}</span>
+          }
+        </span>
+        <span class="row__actions">
+          <button
+            type="button"
+            class="link"
+            (click)="editing.set({ kind: 'rename', id: category.id })"
+          >
+            {{ t('categoriesPage.rename') }}
+          </button>
+          <button type="button" class="link" [disabled]="saving()" (click)="toggleHidden(category)">
+            {{ t(category.hidden ? 'categoriesPage.show' : 'categoriesPage.hide') }}
+          </button>
+          @if (top) {
+            <button
+              type="button"
+              class="link"
+              (click)="editing.set({ kind: 'add', parentId: category.id })"
+            >
+              {{ t('categoriesPage.addSub') }}
+            </button>
+          }
+        </span>
+      </div>
+    }
+  </ng-template>
+
+  <section class="rules" aria-labelledby="rules-title">
+    <h2 id="rules-title" class="section-title">{{ t('categoriesPage.rules') }}</h2>
+    <p class="support">{{ t('categoriesPage.rulesIntro') }}</p>
+    @if (rules.value().length === 0) {
+      <p class="support">{{ t('categoriesPage.noRules') }}</p>
+    } @else {
+      <ul class="rules__list">
+        @for (rule of rules.value(); track rule.id) {
+          <li class="row">
+            <span class="row__name">
+              {{ ruleText(rule) }}
+              <span class="support">→ {{ categories.label(rule.categoryId, true) }}</span>
+            </span>
+            <button type="button" class="link" (click)="deleteRule(rule)">
+              {{ t('categoriesPage.deleteRule') }}
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</section>

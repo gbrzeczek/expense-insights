@@ -1,0 +1,126 @@
+.page {
+  display: grid;
+  gap: var(--card-gap);
+  max-width: 720px;
+}
+
+.page__header {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.shortcuts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.shortcut {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-height: var(--touch-target);
+  padding: var(--space-3) var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: border-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    border-color: var(--color-ink-subtle);
+  }
+}
+
+.shortcut__title {
+  font-weight: var(--weight-medium);
+}
+
+.filters {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    background: var(--color-surface);
+  }
+}
+
+.chip--active,
+.chip--active:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+.empty {
+  text-align: center;
+}
+
+.day {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.day__date {
+  padding-top: var(--space-2);
+}
+
+.day__list {
+  margin: 0;
+  padding: 0 var(--space-4);
+  border: var(--border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  list-style: none;
+
+  li:not(:last-child) {
+    border-bottom: var(--border);
+  }
+}
+
+// The row keeps its own layout; the button only makes it tappable.
+.tx {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+
+  app-transaction-row {
+    border-bottom: 0;
+  }
+
+  &:focus-visible {
+    outline-offset: 0;
+    border-radius: var(--radius-control);
+  }
+}
+
+.more {
+  display: grid;
+  justify-items: center;
+}
