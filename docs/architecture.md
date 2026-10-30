@@ -4,7 +4,7 @@
 
 ```
  Phone / desktop browser (Angular PWA, pl-PL)
-              │  HTTPS (Cloudflare Tunnel / Tailscale)
+              │  HTTPS via Tailscale → Caddy (TLS)
               ▼
  ┌──────────────────────── home server (Docker Compose) ────────────────────────┐
  │  ExpenseInsights.Api (ASP.NET Core)                                          │
@@ -107,10 +107,13 @@ Accuracy is measured offline against `test-data/fake_ing.labels.csv` and reporte
 
 ## Deployment
 
-Docker Compose: `api`, `db`, and optionally `llm` (llama.cpp, 2 threads, low CPU priority). The
-Angular build is served by the API as static files, so there is one origin and no CORS. Remote
-access goes through Cloudflare Tunnel or Tailscale, with no open ports. Nightly `pg_dump`,
-encrypted, plus an off-site copy.
+Docker Compose (`deploy/docker-compose.prod.yml`): `caddy`, `api`, `db`, and optionally `llm`
+(llama.cpp, 2 threads, low CPU priority). The Angular build is served by the API as static files,
+so there is one origin and no CORS. The app is reachable only inside the tailnet: Caddy listens on
+the server's Tailscale address and terminates TLS for `expenses.gbrzeczek.dev`, a Cloudflare
+DNS-only record pointing at that address, with a Let's Encrypt certificate from the DNS-01
+challenge. No open ports, nothing on the LAN. Nightly `pg_dump`, `age`-encrypted, kept locally and
+copied to Cloudflare R2. Setup, backups, restore and monitoring: `deploy/README.md`.
 
 ## Decision log
 
@@ -138,3 +141,6 @@ encrypted, plus an off-site copy.
 | D20 | Only accounts in the export make an own transfer; the user's name with another account is a guess for review (incoming → `Inne przychody`, outgoing → `Przelew własny`), settled by a rule per account | A business account isn't in the ING export, and money from it is income, not a move between own accounts |
 | D21 | Global merchant rules ship as an embedded JSON file; only user rules are rows | A new rule list ships with a deploy, needs no migration, and is reviewed in diffs |
 | D22 | Classification runs in a background `BackgroundService` fed by a channel after import; `xmin` guards against overwriting a concurrent correction | The import returns at once; no broker needed for this load (D2) |
+| D23 | ~~Cloudflare Tunnel~~ → **Tailscale only**, under a Cloudflare DNS-only name pointing at the server's tailnet address; Caddy bound to that address with a Let's Encrypt certificate via the Cloudflare DNS-01 challenge (revised) | Bank data shouldn't be on the public internet; a real name and certificate keep Google sign-in and PWA install working; no open port is needed for the certificate |
+| D24 | Backups: `pg_dump` custom format piped into `age` (public key only on the server), 14 daily + 6 monthly, `rclone copy` (never sync) to Cloudflare R2, run by a host systemd timer | No extra container; a stolen server or bucket doesn't expose data; a wiped disk can't delete the off-site copies |
+| D25 | Monitoring by dead man's switch: systemd timers check `/health` through Caddy and ping healthchecks.io, instead of Uptime Kuma | An outside checker can't reach a tailnet-only host; pings stopping also catches the whole server being down; no extra container |

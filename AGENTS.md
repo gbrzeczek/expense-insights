@@ -34,7 +34,7 @@ source of truth for colours, typography, spacing, components and UX writing.
 | Background work | `BackgroundService` + `System.Threading.Channels` |
 | Local LLM (optional) | llama.cpp server (OpenAI-compatible API), small quantized model |
 | Tests | xUnit + Testcontainers (backend), Vitest (frontend), Playwright with a mobile viewport (e2e) |
-| Deployment | Docker Compose on the home server, Cloudflare Tunnel or Tailscale |
+| Deployment | Docker Compose on the home server, Caddy, reachable only via Tailscale |
 
 ## Repository layout (target)
 
@@ -55,7 +55,7 @@ test-data/                           # FAKE data + generator only
 docs/
   architecture.md
   plans/                             # numbered implementation plans
-deploy/                              # docker-compose, tunnel config, backup scripts
+deploy/                              # docker-compose (dev + prod), Caddy, backup/deploy scripts
 ```
 
 
@@ -124,7 +124,7 @@ login page (any invited address; the owner's address is invited automatically).
 
 `npm start` listens on `0.0.0.0`, so a phone on the same LAN can open `http://<computer-ip>:4200`.
 The service worker only registers on `localhost` or HTTPS, so install/offline checks need one of
-those (HTTPS comes with the tunnel in plan 05).
+those (production has HTTPS, see `deploy/README.md`).
 
 ### Backend (`src/backend`)
 
