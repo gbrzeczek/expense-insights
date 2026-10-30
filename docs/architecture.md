@@ -74,25 +74,28 @@ User ─┬─ Account ── Transaction ──┬── Classification (curren
       │                           └── Split[] (optional: one payment → several categories)
       ├─ ImportBatch (file hash, counts, errors)
       ├─ MerchantRule (pattern → category, per user; created from corrections)
-      └─ Category (per-user overrides of the global taxonomy)
+      ├─ Category (the user's own subcategories) + CategorySetting (rename/hide of a global one)
+      └─ ClassificationHistory, TransactionSplit
 
-Merchant (global, normalized name, aliases, default category)
+Category (global taxonomy, seeded)    global-rules.json (global merchant rules, shipped with the app)
 ```
 
 - **Category taxonomy:** fixed, two levels, about 12 top-level categories, seeded globally.
   Users can rename or hide categories and add subcategories, but not change top-level semantics
   (this keeps ML and insights consistent). Special categories that are excluded from spending:
   `Przelew własny`, `Zwroty`, and income categories.
-- **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Similarity` > `Ml`
-  > `Llm` > `Unclassified`. A higher source never gets overwritten by a lower one.
+- **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Unclassified` so far
+  (`Similarity`, `Ml` and `Llm` come with plans 07 and 08). A `UserCorrection` is never
+  recomputed; the rule-based sources are re-derived when the rules change.
 
 ## Classification pipeline
 
 1. **Normalize.** Strip store numbers, cities, country codes and the `JMP S.A.` style legal
    prefixes, giving a merchant key (`JMP S.A. BIEDRONKA 6537 KRAKOW PO` → `biedronka`). For BLIK
    through processors (PayU, Cashbill, PayPro, Przelewy24), use the shop domain from the title.
-2. **Rules.** The user's rules, then global merchant rules. Exact key first, then trigram
-   similarity (`pg_trgm`) above a threshold.
+2. **Rules.** Own accounts and refunds, the user's rules, the account holder's own name (for
+   review), transfers to and from people, then global merchant and title-keyword rules; trigram
+   similarity only when nothing matched (see plan 04, *As built*).
 3. **Similarity.** kNN over the user's own labelled transactions (char n-grams first;
    embeddings in plan 06).
 4. **LLM fallback** (optional, async). Only for low-confidence leftovers. The output is
@@ -132,3 +135,6 @@ encrypted, plus an off-site copy.
 | D17 | Antiforgery for the SPA via Angular's `XSRF-TOKEN` cookie / `X-XSRF-TOKEN` header on every state-changing `/api` request | Built into both frameworks; SameSite=Lax alone doesn't cover every case |
 | D18 | Data Protection keys stored in Postgres (`DataProtectionKeys`) | Sessions survive restarts and redeploys; the keys are in the same backups, no extra volume |
 | D19 | Account deletion erases all of a user's rows (and their invitation); the owner's account can't be deleted | GDPR-style erasure of other people's bank records; the owner manages invitations |
+| D20 | Only accounts in the export make an own transfer; the user's name with another account is a guess for review (incoming → `Inne przychody`, outgoing → `Przelew własny`), settled by a rule per account | A business account isn't in the ING export, and money from it is income, not a move between own accounts |
+| D21 | Global merchant rules ship as an embedded JSON file; only user rules are rows | A new rule list ships with a deploy, needs no migration, and is reviewed in diffs |
+| D22 | Classification runs in a background `BackgroundService` fed by a channel after import; `xmin` guards against overwriting a concurrent correction | The import returns at once; no broker needed for this load (D2) |

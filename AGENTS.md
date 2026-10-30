@@ -138,6 +138,9 @@ dotnet ef migrations add <Name> -p ExpenseInsights.Infrastructure -s ExpenseInsi
 Tests run on Microsoft.Testing.Platform (xUnit v3); `global.json` opts `dotnet test` into it.
 Import speed benchmarks are explicit tests (skipped by default and in CI):
 `dotnet test --project tests/ExpenseInsights.Infrastructure.Tests -c Release -- --explicit only`.
+Classification accuracy on the fake data (coverage, precision, per tier, confusion):
+`dotnet run --project ExpenseInsights.Classification.Eval -- --errors`. Pass `--csv` and `--labels`
+for a real export plus the labels from `GET /api/classification/labels`, kept outside the repo.
 
 ### Frontend (`src/frontend`)
 
