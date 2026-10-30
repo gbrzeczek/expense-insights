@@ -26,7 +26,7 @@ source of truth for colours, typography, spacing, components and UX writing.
 | Area | Choice |
 |---|---|
 | Backend | .NET 10 (LTS), ASP.NET Core minimal APIs, EF Core |
-| Database | PostgreSQL with `pg_trgm` (+ `pgvector` from plan 06) |
+| Database | PostgreSQL with `pg_trgm` (+ `pgvector` from plan 07) |
 | Frontend | Angular (latest stable, standalone components, signals), PWA, mobile-first |
 | Charts | ECharts via `ngx-echarts` |
 | i18n | Transloco, default `pl`, `en` later |
@@ -46,7 +46,7 @@ src/
     ExpenseInsights.Core/            # domain model, application services (no infra deps)
     ExpenseInsights.Infrastructure/  # EF Core, Postgres, external services
     ExpenseInsights.Import.Ing/      # ING CSV parser (one project per bank)
-    ExpenseInsights.Classification/  # rules, similarity, ML, LLM fallback
+    ExpenseInsights.Classification/  # rules, similarity, embeddings, LLM fallback
     tests/
       ExpenseInsights.*.Tests/
       ExpenseInsights.Testing/       # shared test helpers (Testcontainers Postgres fixture)

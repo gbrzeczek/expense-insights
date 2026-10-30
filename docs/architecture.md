@@ -85,7 +85,7 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
   (this keeps ML and insights consistent). Special categories that are excluded from spending:
   `Przelew własny`, `Zwroty`, and income categories.
 - **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Unclassified` so far
-  (`Similarity`, `Ml` and `Llm` come with plans 07 and 08). A `UserCorrection` is never
+  (`Similarity` and `Embedding` come with plan 07, `Llm` with plan 08 if it is built). A `UserCorrection` is never
   recomputed; the rule-based sources are re-derived when the rules change.
 
 ## Classification pipeline
@@ -96,11 +96,15 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
 2. **Rules.** Own accounts and refunds, the user's rules, the account holder's own name (for
    review), transfers to and from people, then global merchant and title-keyword rules; trigram
    similarity only when nothing matched (see plan 04, *As built*).
-3. **Similarity.** kNN over the user's own labelled transactions (char n-grams first;
-   embeddings in plan 06).
-4. **LLM fallback** (optional, async). Only for low-confidence leftovers. The output is
-   constrained to the category enum, and the prompt includes the nearest labelled examples.
-5. **User correction.** Saves a correction, offers "apply to all from this merchant", and
+3. **Memory.** kNN over the user's own labelled transactions (char n-gram TF-IDF). No training;
+   every correction is another example (plan 07).
+4. **Embeddings.** `multilingual-e5-small` (ONNX) + `pgvector`: nearest labelled transactions
+   and category anchors (descriptions + example merchants), for merchants nobody has labelled
+   (plan 07).
+5. **LLM or hosted chooser** (conditional, optional, async). Only if plan 07 leaves a real gap:
+   low-confidence leftovers, output constrained to the category enum, nearest labelled examples
+   in the prompt (plan 08).
+6. **User correction.** Saves a correction, offers "apply to all from this merchant", and
    creates or updates a `MerchantRule`.
 
 Accuracy is measured offline against `test-data/fake_ing.labels.csv` and reported per tier.
@@ -138,3 +142,5 @@ encrypted, plus an off-site copy.
 | D20 | Only accounts in the export make an own transfer; the user's name with another account is a guess for review (incoming → `Inne przychody`, outgoing → `Przelew własny`), settled by a rule per account | A business account isn't in the ING export, and money from it is income, not a move between own accounts |
 | D21 | Global merchant rules ship as an embedded JSON file; only user rules are rows | A new rule list ships with a deploy, needs no migration, and is reviewed in diffs |
 | D22 | Classification runs in a background `BackgroundService` fed by a channel after import; `xmin` guards against overwriting a concurrent correction | The import returns at once; no broker needed for this load (D2) |
+| D26 | Insights use robust statistics (median baseline, MAD spread, seasonal comparison, day-of-month pace profile), not ML | A few hundred monthly data points per user is too little to train on; every number must be explainable and lead to its transactions |
+| D27 | Classification after rules: kNN memory over corrections + local embeddings with category anchors; no trained ML.NET model; the LLM tier (plan 08) only if plan 07's leftover report shows a gap | Both tiers work from the first correction with no training step; anchors cover cold start, which an LLM would mostly be there for; saves the RAM upgrade if it isn't needed |
