@@ -14,8 +14,8 @@ summaries and insights.
   without a plan in `docs/plans/`.
 - UI language: **Polish first**. Every user-facing string goes through i18n; no hardcoded text.
 - Runs on a home server: Intel i3-6100T (2C/4T, AVX2), 8 GB RAM (16 GB planned), Debian.
-  Everything must stay lightweight. Assume a ~3 GB memory budget for the app stack, excluding
-  the optional local LLM.
+  Everything must stay lightweight. Assume a ~3 GB memory budget for the app stack, plus up to
+  ~3 GB for the local LLM (plan 08, a ≤ 3B model).
 
 Read `docs/architecture.md` and the relevant plan in `docs/plans/` before starting work.
 For any UI work, also read `docs/design-system.md` (**Warm Paper Finance**): it is the
@@ -32,7 +32,8 @@ source of truth for colours, typography, spacing, components and UX writing.
 | i18n | Transloco, default `pl`, `en` later |
 | Auth | Google OIDC (Apple later: it needs a paid Apple Developer account) |
 | Background work | `BackgroundService` + `System.Threading.Channels` |
-| Local LLM (optional) | llama.cpp server (OpenAI-compatible API), small quantized model |
+| Local LLM | llama.cpp server (OpenAI-compatible API), small quantized model (≤ 3B) |
+| Cloud LLM (opt-in) | Any OpenAI-compatible API with tool calling, prepaid (plan 09) |
 | Tests | xUnit + Testcontainers (backend), Vitest (frontend), Playwright with a mobile viewport (e2e) |
 | Deployment | Docker Compose on the home server, Cloudflare Tunnel or Tailscale |
 
@@ -72,9 +73,11 @@ deploy/                              # docker-compose, tunnel config, backup scr
    normalized `ImportedTransaction` model and must not know which bank a row came from.
 5. **Keep raw rows.** Store the original CSV row (as JSON) with every transaction so it can be
    re-parsed when the parser improves.
-6. **Numbers are never produced by an LLM.** All amounts, sums, percentages and comparisons
-   are computed in code. An LLM may only pick a category from a fixed list, or put
-   pre-computed facts into words.
+6. **Numbers come from code, never from an LLM.** All amounts, sums, percentages and
+   comparisons are computed in code. An LLM may pick a category from a fixed list, decide what
+   to compute through fixed query tools, and write free text, but every number it shows is
+   inserted by code from a computed result (placeholders). Text with a digit the model typed
+   is rejected.
 7. **Every query is scoped to the current user.** Use an EF Core global query filter; add a test
    whenever you add a new user-owned entity.
 8. **No secrets in the repo.** Use user-secrets locally and environment variables or Docker

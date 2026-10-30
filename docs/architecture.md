@@ -19,7 +19,7 @@
  └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-One deployable API (a modular monolith) plus Postgres, and optionally llama.cpp. No message
+One deployable API (a modular monolith) plus Postgres and llama.cpp (plan 08). No message
 broker or microservices: the load is a few users importing a few hundred rows a month.
 
 ## Bank import abstraction
@@ -85,7 +85,7 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
   (this keeps ML and insights consistent). Special categories that are excluded from spending:
   `Przelew własny`, `Zwroty`, and income categories.
 - **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Unclassified` so far
-  (`Similarity` and `Embedding` come with plan 07, `Llm` with plan 08 if it is built). A `UserCorrection` is never
+  (`Similarity` and `Embedding` come with plan 07, `Llm` with plan 08). A `UserCorrection` is never
   recomputed; the rule-based sources are re-derived when the rules change.
 
 ## Classification pipeline
@@ -101,9 +101,9 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
 4. **Embeddings.** `multilingual-e5-small` (ONNX) + `pgvector`: nearest labelled transactions
    and category anchors (descriptions + example merchants), for merchants nobody has labelled
    (plan 07).
-5. **LLM or hosted chooser** (conditional, optional, async). Only if plan 07 leaves a real gap:
-   low-confidence leftovers, output constrained to the category enum, nearest labelled examples
-   in the prompt (plan 08).
+5. **Local LLM** (required, async). Low-confidence leftovers only. Output constrained to the
+   category ids; confidence from the token log-probabilities; nearest labelled examples and the
+   category anchors in the prompt. The result is a suggestion (plan 08).
 6. **User correction.** Saves a correction, offers "apply to all from this merchant", and
    creates or updates a `MerchantRule`.
 
@@ -125,7 +125,7 @@ encrypted, plus an off-site copy.
 | D3 | PostgreSQL over SQLite | `pg_trgm` and `pgvector`; better portfolio signal |
 | D4 | ING only, behind `IStatementParser` | Ship one bank well; keep the seam for more |
 | D5 | Rules → similarity → LLM, LLM last | Old CPU; merchant strings are repetitive; small models are unreliable |
-| D6 | LLM never computes numbers | Small models hallucinate figures |
+| D6 | ~~LLM never computes numbers~~ → **numbers come from code; an LLM may choose what to compute (fixed query tools) and write free text, with numbers inserted by code** (revised, D29) | Models slip on arithmetic and sound just as sure; code-inserted numbers are cheap and always right |
 | D7 | Google login first, Apple later | Sign in with Apple requires a paid developer account |
 | D8 | No Biedronka scraping | No public API, ToS risk, would require holding users' credentials; receipt upload is possible later |
 | D9 | PWA, not native | One codebase, mobile install without app stores |
@@ -143,4 +143,6 @@ encrypted, plus an off-site copy.
 | D21 | Global merchant rules ship as an embedded JSON file; only user rules are rows | A new rule list ships with a deploy, needs no migration, and is reviewed in diffs |
 | D22 | Classification runs in a background `BackgroundService` fed by a channel after import; `xmin` guards against overwriting a concurrent correction | The import returns at once; no broker needed for this load (D2) |
 | D26 | Insights use robust statistics (median baseline, MAD spread, seasonal comparison, day-of-month pace profile), not ML | A few hundred monthly data points per user is too little to train on; every number must be explainable and lead to its transactions |
-| D27 | Classification after rules: kNN memory over corrections + local embeddings with category anchors; no trained ML.NET model; the LLM tier (plan 08) only if plan 07's leftover report shows a gap | Both tiers work from the first correction with no training step; anchors cover cold start, which an LLM would mostly be there for; saves the RAM upgrade if it isn't needed |
+| D27 | Classification after rules: kNN memory over corrections + local embeddings with category anchors; no trained ML.NET model; the local LLM (plan 08) handles what is left | Both tiers work from the first correction with no training step; anchors cover cold start |
+| D28 | The local LLM (plan 08) is required: a ≤ 3B quantized model on the current 8 GB, used as a chooser (constrained output, log-probability confidence) and for phrasing; the app works unchanged when its container is down | No transaction text leaves the server; brand knowledge covers what embeddings miss; 16 GB only if a bigger model clearly wins |
+| D29 | Cloud insights (plan 09): opt-in per user, category-level monthly aggregates only, the model explores through fixed query tools and writes with placeholders that code fills; OpenAI-compatible client on a prepaid provider plus app-side caps | More interesting insights than fixed rules, without trusting model arithmetic or sending merchants; a few users cost cents a month |

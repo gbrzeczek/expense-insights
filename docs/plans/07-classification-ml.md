@@ -50,7 +50,7 @@ Features beyond text, used as tie-breakers only: `Kind`, the sign, the amount bu
 - [ ] Harness report: rules only, + A, + C, + A + C on fake data and on the owner's local
       labelled export. Coverage and precision at several thresholds, latency, peak RAM.
 - [ ] **Leftover report:** after rules + A + C, how many transactions a month still land in
-      review, and what they look like. This decides plan 08.
+      review, and what they look like. Plan 08 benchmarks its candidates on these.
 - [ ] Write the results up in this file. This doubles as portfolio material.
 - [ ] Wire the tiers that measurably help into the pipeline after the rules.
 

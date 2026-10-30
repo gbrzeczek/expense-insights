@@ -1,22 +1,14 @@
 # 08 · Local LLM fallback
 
-**Status:** Conditional: built only if plan 07's leftover report shows a gap worth it (D27).
-A local model also needs the RAM upgrade to 16 GB.
-
-## Go / no-go (decided after plan 07)
-
-Plan 07 reports how many transactions a month still land in "Do sprawdzenia" after rules +
-memory + embeddings. If that is a handful a month, the review list handles them in seconds
-and this plan is closed as not needed (record it in the decision log). It goes ahead only if:
-
-- leftovers stay above ~5% of a month's transactions after a month of corrections, **and**
-- a quick benchmark (below) shows a candidate model fixes a clear share of them on the harness.
+**Status:** Not started. Required (D28); a ≤ 3B model fits the current 8 GB. The 16 GB upgrade
+is only needed if the benchmark shows a 7–8B model is clearly better.
 
 ## Goal
 
-Handle the long tail that rules, memory and embeddings can't classify confidently, and optionally turn
-computed insights into natural Polish sentences. Fully local and optional: the app must work
-identically with the LLM container turned off.
+Classify the long tail that rules, memory and embeddings (plan 07) can't classify confidently,
+and turn computed insights into natural Polish sentences. Fully local, so no transaction text
+leaves the server. Required, but not a single point of failure: with the `llm` container down,
+the app works as before and leftovers wait in "Do sprawdzenia" until it is back.
 
 ## Hardware reality (i3-6100T: 2C/4T, AVX2 + FMA, DDR4 or DDR3L)
 
@@ -27,47 +19,56 @@ CPU inference is limited by memory bandwidth. Rough expectations, to be measured
 |---|---|---|
 | 1.5–2B | ~1.3 GB | ~10–15 tok/s |
 | 3–4B | ~2.5 GB | ~5–8 tok/s |
-| 7–8B | ~4.5 GB | ~2–3 tok/s |
+| 7–8B | ~4.5 GB | ~2–3 tok/s (needs 16 GB) |
 
-Classification output is a few tokens (constrained to the category enum), so the cost is
-dominated by prompt processing. Keep prompts short. A few dozen leftover transactions per
-month is easily feasible as an async queue.
+Classification output is one category, so the cost is dominated by prompt processing (likely a
+few seconds per transaction). Keep prompts short. A few dozen leftovers a month is easily
+feasible as an async queue.
 
 ## Design
 
-- `llm` service in Compose: llama.cpp `llama-server` (OpenAI-compatible), `--threads 2`,
-  `nice`, `mem_limit`. The model file is mounted from `models/` (git-ignored).
-- `LlmClassifier : IClassifier` uses **JSON schema / GBNF-constrained output**:
-  `{ "category": <enum>, "confidence": "low|medium|high" }`.
+- `llm` service in the production Compose stack (not a profile): llama.cpp `llama-server`
+  (OpenAI-compatible), `--threads 2`, `nice`, `mem_limit` sized to the chosen model. The model
+  file is mounted from `models/` (git-ignored); `deploy/README.md` says how to download it.
+- **The model is a chooser, not a writer** (the same idea as hosted choosers such as Jev).
+  `LlmClassifier : IClassifier` restricts the output to the category ids with a GBNF grammar /
+  JSON schema and reads the **token log-probabilities** of each category, giving a probability
+  per category. Confidence = that probability, calibrated on the fake labels like plan 07's
+  tiers. The generated text itself is never trusted.
 - Prompt = the category list with the anchor descriptions from plan 07 + the 5 nearest labelled
-  transactions (from plan 07, "RAG-lite") + the cleaned transaction. Never send account numbers.
+  transactions (plan 07, "RAG-lite") + the cleaned transaction. Never send account numbers. Its
+  advantage over the embeddings: knowledge of brands (`ROSSMANN` → drugstore) without labels.
 - Queue: a `Channel` worker, one request at a time, retry with backoff, and a circuit breaker
-  when the container is down.
-- The LLM result is a **suggestion**: it's shown as the first chip in "Do sprawdzenia" and only
-  auto-applied at `high` confidence if the user enables that.
-- Optional insight phrasing: input = a typed `Insight` with its computed parameters; output = one
-  Polish sentence. It's validated by checking that every number in the output appears in the
-  input; otherwise the template text is used.
+  when the container is down (health check on `/health` of `llama-server`).
+- The result is a **suggestion**: the first chip in "Do sprawdzenia", auto-applied only above a
+  high calibrated confidence and only if the user enables that.
+- **Insight phrasing:** input = a typed `Insight` with its computed parameters; output = one
+  Polish sentence with placeholders (`{delta}`, `{category}`) that code fills in, the same
+  mechanism as plan 09. A sentence containing a digit the model typed is rejected and the i18n
+  template text is used instead (hard rule 6).
 
 ## Tasks
 
-- [ ] Go / no-go from plan 07's leftover report (above). Stop here on a no-go.
-- [ ] Benchmark candidates on the server: Bielik small variants (a Polish-native model from
-      SpeakLeash), Qwen-class 1.5–4B, Gemma-class small. Measure tok/s, RAM, and accuracy with
-      the harness.
-- [ ] Compose `llm` service with a profile (`docker compose --profile llm up`).
-- [ ] `LlmClassifier` plus a queue worker plus a health-based circuit breaker.
-- [ ] Settings toggle per user: "Użyj lokalnego modelu AI" ("use the local AI model").
-- [ ] Optional cloud fallback instead of (or before) a local model: a hosted "choose one of
-      these options" API such as TypeSafe's Jev, which returns one of the given category ids with
-      a confidence. Anonymized merchant strings only (no account numbers, names or titles with
-      personal data), explicit opt-in per user, off by default. Compare its accuracy on the
-      leftovers with the local candidates before choosing either.
-- [ ] Record the results and the chosen model in this file and in the decision log.
+- [ ] Benchmark candidates on the server with the plan 04/07 harness on plan 07's leftovers:
+      tok/s, seconds per transaction, peak RAM, accuracy at the calibrated thresholds.
+  - Small LLMs (≤ 3B, Q4): Bielik small variants (Polish-native, from SpeakLeash), Qwen-class
+    1.5–3B, Gemma-class small.
+  - Zero-shot encoders as a lighter alternative, run in ONNX Runtime inside the API (no extra
+    container): a multilingual mDeBERTa-v3 NLI model (one pass per category) and a multilingual
+    GLiClass model (one pass for all categories). Check Polish support and how they cope with
+    terse merchant strings.
+- [ ] Choose the winner; record it, with the numbers, in this file and in the decision log.
+- [ ] `llm` service in `deploy/docker-compose.prod.yml` (or the encoder inside the API), with a
+      memory limit; model download steps in `deploy/README.md`.
+- [ ] `LlmClassifier` with constrained output and log-probability scoring, a queue worker and a
+      health-based circuit breaker.
+- [ ] Insight phrasing with placeholders and the digit check; template text as the fallback.
+- [ ] Settings toggle per user for auto-applying high-confidence suggestions.
 
 ## Acceptance criteria
 
-- The tier improves harness accuracy on plan 07's leftovers by a measurable margin. Otherwise
-  it's not enabled by default.
+- The tier improves harness accuracy on plan 07's leftovers by a measurable margin.
 - The web UI stays responsive (p95 API latency < 300 ms) while the LLM queue is busy.
-- With the `llm` container stopped, nothing breaks and items stay in "Do sprawdzenia".
+- With the `llm` container stopped, nothing breaks, items stay in "Do sprawdzenia" and the
+  queue catches up when it is back.
+- The whole stack, including the model, stays within the server's memory budget (AGENTS.md).
