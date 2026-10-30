@@ -11,8 +11,8 @@ phone (Tailscale app) ──tailnet──▶ debianhome 100.x.y.z:443
 expenses.gbrzeczek.dev  ─ Cloudflare DNS, A record → 100.x.y.z, "DNS only" (grey cloud)
 ```
 
-- [Production setup](#production-setup-once-on-the-server) · [Deploying](#deploying) ·
-  [Backups](#backups) · [Restore drill](#restore-drill) · [Disaster recovery](#disaster-recovery) ·
+- [How a deploy works](#how-a-deploy-works) · [Production setup](#production-setup-once) ·
+  [Deploying](#deploying) · [Secrets](#secrets-where-they-live) · [Backups](#backups) · [Restore drill](#restore-drill) · [Disaster recovery](#disaster-recovery) ·
   [Monitoring and logs](#monitoring-and-logs) · [What the owner still has to do](#what-the-owner-still-has-to-do-on-the-server)
 - The dev stack (`docker-compose.yml`) is described in `AGENTS.md`; this file covers production
   (`docker-compose.prod.yml`, `scripts/`, `systemd/`) and sign-in.
@@ -40,25 +40,56 @@ Things to know: the hostname appears in public Certificate Transparency logs (it
 name exists, nothing more); any device in the tailnet can reach the login page (sign-in is still
 needed; tighten with Tailscale ACLs if the tailnet grows).
 
-## Production setup (once, on the server)
+## How a deploy works
 
-Run these on `debianhome` as the user that will own the deployment (it must be in the `docker`
-group). Paths assume the repository is cloned to `~/expense-insights`.
+Every merge to `main` that passes CI deploys itself (`.github/workflows/deploy.yml`):
 
-### 1. Packages and the repository
+1. **Images.** GitHub's runners build the app image and the Caddy image and push both to the
+   GitHub Container Registry, tagged with the commit (`ghcr.io/gbrzeczek/expense-insights:<sha>`).
+   The packages are private, like the repository.
+2. **Tailscale.** The deploy job joins the tailnet for its duration as `tag:ci`, through a
+   Tailscale OAuth client, and may reach only the server's SSH port.
+3. **Settings.** It writes `deploy/.env` from the GitHub environment `production` (secrets and
+   variables, see step 8), so GitHub is where settings are edited and the server only holds the
+   generated copy.
+4. **SSH.** It sends `deploy/` (compose file, scripts, systemd units, the new `.env`) and the job's
+   short-lived registry token to the server in one SSH call. The key can run nothing but
+   `deploy/scripts/ci-deploy.sh` (a forced command), which swaps the new `deploy/` in (keeping the
+   old one as `deploy.previous`) and runs `deploy/scripts/deploy.sh`: pull the new images, back up
+   (the API runs migrations on start), start, wait for `/health`. A failed health check fails
+   the job.
+
+The server never builds anything and needs no access to GitHub. The deploy job is skipped until
+the repository variable `DEPLOY_HOST` is set, so the images build before the server is ready.
+
+## Production setup (once)
+
+Server commands run as an admin user with `sudo`, unless they say `sudo -u deploy`. The app lives
+in `/srv/expense-insights`, owned by a `deploy` user (the same one sheetsolver uses is fine).
+
+### 1. Server: packages, user, directories
 
 ```bash
-sudo apt install git curl age rclone
-git clone https://github.com/gbrzeczek/expense-insights.git ~/expense-insights
+sudo apt install curl age rclone
+id deploy || sudo adduser --disabled-password --gecos '' deploy
+sudo usermod -aG docker deploy
+sudo install -d -o deploy -m 750 /srv/expense-insights
+sudo install -d -o deploy -m 700 /var/backups/expense-insights
 ```
 
-Docker Engine with the Compose plugin is assumed to be there already (the tunnel container runs
-on it). Check with `docker compose version`.
+Docker Engine with the Compose plugin and Tailscale are assumed to be there already. The first
+copy of `deploy/` comes from your laptop's clone, because the forced command it contains has to
+exist before the first deploy:
+
+```bash
+git -C ~/code/expense-insights archive main deploy |
+  ssh debianhome 'sudo -u deploy tar -x -C /srv/expense-insights'
+```
 
 ### 2. The Tailscale address, and binding to it at boot
 
 ```bash
-tailscale ip -4                       # e.g. 100.101.102.103, goes into TAILSCALE_IP
+tailscale ip -4                       # e.g. 100.101.102.103 → the TAILSCALE_IP variable
 ```
 
 Docker binds the published ports when the containers start. At boot Docker can start before
@@ -71,8 +102,8 @@ sudo sysctl --system
 ```
 
 Nothing else may listen on port 443 or 80 on all addresses (`0.0.0.0`); check with
-`sudo ss -ltnp '( sport = :443 or sport = :80 )'`. The `cloudflared` container makes only
-outbound connections, so it doesn't conflict.
+`sudo ss -ltnp '( sport = :443 or sport = :80 )'`. `cloudflared` only connects outwards, so the
+sheetsolver tunnel doesn't conflict.
 
 ### 3. DNS record and Cloudflare API token
 
@@ -82,8 +113,8 @@ In the Cloudflare dashboard for `gbrzeczek.dev`:
    **Proxy status: DNS only** (grey cloud). Proxied would not work: Cloudflare can't reach a
    tailnet address.
 2. **My Profile → API Tokens → Create Token → Edit zone DNS** template: permission
-   `Zone · DNS · Edit`, zone resources `Include · Specific zone · gbrzeczek.dev`. Copy the
-   token into `CLOUDFLARE_API_TOKEN`. It can change DNS records of this one zone and nothing else.
+   `Zone · DNS · Edit`, zone resources `Include · Specific zone · gbrzeczek.dev`. It can change DNS
+   records of this one zone and nothing else. → secret `CLOUDFLARE_API_TOKEN`.
 
 Some routers block DNS answers that point at private ranges ("DNS rebinding protection"). Phones
 on the Tailscale app use Tailscale's resolver, so this usually doesn't matter; if the name doesn't
@@ -92,7 +123,8 @@ resolve on the home Wi-Fi, allow `gbrzeczek.dev` in the router or enable MagicDN
 ### 4. Google OAuth redirect URI
 
 In the Google Cloud client (see [Google Cloud OAuth client](#google-cloud-oauth-client)), add
-`https://expenses.gbrzeczek.dev/api/auth/callback/google` to **Authorized redirect URIs**.
+`https://expenses.gbrzeczek.dev/api/auth/callback/google` to **Authorized redirect URIs**. The
+same client serves development and production.
 
 ### 5. An `age` key for the backups
 
@@ -100,61 +132,109 @@ On your laptop, not the server:
 
 ```bash
 age-keygen -o expense-insights-backup.key
-# Public key: age1...   ← goes into AGE_RECIPIENT on the server
+# Public key: age1...   → the AGE_RECIPIENT variable
 ```
 
 Keep the private key file in your password manager and on one offline copy (a USB stick in a
-drawer). The server only ever has the public key, so a stolen server or a leaked R2 bucket doesn't
-expose the backups. Without the private key the backups can't be read; there is no recovery.
+drawer). It never goes to the server or to GitHub, so a stolen server, a leaked bucket or a leaked
+GitHub secret doesn't expose the backups. Without it the backups can't be read; there is no
+recovery.
 
-### 6. Cloudflare R2 bucket and rclone
+### 6. Cloudflare R2 bucket
 
 1. **R2 → Create bucket:** `expense-insights-backups`, location automatic. Leave public access off.
 2. **R2 → Manage API tokens → Create API token:** permission **Object Read & Write**, applied to
-   **this bucket only**. Note the access key id, the secret access key and the S3 endpoint
-   (`https://<account id>.r2.cloudflarestorage.com`).
-3. On the server:
+   **this bucket only**. → secrets `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`; the S3 endpoint
+   (`https://<account id>.r2.cloudflarestorage.com`) → variable `R2_ENDPOINT`.
 
-   ```bash
-   rclone config create r2 s3 provider=Cloudflare \
-     access_key_id=<access key id> secret_access_key=<secret access key> \
-     endpoint=https://<account id>.r2.cloudflarestorage.com acl=private no_check_bucket=true
-   rclone lsf r2:expense-insights-backups      # empty output, no error
-   ```
+No `rclone config` is needed: the scripts define the `r2` remote from `deploy/.env`
+(`deploy/scripts/r2.sh` runs rclone with it by hand). The backups stay well inside R2's free 10 GB.
 
-   `no_check_bucket` is needed because a bucket-scoped token may not list buckets. The config is
-   written to `~/.config/rclone/rclone.conf` (mode 600), outside the repository.
-4. Set `RCLONE_REMOTE=r2:expense-insights-backups`.
+### 7. Deploy key and Tailscale access for the job
 
-The backups stay well inside R2's free 10 GB (a few hundred KB per dump for years of history).
-
-### 7. `deploy/.env`
+**SSH key**, on your laptop. The private half goes only into the GitHub secret; delete the local
+file afterwards (if it is ever lost, make a new one):
 
 ```bash
-cd ~/expense-insights
-cp deploy/.env.prod.example deploy/.env
-chmod 600 deploy/.env
-openssl rand -base64 32 | tr -d '/+='     # → POSTGRES_PASSWORD
-sudo install -d -o "$USER" -m 700 /var/backups/expense-insights
+ssh-keygen -t ed25519 -N '' -C github-expense-insights -f expense-insights-deploy
 ```
 
-Fill in every value; Compose refuses to start while a required one is empty. Keep a copy of the
-filled-in file in your password manager: it isn't in the backups.
-
-### 8. First start
+On the server, allow it for `deploy`, restricted to the deploy script:
 
 ```bash
-docker compose -f deploy/docker-compose.prod.yml up -d --build
-docker compose -f deploy/docker-compose.prod.yml logs -f caddy   # wait for "certificate obtained successfully"
-curl -fsS https://expenses.gbrzeczek.dev/health                 # Healthy
-deploy/systemd/install.sh                                         # nightly backup + uptime timers
-deploy/scripts/backup.sh                                          # first backup now
+echo "restrict,command=\"/srv/expense-insights/deploy/scripts/ci-deploy.sh\" $(cat expense-insights-deploy.pub)" |
+  ssh debianhome "sudo -u deploy sh -c 'mkdir -p -m 700 ~/.ssh && cat >> ~/.ssh/authorized_keys'"
+```
+
+`restrict` turns off terminals and forwarding; `command=` means whatever the job asks for, only
+`ci-deploy.sh` runs, and it accepts only `deploy <commit>`. The key is therefore not a shell on the
+server, though a deploy can still run any image built from `main`.
+
+**Host key**, from a machine in the tailnet: `ssh-keyscan debianhome` → secret
+`DEPLOY_KNOWN_HOSTS`, so the job knows it talks to the real server.
+
+**Tailscale.** Reuse sheetsolver's setup: the `tag:ci` tag, its OAuth client (copy the id and
+secret into this repository's secrets), and an access rule letting `tag:ci` reach only port 22 on
+the server:
+
+```json
+"tagOwners": { "tag:ci": ["autogroup:admin"] },
+"grants": [
+  { "src": ["tag:ci"], "dst": ["debianhome"], "ip": ["tcp:22"] }
+]
+```
+
+(Use the server's tag instead of its name if it has one.) Runners join as ephemeral nodes and
+disappear after the job. Port 22 only: the job never needs the app itself.
+
+### 8. GitHub: the `production` environment
+
+Repository → **Settings → Environments → New environment** `production`. Under **Deployment
+branches and tags**, choose *Selected branches* and add `main`, so only workflows on `main` can
+read these values. Then add:
+
+| Kind | Name | Value |
+|---|---|---|
+| Secret | `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRET` | Tailscale OAuth client (step 7) |
+| Secret | `DEPLOY_SSH_KEY` | The private key `expense-insights-deploy`, whole |
+| Secret | `DEPLOY_KNOWN_HOSTS` | Output of `ssh-keyscan debianhome` |
+| Secret | `POSTGRES_PASSWORD` | `openssl rand -base64 32 \| tr -d '/+='`. Set once: the database keeps it |
+| Secret | `GOOGLE_CLIENT_SECRET` | Google OAuth client |
+| Secret | `CLOUDFLARE_API_TOKEN` | Step 3 |
+| Secret | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Step 6 |
+| Secret | `BACKUP_PING_URL`, `HEALTH_PING_URL` | healthchecks.io ping URLs (optional, see *Monitoring*) |
+| Variable | `DEPLOY_USER` | `deploy` |
+| Variable | `AUTH_OWNER_EMAIL` | Your Google address |
+| Variable | `GOOGLE_CLIENT_ID` | Google OAuth client id (public) |
+| Variable | `APP_HOST` | `expenses.gbrzeczek.dev` |
+| Variable | `TAILSCALE_IP` | Step 2 |
+| Variable | `ACME_EMAIL` | Your email, for Let's Encrypt expiry notices |
+| Variable | `AGE_RECIPIENT` | The `age1…` public key (step 5) |
+| Variable | `R2_ENDPOINT` | Step 6 |
+| Variable | `RCLONE_REMOTE` | `r2:expense-insights-backups` |
+| Variable | `BACKUP_DIR` | Optional; default `/var/backups/expense-insights` |
+
+Values must not contain a single quote or a line break (the job refuses them). Finally, a
+**repository** variable (Settings → Secrets and variables → Actions → Variables), because the
+job's `if` is decided before the environment is loaded: `DEPLOY_HOST` = `debianhome` (the server's
+MagicDNS name). Setting it turns deploys on.
+
+### 9. First deploy, timers, first backup
+
+**Actions → Deploy → Run workflow** on `main` (or merge something). Then on the server:
+
+```bash
+sudo -u deploy docker compose -f /srv/expense-insights/deploy/docker-compose.prod.yml logs caddy | grep -i certificate
+curl -fsS https://expenses.gbrzeczek.dev/health                          # Healthy
+sudo /srv/expense-insights/deploy/systemd/install.sh deploy              # nightly backup + uptime timers
+sudo -u deploy /srv/expense-insights/deploy/scripts/backup.sh            # first backup now
 ```
 
 The API migrates the database on start. The owner (`AUTH_OWNER_EMAIL`) signs in with Google and
-invites the others from the app.
+invites the others from the app. Re-run `install.sh` only if a deploy changes the units in
+`deploy/systemd/`.
 
-### 9. Phones and invited people
+### 10. Phones and invited people
 
 - **You:** install Tailscale on the phone and sign in to your tailnet. Open
   `https://expenses.gbrzeczek.dev`, sign in with Google, then install the app (Android Chrome: menu
@@ -167,16 +247,39 @@ invites the others from the app.
 
 ## Deploying
 
-From the laptop:
+- **Normally:** merge to `main`. CI runs, then *Deploy*. While the API restarts, Caddy holds
+  requests for up to 30 seconds instead of failing them.
+- **Again, e.g. after changing a secret:** Actions → Deploy → *Run workflow* (deploys `main`).
+- **Roll back:** open an older successful *Deploy* run → *Re-run all jobs*; it deploys that run's
+  commit, whose images are still in GHCR. A rollback doesn't undo database migrations; if the
+  newer version migrated the schema, restore the backup taken before it (see *Disaster recovery*).
+- **By hand on the server**, e.g. with GitHub down: images already pulled are reused, a new tag
+  needs a `docker login ghcr.io` with a token that can read packages first.
 
-```bash
-ssh debianhome '~/expense-insights/deploy/scripts/deploy.sh'
-```
+  ```bash
+  sudo -u deploy /srv/expense-insights/deploy/scripts/deploy.sh        # --no-backup to skip the backup
+  ```
 
-`deploy.sh` pulls `main` (fast-forward only), builds the images, takes a backup (the API runs
-migrations on start), restarts what changed and waits for `/health`. It prunes dangling images
-afterwards. `--no-backup` skips the backup. While the API restarts, Caddy holds requests for up to
-30 seconds instead of failing them.
+- **From source**, without GHCR: in a checkout with a `deploy/.env`,
+  `docker compose -f deploy/docker-compose.prod.yml up -d --build` (tags the images `local`).
+
+## Secrets: where they live
+
+| Where | What | Role |
+|---|---|---|
+| GitHub environment `production` | Everything in step 8 | Where you edit settings; write-only, can't be read back |
+| Password manager | All of step 8 except the deploy key, plus the `age` private key | The master copy, for rebuilding everything |
+| Server, `/srv/expense-insights/deploy/.env` (mode 600) | Generated by each deploy | Runtime copy; overwritten on every deploy |
+| Nowhere near the server or GitHub | The `age` private key | Only for restores, briefly in `/dev/shm` |
+
+To change or rotate a value: change it where it was issued (Google, Cloudflare, R2, healthchecks.io),
+update the password manager and the GitHub environment, then run *Deploy*. The exception is
+`POSTGRES_PASSWORD`: the database keeps its own copy, so first run
+`ALTER USER expense_insights PASSWORD '<new>'` in the db container
+(`docker compose … exec db psql -U expense_insights`), then update GitHub and deploy.
+
+Development doesn't use any of this: locally the Google client comes from `dotnet user-secrets`,
+and CI builds and tests without secrets.
 
 ## Backups
 
@@ -192,12 +295,12 @@ if the server was off then):
    wiped local disk can't delete the off-site files.
 5. On success it pings `BACKUP_PING_URL`, on failure `BACKUP_PING_URL/fail`.
 
-Run it by hand with `deploy/scripts/backup.sh`; see past runs with
-`journalctl -u expense-insights-backup`.
+Run it by hand with `sudo -u deploy /srv/expense-insights/deploy/scripts/backup.sh`; see past runs
+with `journalctl -u expense-insights-backup`.
 
 What the dump contains: every table, including the Data Protection keys, so sessions survive a
-restore. What it doesn't: `deploy/.env` and the rclone config (keep them in the password manager),
-and Caddy's certificates (re-issued automatically).
+restore. What it doesn't: the settings (they come from GitHub on every deploy, master copy in the
+password manager) and Caddy's certificates (re-issued automatically).
 
 ## Restore drill
 
@@ -206,10 +309,11 @@ compares every table with the live database: the row count and an MD5 over all r
 not touched. Do it once now, and again after anything changes in the backup chain.
 
 ```bash
-cd ~/expense-insights
+sudo -iu deploy
+cd /srv/expense-insights
 deploy/scripts/backup.sh                                   # fresh, so live and backup match
 # Off-site copy, to prove R2 and the key work, not just the local file:
-rclone copy "r2:expense-insights-backups/daily/expense-insights-$(date +%F).dump.age" /tmp/drill/
+deploy/scripts/r2.sh copy "r2:expense-insights-backups/daily/expense-insights-$(date +%F).dump.age" /tmp/drill/
 # The private key, only for the drill, in memory:
 install -m 600 /dev/null /dev/shm/backup.key && nano /dev/shm/backup.key   # paste the key
 deploy/scripts/restore-drill.sh /tmp/drill/expense-insights-$(date +%F).dump.age /dev/shm/backup.key
@@ -228,12 +332,12 @@ Drill log:
 
 ## Disaster recovery
 
-New or rebuilt server: steps 1–8 of the setup (the same `deploy/.env` from the password manager),
-but start only the database before restoring, so the API doesn't create an empty schema first:
+New or rebuilt server: steps 1, 2 and 7 of the setup on the new machine (update `TAILSCALE_IP`,
+`DEPLOY_KNOWN_HOSTS` and the DNS record if they changed), run *Deploy* (it starts with an empty
+database), then restore over it as `deploy` in `/srv/expense-insights`:
 
 ```bash
-docker compose -f deploy/docker-compose.prod.yml up -d --build db
-rclone copy r2:expense-insights-backups/daily/<newest file> /tmp/restore/
+deploy/scripts/r2.sh copy r2:expense-insights-backups/daily/<newest file> /tmp/restore/
 install -m 600 /dev/null /dev/shm/backup.key && nano /dev/shm/backup.key
 deploy/scripts/restore.sh /tmp/restore/<newest file> /dev/shm/backup.key   # asks you to type "restore"
 rm -f /dev/shm/backup.key
@@ -263,7 +367,9 @@ server to roll back to a backup.
 
 These can't be done from a development machine:
 
-- [ ] Steps 1–9 above, with the real Cloudflare token, R2 bucket, `age` key and Google redirect URI.
+- [ ] Steps 1–10 above: server user and directories, DNS, Cloudflare token, Google redirect URI,
+      `age` key, R2 bucket, deploy key and Tailscale rule, the `production` environment, a first
+      deploy.
 - [ ] The restore drill once on `debianhome` from an R2 copy; add a row to the drill log.
 - [ ] Sign in from a phone **on mobile data** (Wi-Fi off, Tailscale on) and install the PWA.
 - [ ] Check that the app isn't reachable off the tailnet: with Tailscale off on the phone,
@@ -319,8 +425,9 @@ use the dev login there.
 
 ### Docker / production
 
-Put the three values in `deploy/.env` (git-ignored; see `.env.example` for the dev stack and
-`.env.prod.example` for production). In production Caddy terminates TLS, and
+For the dev stack, put the three values in `deploy/.env` (git-ignored, see `.env.example`). In
+production they come from the GitHub environment `production`, and the Deploy workflow writes them
+to the server's `deploy/.env` (see *Production setup*, step 8). In production Caddy terminates TLS, and
 `docker-compose.prod.yml` sets `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` so the API trusts its
 `X-Forwarded-Proto` and builds an `https` redirect URI (the API port is reachable only from Caddy
 and from the server's loopback). Outside Development the session and antiforgery cookies are

@@ -113,7 +113,9 @@ so there is one origin and no CORS. The app is reachable only inside the tailnet
 the server's Tailscale address and terminates TLS for `expenses.gbrzeczek.dev`, a Cloudflare
 DNS-only record pointing at that address, with a Let's Encrypt certificate from the DNS-01
 challenge. No open ports, nothing on the LAN. Nightly `pg_dump`, `age`-encrypted, kept locally and
-copied to Cloudflare R2. Setup, backups, restore and monitoring: `deploy/README.md`.
+copied to Cloudflare R2. Merges to `main` deploy themselves: GitHub Actions builds the images, pushes
+them to GHCR and deploys over SSH through Tailscale, with settings from a GitHub environment.
+Setup, backups, restore and monitoring: `deploy/README.md`.
 
 ## Decision log
 
@@ -144,3 +146,4 @@ copied to Cloudflare R2. Setup, backups, restore and monitoring: `deploy/README.
 | D23 | ~~Cloudflare Tunnel~~ → **Tailscale only**, under a Cloudflare DNS-only name pointing at the server's tailnet address; Caddy bound to that address with a Let's Encrypt certificate via the Cloudflare DNS-01 challenge (revised) | Bank data shouldn't be on the public internet; a real name and certificate keep Google sign-in and PWA install working; no open port is needed for the certificate |
 | D24 | Backups: `pg_dump` custom format piped into `age` (public key only on the server), 14 daily + 6 monthly, `rclone copy` (never sync) to Cloudflare R2, run by a host systemd timer | No extra container; a stolen server or bucket doesn't expose data; a wiped disk can't delete the off-site copies |
 | D25 | Monitoring by dead man's switch: systemd timers check `/health` through Caddy and ping healthchecks.io, instead of Uptime Kuma | An outside checker can't reach a tailnet-only host; pings stopping also catches the whole server being down; no extra container |
+| D30 | Deploys from GitHub Actions after CI on `main`: images built on GitHub and pushed to GHCR by commit; the job joins the tailnet as `tag:ci` and deploys over SSH with a key restricted to one forced command; settings live in the GitHub environment `production` and each deploy writes the server's `.env` | Same pattern as sheetsolver on the same server; builds on fast runners, not the i3; one place to edit settings; no open port and no shell for the deploy key |

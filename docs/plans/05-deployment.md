@@ -25,8 +25,9 @@ outside the home network, with backups that have actually been restored once.
       Caddy redirects HTTP and sends HSTS; `ASPNETCORE_FORWARDEDHEADERS_ENABLED` is covered by an
       integration test (https redirect URI, `Secure` cookies).
 - [x] Secrets: Google client secret and DB password in a `.env` (not committed) or Docker
-      secrets. `deploy/.env` from `.env.prod.example`; Compose refuses to start with a required
-      value empty.
+      secrets. The GitHub environment `production` holds them; each deploy writes the server's
+      `deploy/.env` (mode 600) from it, and Compose refuses to start with a required value empty
+      (D30).
 - [x] Backups: nightly `pg_dump` → `age`-encrypted → local disk plus an off-site copy (e.g.
       rclone to cloud storage). Keep 14 daily and 6 monthly. `deploy/scripts/backup.sh` on a
       systemd timer, off-site to Cloudflare R2 (D24).
@@ -34,8 +35,10 @@ outside the home network, with backups that have actually been restored once.
       Documented, scripted (`restore-drill.sh` compares every table's row count and checksum) and
       passed locally on fake data; still to do once on the server from an R2 copy.
 - [x] Deploy script: `git pull && docker compose build && docker compose up -d`, run over SSH.
-      Optionally a GitHub Actions self-hosted runner later. `deploy/scripts/deploy.sh` also backs
-      up before migrations and waits for `/health`.
+      Optionally a GitHub Actions self-hosted runner later. Done as in sheetsolver instead (D30):
+      after CI passes on `main`, the Deploy workflow builds the images on GitHub, pushes them to
+      GHCR, joins the tailnet as `tag:ci` and runs `deploy.sh` on the server over SSH through a
+      forced command (pull, backup before migrations, start, wait for `/health`).
 - [x] Basic monitoring: the `/health` endpoint, plus an uptime check (e.g. Uptime Kuma or a
       Cloudflare health check). A 5-minute systemd timer checks `/health` through Caddy and pings
       a dead man's switch (healthchecks.io), as does the backup (D25).
