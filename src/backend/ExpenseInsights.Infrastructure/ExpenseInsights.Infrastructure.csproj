@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\ExpenseInsights.Classification\ExpenseInsights.Classification.csproj" />
     <ProjectReference Include="..\ExpenseInsights.Core\ExpenseInsights.Core.csproj" />
   </ItemGroup>
 

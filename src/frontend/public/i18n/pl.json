@@ -221,5 +221,27 @@
     "revoke": "Cofnij",
     "revokeLabel": "Cofnij zaproszenie dla {{email}}",
     "revokeFailed": "Nie udało się cofnąć zaproszenia. Spróbuj ponownie."
+  },
+  "categories": {
+    "groceries": "Spożywcze",
+    "restaurants": "Restauracje i jedzenie na wynos",
+    "transport": "Transport",
+    "health": "Zdrowie",
+    "beauty": "Drogeria i uroda",
+    "home": "Dom i ogród",
+    "clothing": "Odzież i obuwie",
+    "electronics": "Elektronika",
+    "leisure": "Sport, hobby i rozrywka",
+    "subscriptions": "Subskrypcje",
+    "bills": "Rachunki i opłaty",
+    "onlineShopping": "Zakupy online (inne)",
+    "transfersToPeople": "Przelewy do osób",
+    "other": "Inne",
+    "salary": "Wynagrodzenie",
+    "transfersFromPeople": "Przelewy od osób",
+    "otherIncome": "Inne przychody",
+    "interest": "Odsetki",
+    "refunds": "Zwroty",
+    "ownTransfer": "Przelew własny"
   }
 }

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ExpenseInsights.Classification\ExpenseInsights.Classification.csproj" />
+    <ProjectReference Include="..\ExpenseInsights.Import.Ing\ExpenseInsights.Import.Ing.csproj" />
+  </ItemGroup>
+
+</Project>

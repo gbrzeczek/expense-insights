@@ -1,3 +1,4 @@
+using ExpenseInsights.Core.Classification;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Core.Users;
 
@@ -53,6 +54,33 @@ public sealed class Transaction : IUserOwned
     public Guid? OwnTransferPairId { get; set; }
 
     public required RawRow RawRow { get; set; }
+
+    /// <summary>The normalized merchant (<c>biedronka</c>): groups transactions and matches rules.</summary>
+    public string MerchantKey { get; set; } = "";
+
+    /// <summary>The current category; <c>null</c> while unclassified.</summary>
+    public Guid? CategoryId { get; set; }
+
+    public ClassificationSource ClassificationSource { get; set; }
+
+    /// <summary>0–1. Below <see cref="Classification.Confidence.ReviewBelow"/> it goes to "Do sprawdzenia".</summary>
+    public double ClassificationConfidence { get; set; }
+
+    /// <summary>The user rule that set the category, if one did.</summary>
+    public Guid? ClassificationRuleId { get; set; }
+
+    /// <summary>Why it got the category, as an i18n code (<c>merchantExact</c>), plus its value (the pattern).</summary>
+    public string? ClassificationReason { get; set; }
+
+    public string? ClassificationReasonValue { get; set; }
+
+    public DateTimeOffset? ClassifiedAt { get; set; }
+
+    /// <summary>
+    /// For incoming money: the spending category it pays back (a friend returning their share of the
+    /// shopping offsets groceries instead of counting as income).
+    /// </summary>
+    public Guid? OffsetsCategoryId { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
 
