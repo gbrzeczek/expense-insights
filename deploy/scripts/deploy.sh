@@ -1,33 +1,37 @@
 #!/usr/bin/env bash
-# Deploys the current main on the server: pull, back up (migrations run on start), build, start,
-# wait for /health. Run it on the server, or from a laptop over SSH:
+# Deploys the images named in deploy/.env (IMAGE_TAG) on the server: pull what is missing, back up
+# (migrations run on start), start, wait for /health. Run by ci-deploy.sh from the Deploy
+# workflow, or by hand on the server:
 #
-#   ssh debianhome '~/expense-insights/deploy/scripts/deploy.sh'
+#   deploy/scripts/deploy.sh               # needs `docker login ghcr.io` for a new IMAGE_TAG
 #   deploy/scripts/deploy.sh --no-backup
+#
+# DOCKER_PULL_CONFIG, if set, is a Docker config directory holding the registry login for the pull.
 set -euo pipefail
 source "$(dirname "$0")/lib.sh"
 
 backup=1
 [[ "${1-}" == --no-backup ]] && backup=0
 
-log "pulling"
-git -C "$REPO_DIR" pull --ff-only
-
-log "building"
-compose build --pull
+for image in $(compose config --images); do
+  if ! docker image inspect "$image" >/dev/null 2>&1; then
+    log "pulling $image"
+    DOCKER_CONFIG="${DOCKER_PULL_CONFIG:-${DOCKER_CONFIG:-$HOME/.docker}}" docker pull -q "$image" >/dev/null
+  fi
+done
 
 if [[ $backup -eq 1 && -n "$(compose ps -q db)" ]]; then
   log "backing up before migrations"
   "$DEPLOY_DIR/scripts/backup.sh"
 fi
 
-log "starting"
-compose up -d --remove-orphans
+log "starting $(env_value IMAGE_TAG local)"
+compose up -d --no-build --remove-orphans
 
 port="$(env_value API_PORT 8080)"
 for _ in $(seq 60); do
-  if curl -fsS -m 5 -o /dev/null "http://127.0.0.1:$port/health"; then
-    log "healthy at $(git -C "$REPO_DIR" rev-parse --short HEAD)"
+  if curl -fs -m 5 -o /dev/null "http://127.0.0.1:$port/health"; then
+    log "healthy"
     docker image prune -f >/dev/null
     exit 0
   fi

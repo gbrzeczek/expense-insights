@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Installs the backup and uptime timers for the user who runs it (must be in the docker group).
+# Installs the backup and uptime timers, run as the given user (default: whoever runs this),
+# who must be in the docker group. Needs sudo.
 #
-#   deploy/systemd/install.sh
+#   deploy/systemd/install.sh deploy
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "$0")/../.." && pwd)"
-user="$(id -un)"
+user="${1:-$(id -un)}"
 id -nG "$user" | grep -qw docker || {
   echo "$user is not in the docker group" >&2
   exit 1

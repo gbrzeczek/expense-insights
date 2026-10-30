@@ -46,6 +46,21 @@ ping_url() {
   curl -fsS -m 10 --retry 3 -o /dev/null "${url}${suffix}" || log "warning: monitoring ping failed"
 }
 
+# Defines the rclone remote `r2` from deploy/.env, so no rclone.conf is needed. Without
+# R2_ACCESS_KEY_ID, rclone falls back to its own config file.
+export_r2_remote() {
+  local key
+  key="$(env_value R2_ACCESS_KEY_ID)"
+  [[ -n "$key" ]] || return 0
+  export RCLONE_CONFIG_R2_TYPE=s3 RCLONE_CONFIG_R2_PROVIDER=Cloudflare RCLONE_CONFIG_R2_ACL=private
+  # A token scoped to one bucket may not list buckets.
+  export RCLONE_CONFIG_R2_NO_CHECK_BUCKET=true
+  export RCLONE_CONFIG_R2_ACCESS_KEY_ID="$key"
+  RCLONE_CONFIG_R2_SECRET_ACCESS_KEY="$(require_value R2_SECRET_ACCESS_KEY)"
+  RCLONE_CONFIG_R2_ENDPOINT="$(require_value R2_ENDPOINT)"
+  export RCLONE_CONFIG_R2_SECRET_ACCESS_KEY RCLONE_CONFIG_R2_ENDPOINT
+}
+
 # Reads file names (one per line) and prints those past the newest $1. Names sort by date.
 beyond_retention() {
   sort -r | tail -n +"$(($1 + 1))"

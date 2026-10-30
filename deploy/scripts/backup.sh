@@ -14,6 +14,7 @@ keep_monthly="$(env_value KEEP_MONTHLY 6)"
 ping="$(env_value BACKUP_PING_URL)"
 
 trap 'ping_url "$ping" /fail' ERR
+export_r2_remote
 
 mkdir -p "$backup_dir/daily" "$backup_dir/monthly"
 chmod 700 "$backup_dir"

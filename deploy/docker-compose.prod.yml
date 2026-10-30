@@ -1,8 +1,12 @@
 # Production stack on the home server: db + api + caddy (TLS), reachable only via Tailscale.
-# See deploy/README.md. Values come from deploy/.env (copy deploy/.env.prod.example).
+# See deploy/README.md. Values come from deploy/.env, which the Deploy workflow writes from the
+# GitHub environment `production` (variables listed in deploy/.env.prod.example).
+#
+# The Deploy workflow builds the images, pushes them to GHCR tagged with the commit, and runs
+# deploy/scripts/deploy.sh on the server, which pulls them. `build:` stays for building from a
+# checkout instead (IMAGE_TAG unset → `local`):
 #
 #   docker compose -f deploy/docker-compose.prod.yml up -d --build
-#   deploy/scripts/deploy.sh          # what to run on later deploys (pull, backup, build, up)
 name: expense-insights-prod
 
 x-logging: &logging
@@ -35,7 +39,7 @@ services:
     build:
       context: ..
       dockerfile: Dockerfile
-    image: expense-insights:prod
+    image: ghcr.io/gbrzeczek/expense-insights:${IMAGE_TAG:-local}
     restart: unless-stopped
     depends_on:
       db:
@@ -57,7 +61,7 @@ services:
 
   caddy:
     build: caddy
-    image: expense-insights-caddy:prod
+    image: ghcr.io/gbrzeczek/expense-insights-caddy:${IMAGE_TAG:-local}
     restart: unless-stopped
     depends_on:
       - api
