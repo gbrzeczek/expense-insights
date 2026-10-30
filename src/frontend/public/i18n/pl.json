@@ -243,5 +243,134 @@
     "interest": "Odsetki",
     "refunds": "Zwroty",
     "ownTransfer": "Przelew własny"
+  },
+  "picker": {
+    "suggestions": "Proponowane kategorie",
+    "more": "Więcej…",
+    "less": "Mniej"
+  },
+  "transactions": {
+    "shortcuts": "Porządkowanie kategorii",
+    "reviewHint": "Zgadnięte kategorie, po kolei.",
+    "merchantsHint": "Cały sprzedawca jednym dotknięciem.",
+    "search": "Szukaj",
+    "searchPlaceholder": "Sklep, tytuł lub kwota",
+    "filterLabel": "Pokaż",
+    "filter": {
+      "all": "Wszystkie",
+      "unclassified": "Nieskategoryzowane",
+      "review": "Do sprawdzenia"
+    },
+    "empty": {
+      "all": "Nie ma jeszcze transakcji. Zaimportuj wyciąg, żeby je zobaczyć.",
+      "unclassified": "Wszystkie transakcje mają kategorię.",
+      "review": "Nie ma nic do sprawdzenia."
+    },
+    "loading": "Wczytywanie…",
+    "loadError": "Nie udało się wczytać transakcji. Spróbuj ponownie.",
+    "more": "Pokaż więcej",
+    "back": "Wróć do transakcji",
+    "unclassified": "Bez kategorii",
+    "needsReview": "Do sprawdzenia",
+    "withReview": "{{name}} · do sprawdzenia",
+    "pending": "oczekująca",
+    "corrected": "Zmieniono kategorię na: {{category}}.",
+    "applyToAll": "Zastosuj do wszystkich: „{{label}}” ({{count}})",
+    "appliedToAll": {
+      "one": "Zmieniono kategorię {{count}} transakcji.",
+      "few": "Zmieniono kategorie {{count}} transakcji.",
+      "many": "Zmieniono kategorie {{count}} transakcji.",
+      "other": "Zmieniono kategorie {{count}} transakcji."
+    },
+    "applyToAllError": "Nie udało się zastosować zmiany do wszystkich transakcji.",
+    "reason": {
+      "ownAccount": "Przelew między Twoimi kontami z wyciągu.",
+      "refund": "Wpływ od sprzedawcy, więc to zwrot.",
+      "userAccount": "Twoja reguła dla odbiorcy: {{value}}.",
+      "merchantExact": "Reguła dla sprzedawcy „{{value}}”.",
+      "merchantContains": "Reguła dla sprzedawcy „{{value}}”.",
+      "merchantSimilar": "Nazwa podobna do „{{value}}”, dlatego do sprawdzenia.",
+      "titleKeyword": "Tytuł zawiera „{{value}}”.",
+      "accountHolderIncoming": "Od osoby o Twoim imieniu i nazwisku z konta spoza wyciągu, np. firmowego. Do sprawdzenia.",
+      "accountHolderOutgoing": "Do osoby o Twoim imieniu i nazwisku na konto spoza wyciągu. Do sprawdzenia.",
+      "personOutgoing": "Przelew do osoby.",
+      "personIncoming": "Przelew od osoby.",
+      "userCorrection": "Kategoria wybrana przez Ciebie."
+    },
+    "sheet": {
+      "close": "Zamknij",
+      "category": "Kategoria",
+      "pickHint": "Wybierz inną kategorię jednym dotknięciem.",
+      "offsets": "Zwrot kosztów",
+      "offsetsNone": "Nie, to przychód",
+      "offsetsHint": "Jeśli ktoś oddaje Ci pieniądze za zakupy, wybierz ich kategorię: kwota pomniejszy wydatki zamiast zwiększać przychody.",
+      "details": "Szczegóły z banku",
+      "title": "Tytuł",
+      "counterparty": "Kontrahent",
+      "counterpartyAccount": "Rachunek kontrahenta",
+      "account": "Twoje konto",
+      "bookingDate": "Data księgowania",
+      "originalAmount": "Kwota w walucie",
+      "raw": "Oryginalny wiersz",
+      "loadError": "Nie udało się wczytać transakcji.",
+      "saveError": "Nie udało się zapisać zmiany. Spróbuj ponownie.",
+      "pickFirst": "Wybierz kategorię jednym dotknięciem."
+    }
+  },
+  "review": {
+    "title": "Do sprawdzenia",
+    "intro": "Kategorie zgadnięte z niepewnych przesłanek. Potwierdź albo wybierz inną.",
+    "position": "{{current}} z {{total}}",
+    "guess": "Proponowana kategoria",
+    "confirm": "Zgadza się",
+    "other": "Albo wybierz inną",
+    "skip": "Pomiń",
+    "done": "Wszystko sprawdzone.",
+    "doneHint": "Nowe propozycje pojawią się po kolejnym imporcie."
+  },
+  "merchants": {
+    "title": "Według sprzedawcy",
+    "intro": "Sprzedawcy, których transakcje nie mają jeszcze pewnej kategorii, od największych. Jedno dotknięcie oznacza wszystkie ich transakcje i tworzy regułę na przyszłość.",
+    "progress": "{{percent}}% wydatków skategoryzowanych",
+    "progressLabel": "Skategoryzowane wydatki",
+    "progressDetail": "{{categorized}} z {{total}}, licząc kwoty",
+    "count": {
+      "one": "{{count}} transakcja",
+      "few": "{{count}} transakcje",
+      "many": "{{count}} transakcji",
+      "other": "{{count}} transakcji"
+    },
+    "pickHint": "Kategoria dla wszystkich transakcji tego sprzedawcy:",
+    "labelled": {
+      "one": "Oznaczono {{count}} transakcję jako: {{category}}.",
+      "few": "Oznaczono {{count}} transakcje jako: {{category}}.",
+      "many": "Oznaczono {{count}} transakcji jako: {{category}}.",
+      "other": "Oznaczono {{count}} transakcji jako: {{category}}."
+    },
+    "done": "Wszyscy sprzedawcy mają kategorie."
+  },
+  "categoriesPage": {
+    "intro": "Zmieniaj nazwy, ukrywaj nieużywane kategorie i dodawaj podkategorie. Znaczenie kategorii głównych się nie zmienia.",
+    "error": "Nie udało się zapisać zmian. Spróbuj ponownie.",
+    "rename": "Zmień nazwę",
+    "name": "Nazwa kategorii",
+    "newName": "Nazwa podkategorii",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "hide": "Ukryj",
+    "show": "Pokaż",
+    "hiddenMark": "ukryta",
+    "addSub": "Dodaj podkategorię",
+    "add": "Dodaj",
+    "rules": "Twoje reguły",
+    "rulesIntro": "Powstają po „Zastosuj do wszystkich”. Usunięcie reguły przelicza kategorie jej transakcji.",
+    "noRules": "Nie masz jeszcze reguł.",
+    "deleteRule": "Usuń",
+    "ruleDeleted": {
+      "one": "Usunięto regułę. Zmieniono {{count}} transakcję.",
+      "few": "Usunięto regułę. Zmieniono {{count}} transakcje.",
+      "many": "Usunięto regułę. Zmieniono {{count}} transakcji.",
+      "other": "Usunięto regułę. Zmieniono {{count}} transakcji."
+    }
   }
 }

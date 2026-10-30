@@ -1,0 +1,67 @@
+<section class="page" *transloco="let t">
+  <header class="page__header">
+    <a class="back" routerLink="/transactions">{{ t('transactions.back') }}</a>
+    <h1 class="page-title">{{ t('review.title') }}</h1>
+    <p class="support">{{ t('review.intro') }}</p>
+  </header>
+
+  @if (loading()) {
+    <p class="support" role="status">{{ t('transactions.loading') }}</p>
+  } @else if (done()) {
+    <div class="card done">
+      <p class="section-title">{{ t('review.done') }}</p>
+      <p class="support">{{ t('review.doneHint') }}</p>
+      <a class="button button--secondary" routerLink="/transactions">{{
+        t('transactions.back')
+      }}</a>
+    </div>
+  } @else if (current(); as item) {
+    <p class="support numeric" aria-live="polite">
+      {{ t('review.position', { current: position() + 1, total: queue().length }) }}
+    </p>
+    <article class="card item">
+      <div class="item__head">
+        <div class="item__title">
+          <h2 class="section-title">{{ item.merchant }}</h2>
+          <p class="support numeric">{{ item.date | displayDate }}</p>
+        </div>
+        <p class="item__amount numeric">{{ item.amount | money: item.currency : 'always' }}</p>
+      </div>
+
+      <div class="item__guess">
+        <p class="overline">{{ t('review.guess') }}</p>
+        <p class="item__category">{{ categories.label(item.categoryId, true) }}</p>
+        @if (item.reason) {
+          <p class="support">
+            {{ t('transactions.reason.' + item.reason, { value: item.reasonValue ?? '' }) }}
+          </p>
+        }
+      </div>
+
+      <button type="button" class="button item__confirm" [disabled]="saving()" (click)="confirm()">
+        {{ t('review.confirm') }}
+      </button>
+
+      <div class="item__other">
+        <p class="overline">{{ t('review.other') }}</p>
+        <app-category-picker
+          [suggestions]="detail()?.suggestions ?? []"
+          [disabled]="saving()"
+          (picked)="pick($event)"
+        />
+      </div>
+
+      <button
+        type="button"
+        class="button button--secondary item__skip"
+        [disabled]="saving()"
+        (click)="next()"
+      >
+        {{ t('review.skip') }}
+      </button>
+    </article>
+  }
+  @if (failed()) {
+    <p class="support" role="alert">{{ t('transactions.loadError') }}</p>
+  }
+</section>

@@ -20,8 +20,30 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'overview' },
       { path: 'overview', title: 'nav.overview', loadComponent: placeholder },
-      { path: 'transactions', title: 'nav.transactions', loadComponent: placeholder },
-      { path: 'categories', title: 'nav.categories', loadComponent: placeholder },
+      {
+        path: 'transactions',
+        title: 'nav.transactions',
+        loadComponent: () =>
+          import('./features/transactions/transactions-page').then((m) => m.TransactionsPage),
+      },
+      {
+        path: 'transactions/review',
+        title: 'review.title',
+        loadComponent: () =>
+          import('./features/transactions/review-page').then((m) => m.ReviewPage),
+      },
+      {
+        path: 'transactions/merchants',
+        title: 'merchants.title',
+        loadComponent: () =>
+          import('./features/transactions/merchants-page').then((m) => m.MerchantsPage),
+      },
+      {
+        path: 'categories',
+        title: 'nav.categories',
+        loadComponent: () =>
+          import('./features/categories/categories-page').then((m) => m.CategoriesPage),
+      },
       {
         path: 'import',
         title: 'nav.import',

@@ -1,0 +1,71 @@
+.page {
+  display: grid;
+  gap: var(--card-gap);
+  max-width: 560px;
+}
+
+.page__header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  color: var(--color-accent-text);
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+}
+
+.done {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+.item {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.item__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.item__title {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.item__amount {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+  white-space: nowrap;
+}
+
+.item__guess,
+.item__other {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.item__category {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+}
+
+// Large targets: this screen is worked through with a thumb.
+.item__confirm,
+.item__skip {
+  width: 100%;
+  min-height: 52px;
+  font-size: var(--text-body);
+}
