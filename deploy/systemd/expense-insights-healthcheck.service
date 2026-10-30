@@ -1,0 +1,9 @@
+[Unit]
+Description=expense-insights uptime check
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=@USER@
+ExecStart=@REPO_DIR@/deploy/scripts/healthcheck.sh

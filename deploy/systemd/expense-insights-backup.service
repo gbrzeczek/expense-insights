@@ -1,0 +1,10 @@
+[Unit]
+Description=expense-insights encrypted database backup
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=@USER@
+ExecStart=@REPO_DIR@/deploy/scripts/backup.sh
