@@ -42,6 +42,57 @@ public sealed class RouteIsolationTests(PostgresFixture postgres) : IntegrationT
             Assert.False(batch.GetProperty("alreadyImported").GetBoolean());
             Assert.NotEqual(s.ABatchId, batch.GetProperty("id").GetGuid());
         }),
+        new("GET /api/transactions", "/api/transactions", async s =>
+        {
+            var page = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/transactions", UriKind.Relative), CancellationToken);
+            Assert.Empty(page.GetProperty("items").EnumerateArray());
+        }),
+        new("GET /api/transactions/{id:guid}", $"/api/transactions/{Guid.Empty}", s => AssertNotFoundAsync(s.B.GetAsync(new Uri($"/api/transactions/{s.ATransactionId}", UriKind.Relative), CancellationToken))),
+        new("PUT /api/transactions/{id:guid}/category", $"/api/transactions/{Guid.Empty}/category", s => AssertNotFoundAsync(s.B.PutAsJsonAsync(new Uri($"/api/transactions/{s.ATransactionId}/category", UriKind.Relative), new { categoryId = OtherCategory }, CancellationToken))),
+        new("POST /api/transactions/{id:guid}/apply-to-all", $"/api/transactions/{Guid.Empty}/apply-to-all", s => AssertNotFoundAsync(s.B.PostAsync(new Uri($"/api/transactions/{s.ATransactionId}/apply-to-all", UriKind.Relative), null, CancellationToken))),
+        new("PUT /api/transactions/{id:guid}/offsets", $"/api/transactions/{Guid.Empty}/offsets", s => AssertNotFoundAsync(s.B.PutAsJsonAsync(new Uri($"/api/transactions/{s.ATransactionId}/offsets", UriKind.Relative), new { categoryId = (Guid?)null }, CancellationToken))),
+        new("GET /api/categories", "/api/categories", async s =>
+        {
+            var categories = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/categories", UriKind.Relative), CancellationToken);
+            Assert.DoesNotContain(categories.EnumerateArray(), c => c.GetProperty("id").GetGuid() == s.ACategoryId);
+            Assert.All(categories.EnumerateArray(), c => Assert.False(c.GetProperty("hidden").GetBoolean()));
+        }),
+        new("POST /api/categories", "/api/categories", async s =>
+        {
+            // A's own category can't be B's parent.
+            using var response = await s.B.PostAsJsonAsync(new Uri("/api/categories", UriKind.Relative), new { parentId = s.ACategoryId, name = "Herbata" }, CancellationToken);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }),
+        new("PUT /api/categories/{id:guid}", $"/api/categories/{Guid.Empty}", async s =>
+        {
+            await AssertNotFoundAsync(s.B.PutAsJsonAsync(new Uri($"/api/categories/{s.ACategoryId}", UriKind.Relative), new { name = "Przejęta", hidden = true }, CancellationToken));
+            // Hiding a global category is B's own setting, not A's.
+            using var response = await s.B.PutAsJsonAsync(new Uri($"/api/categories/{OtherCategory}", UriKind.Relative), new { name = "Różne", hidden = true }, CancellationToken);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }),
+        new("GET /api/merchants/to-review", "/api/merchants/to-review", async s =>
+        {
+            var review = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/merchants/to-review", UriKind.Relative), CancellationToken);
+            Assert.Empty(review.GetProperty("groups").EnumerateArray());
+            Assert.Empty(review.GetProperty("progress").EnumerateArray());
+        }),
+        new("POST /api/merchants/category", "/api/merchants/category", s => AssertNotFoundAsync(s.B.PostAsJsonAsync(new Uri("/api/merchants/category", UriKind.Relative), new { merchantKey = "biedronka", categoryId = OtherCategory }, CancellationToken))),
+        new("GET /api/rules", "/api/rules", async s =>
+        {
+            var rules = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/rules", UriKind.Relative), CancellationToken);
+            Assert.Empty(rules.EnumerateArray());
+        }),
+        new("DELETE /api/rules/{id:guid}", $"/api/rules/{Guid.Empty}", s => AssertNotFoundAsync(s.B.DeleteAsync(new Uri($"/api/rules/{s.ARuleId}", UriKind.Relative), CancellationToken))),
+        new("POST /api/classification/run", "/api/classification/run", async s =>
+        {
+            using var response = await s.B.PostAsync(new Uri("/api/classification/run", UriKind.Relative), null, CancellationToken);
+            Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+        }),
+        new("GET /api/classification/labels", "/api/classification/labels", async s =>
+        {
+            var csv = await s.B.GetStringAsync(new Uri("/api/classification/labels", UriKind.Relative), CancellationToken);
+            Assert.Equal("tx_id;tx_date;amount;category\n", csv);
+        }),
         new("GET /api/invitations", "/api/invitations", s => AssertForbiddenAsync(s.B.GetAsync(new Uri("/api/invitations", UriKind.Relative), CancellationToken))),
         new("POST /api/invitations", "/api/invitations", s => AssertForbiddenAsync(s.B.PostAsJsonAsync(new Uri("/api/invitations", UriKind.Relative), new { email = "x@example.test" }, CancellationToken))),
         new("DELETE /api/invitations/{id:guid}", $"/api/invitations/{Guid.Empty}", s => AssertForbiddenAsync(s.B.DeleteAsync(new Uri($"/api/invitations/{s.AInvitationId}", UriKind.Relative), CancellationToken))),
@@ -63,6 +114,9 @@ public sealed class RouteIsolationTests(PostgresFixture postgres) : IntegrationT
             Assert.Equal("/", response.Headers.Location?.OriginalString);
         }),
     ];
+
+    /// <summary>The global "Inne" category.</summary>
+    private static readonly Guid OtherCategory = new("0000000c-0000-0000-0000-000000000014");
 
     private readonly ApiFactory _factory = new(postgres);
 
@@ -124,18 +178,55 @@ public sealed class RouteIsolationTests(PostgresFixture postgres) : IntegrationT
         var b = await _factory.SignInAsync(bEmail, CancellationToken);
         using var upload = await UploadAsync(a);
         var batch = await upload.Content.ReadFromJsonAsync<JsonElement>(CancellationToken);
-        return new Scenario(a, b, await IdAsync(a), await IdAsync(b), bEmail, batch.GetProperty("id").GetGuid(), aInvitation);
+        var aId = await IdAsync(a);
+        await WaitForClassificationAsync(aId);
+
+        // A's own category and rule, and one of A's transactions.
+        using var category = await a.PostAsJsonAsync(new Uri("/api/categories", UriKind.Relative), new { parentId = new Guid("0000000c-0000-0000-0000-000000000002"), name = "Kawa" }, CancellationToken);
+        using var label = await a.PostAsJsonAsync(new Uri("/api/merchants/category", UriKind.Relative), new { merchantKey = "zabka", categoryId = OtherCategory }, CancellationToken);
+        var page = await a.GetFromJsonAsync<JsonElement>(new Uri("/api/transactions?limit=1", UriKind.Relative), CancellationToken);
+        return new Scenario(
+            a, b, aId, await IdAsync(b), bEmail, batch.GetProperty("id").GetGuid(), aInvitation,
+            page.GetProperty("items")[0].GetProperty("id").GetGuid(),
+            (await category.Content.ReadFromJsonAsync<JsonElement>(CancellationToken)).GetProperty("id").GetGuid(),
+            (await label.Content.ReadFromJsonAsync<JsonElement>(CancellationToken)).GetProperty("rule").GetProperty("id").GetGuid());
+    }
+
+    /// <summary>The import is classified in the background; wait so it doesn't change A's data mid-test.</summary>
+    private async Task WaitForClassificationAsync(Guid userId)
+    {
+        for (var i = 0; i < 100; i++)
+        {
+            await using var db = CreateDbContext(userId);
+            if (!await db.Transactions.AnyAsync(t => t.ClassifiedAt == null, CancellationToken))
+            {
+                return;
+            }
+
+            await Task.Delay(100, CancellationToken);
+        }
+
+        Assert.Fail("The import wasn't classified in time.");
     }
 
     /// <summary>Everything A owns, read straight from the database as A.</summary>
-    private async Task<(int Accounts, int Transactions, int Batches, decimal Sum)> SnapshotAsync(Scenario s)
+    private async Task<(int Accounts, int Transactions, int Batches, decimal Sum, string Classification, string Rules, string Categories)> SnapshotAsync(Scenario s)
     {
         await using var db = CreateDbContext(s.AId);
+        var classification = await db.Transactions.OrderBy(t => t.Id)
+            .Select(t => $"{t.Id}:{t.CategoryId}:{t.ClassificationSource}:{t.OffsetsCategoryId}")
+            .ToListAsync(CancellationToken);
+        var rules = await db.MerchantRules.OrderBy(r => r.Id).Select(r => $"{r.Id}:{r.Pattern}:{r.CategoryId}").ToListAsync(CancellationToken);
+        var categories = await db.Categories.Where(c => c.UserId != null).OrderBy(c => c.Id).Select(c => $"{c.Id}:{c.Name}:{c.IsHidden}").ToListAsync(CancellationToken);
+        var settings = await db.CategorySettings.OrderBy(c => c.Id).Select(c => $"{c.CategoryId}:{c.Name}:{c.IsHidden}").ToListAsync(CancellationToken);
         return (
             await db.Accounts.CountAsync(CancellationToken),
             await db.Transactions.CountAsync(CancellationToken),
             await db.ImportBatches.CountAsync(CancellationToken),
-            await db.Transactions.SumAsync(t => t.Amount, CancellationToken));
+            await db.Transactions.SumAsync(t => t.Amount, CancellationToken),
+            string.Join(',', classification),
+            string.Join(',', rules),
+            string.Join(',', categories.Concat(settings)));
     }
 
     private static async Task<Guid> IdAsync(HttpClient client) =>
@@ -152,6 +243,12 @@ public sealed class RouteIsolationTests(PostgresFixture postgres) : IntegrationT
         return response;
     }
 
+    private static async Task AssertNotFoundAsync(Task<HttpResponseMessage> request)
+    {
+        using var response = await request;
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
     private static async Task AssertForbiddenAsync(Task<HttpResponseMessage> request)
     {
         using var response = await request;
@@ -166,5 +263,6 @@ public sealed class RouteIsolationTests(PostgresFixture postgres) : IntegrationT
     /// <param name="Anonymous">The route works without a session (it starts one).</param>
     private sealed record Route(string Key, string Path, Func<Scenario, Task> UserBTries, bool Anonymous = false);
 
-    private sealed record Scenario(HttpClient A, HttpClient B, Guid AId, Guid BId, string BEmail, Guid ABatchId, Guid AInvitationId);
+    private sealed record Scenario(
+        HttpClient A, HttpClient B, Guid AId, Guid BId, string BEmail, Guid ABatchId, Guid AInvitationId, Guid ATransactionId, Guid ACategoryId, Guid ARuleId);
 }

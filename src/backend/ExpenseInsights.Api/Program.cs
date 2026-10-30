@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using ExpenseInsights.Api;
 using ExpenseInsights.Api.Auth;
+using ExpenseInsights.Api.Classification;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Import.Ing;
 using ExpenseInsights.Infrastructure;
@@ -18,6 +19,7 @@ builder.Services.AddInfrastructure(
         ?? throw new InvalidOperationException("Connection string 'Default' is not configured."));
 builder.Services.AddSingleton(builder.Configuration.GetSection(IngParserOptions.Section).Get<IngParserOptions>() ?? new());
 builder.Services.AddSingleton<IStatementParser, IngCsvParser>();
+builder.Services.AddHostedService<ClassificationWorker>();
 builder.Services.AddHealthChecks().AddDbContextCheck<AppDbContext>("database");
 
 var app = builder.Build();
@@ -44,6 +46,9 @@ api.MapAuthEndpoints(app.Environment);
 api.MapMeEndpoints();
 api.MapInvitationEndpoints();
 api.MapImportEndpoints();
+api.MapTransactionEndpoints();
+api.MapCategoryEndpoints();
+api.MapMerchantEndpoints();
 api.MapFallback(() => Results.Problem(statusCode: StatusCodes.Status404NotFound));
 
 // Client-side routes of the Angular app. The shell must always be revalidated so a new

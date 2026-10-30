@@ -1,4 +1,5 @@
 using ExpenseInsights.Core.Import;
+using ExpenseInsights.Infrastructure.Classification;
 using ExpenseInsights.Infrastructure.Import;
 using ExpenseInsights.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,8 @@ internal static class ImportEndpoints
         imports.MapGet("", ListAsync);
     }
 
-    private static async Task<IResult> UploadAsync(IFormFile? file, StatementImporter importer, CancellationToken ct)
+    private static async Task<IResult> UploadAsync(
+        IFormFile? file, StatementImporter importer, AppDbContext db, ClassificationRequests classification, CancellationToken ct)
     {
         if (file is null || file.Length == 0)
         {
@@ -38,6 +40,12 @@ internal static class ImportEndpoints
             // Buffered by ASP.NET Core, so it is seekable.
             await using var stream = file.OpenReadStream();
             var (batch, alreadyImported) = await importer.ImportAsync(stream, file.FileName, ct);
+            if (!alreadyImported)
+            {
+                // In the background: the import returns as soon as the rows are stored.
+                classification.Enqueue(db.CurrentUserId);
+            }
+
             return Results.Ok(ImportBatchResponse.From(batch, alreadyImported));
         }
         catch (StatementFormatException e)
