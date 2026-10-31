@@ -266,7 +266,8 @@ public sealed class SubscriptionRule : IInsightRule
                     MerchantKey: payment.MerchantKey,
                     Merchant: payment.Merchant,
                     Amount: payment.LatestAmount,
-                    CadenceDays: payment.CadenceDays);
+                    CadenceDays: payment.CadenceDays,
+                    Yearly: payment.YearlyCost);
             }
             else if (payment.PriceChanged)
             {
@@ -281,7 +282,8 @@ public sealed class SubscriptionRule : IInsightRule
                     Merchant: payment.Merchant,
                     Amount: payment.LatestAmount,
                     Usual: payment.PreviousAmount,
-                    CadenceDays: payment.CadenceDays);
+                    CadenceDays: payment.CadenceDays,
+                    Yearly: payment.YearlyCost);
             }
         }
     }

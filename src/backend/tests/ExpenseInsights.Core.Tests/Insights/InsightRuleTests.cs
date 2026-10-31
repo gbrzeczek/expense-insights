@@ -139,7 +139,7 @@ public sealed class InsightRuleTests
         var april = new SubscriptionRule().Evaluate(InsightContext.For(history, M(2026, 5)));
 
         Assert.Equal(["spotify", "youtube"], insights.Keys.Order());
-        Assert.Equal(InsightType.NewSubscription, insights["spotify"].Type);
+        Assert.Equal((InsightType.NewSubscription, 287.88m), (insights["spotify"].Type, insights["spotify"].Yearly));
         Assert.Equal((InsightType.SubscriptionPriceChange, 33.99m, 29.99m), (insights["youtube"].Type, insights["youtube"].Amount, insights["youtube"].Usual));
         Assert.Empty(april); // Netflix was there when the imports start: not news
     }

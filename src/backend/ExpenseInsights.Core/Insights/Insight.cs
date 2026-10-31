@@ -45,6 +45,7 @@ public enum InsightDirection
 /// <para><c>Count</c>: Payments this month (frequent small, uncategorized).</para>
 /// <para><c>UsualCount</c>: The median number of payments a month (frequent small).</para>
 /// <para><c>CadenceDays</c>: For subscriptions: 7, 30 or 365.</para>
+/// <para><c>Yearly</c>: For subscriptions: what it costs a year at the (new) price.</para>
 /// </remarks>
 public sealed record Insight(
     InsightType Type,
@@ -61,7 +62,8 @@ public sealed record Insight(
     decimal? SoFar = null,
     int? Count = null,
     int? UsualCount = null,
-    int? CadenceDays = null)
+    int? CadenceDays = null,
+    decimal? Yearly = null)
 {
     public decimal? Change => Amount is { } amount && Usual is { } usual && usual != 0 ? Math.Round((amount - usual) / usual, 4) : null;
 }

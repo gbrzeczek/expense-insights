@@ -1,5 +1,6 @@
 using ExpenseInsights.Infrastructure.Classification;
 using ExpenseInsights.Infrastructure.Import;
+using ExpenseInsights.Infrastructure.Insights;
 using ExpenseInsights.Infrastructure.Persistence;
 using ExpenseInsights.Infrastructure.Users;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<TransactionClassifier>();
         services.AddScoped<Corrections>();
         services.AddSingleton<ClassificationRequests>();
+        services.AddScoped<SpendingData>();
         services.TryAddSingleton(TimeProvider.System);
 
         return services;
