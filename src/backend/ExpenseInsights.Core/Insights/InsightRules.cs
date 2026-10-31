@@ -159,7 +159,7 @@ public sealed class LargePaymentRule : IInsightRule
             }
 
             var largest = payments.OrderByDescending(e => e.Amount).ThenBy(e => e.TransactionId).First();
-            var median = InsightStatistics.Median(past);
+            var median = Math.Round(InsightStatistics.Median(past), 2);
             var comparison = InsightStatistics.Compare(largest.Amount, new Baseline(median, InsightStatistics.Spread(past), past.Length));
             if (largest.Amount > InsightStatistics.Percentile(past, Percentile) && largest.Amount > MedianMultiple * median && comparison.IsUnusual)
             {

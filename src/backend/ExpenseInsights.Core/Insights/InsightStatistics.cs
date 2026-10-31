@@ -78,7 +78,8 @@ public static class InsightStatistics
         }
 
         var window = previousMonths.Skip(Math.Max(0, previousMonths.Count - BaselineMonths)).ToArray();
-        return new Baseline(Median(window), Spread(window), window.Length);
+        // Money: the usual amount is shown, so it is rounded to the cent (an even count's median may not be).
+        return new Baseline(Math.Round(Median(window), 2), Spread(window), window.Length);
     }
 
     /// <summary>

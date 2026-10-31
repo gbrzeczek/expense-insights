@@ -99,7 +99,7 @@ internal static class InsightEndpoints
 
         if (await data.LoadAsync(ct) is not { } spending)
         {
-            return Results.Ok(new CategoryResponse(id, null, SpendingData.DefaultCurrency, false, 0, null, [], []));
+            return Results.Ok(new CategoryResponse(id, null, SpendingData.DefaultCurrency, null, null, false, 0, null, [], []));
         }
 
         if (Resolve(month, spending) is not { } selected)
@@ -120,6 +120,8 @@ internal static class InsightEndpoints
             id,
             selected.ToString(),
             spending.Currency,
+            spending.EarliestMonth.ToString(),
+            history.LastMonth.ToString(),
             !history.IsComplete(selected),
             history.Spent(selected, id),
             UsualFor(history, selected, id),
@@ -309,6 +311,8 @@ internal sealed record CategoryResponse(
     Guid CategoryId,
     string? Month,
     string Currency,
+    string? EarliestMonth,
+    string? LatestMonth,
     bool IsPartial,
     decimal Spent,
     decimal? Usual,
