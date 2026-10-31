@@ -13,6 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Generated fake exports only (see test-data/README.md), and the category names they are labelled with. -->
+    <None Include="..\..\..\..\test-data\*.labels.csv" LinkBase="test-data" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\frontend\public\i18n\pl.json" Link="i18n\pl.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
