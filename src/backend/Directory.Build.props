@@ -18,4 +18,10 @@
     <!-- Test method names use underscores (Health_ReturnsOk_WhenDatabaseIsReachable). -->
     <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
+
+  <!-- Hang dump (used by CI): a test process that hangs is killed and dumped, and the output names
+       the tests that were still running. -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true' or $(MSBuildProjectName.EndsWith('.Tests'))">
+    <PackageReference Include="Microsoft.Testing.Extensions.HangDump" />
+  </ItemGroup>
 </Project>

@@ -17,6 +17,8 @@ jobs:
   backend:
     name: Backend (build + test)
     runs-on: ubuntu-latest
+    # A normal run takes about 3 minutes; this only stops a hang the hang dump below misses.
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: src/backend
@@ -37,7 +39,24 @@ jobs:
       - run: dotnet restore
       - run: dotnet build --no-restore -c Release
       # Integration tests start Postgres with Testcontainers (Docker is available on the runner).
-      - run: dotnet test --no-build -c Release
+      # A test project still running after 5 minutes is dumped and fails, naming the tests that
+      # were still running.
+      - run: dotnet test --no-build -c Release --hangdump --hangdump-timeout 5m --hangdump-type Mini --results-directory "$PWD/TestResults"
+
+      - name: Show hung tests
+        if: failure()
+        run: cat TestResults/*_hang.log 2>/dev/null || echo "No test hung."
+
+      - name: Upload hang dumps
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: hang-dumps
+          path: |
+            src/backend/TestResults/*_hang.log
+            src/backend/TestResults/*.dmp
+          if-no-files-found: ignore
+          retention-days: 7
 
   frontend:
     name: Frontend (lint + test + build + e2e)
