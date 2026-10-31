@@ -249,7 +249,7 @@ body { background: var(--color-bg); color: var(--color-ink); font-family: var(--
 | --- | --- |
 | Tokens (colours, type scale, spacing, radii, motion), light + dark | `src/frontend/src/styles/_tokens.scss` |
 | Element defaults and shared classes (`.display`, `.page-title`, `.section-title`, `.overline`, `.support`, `.numeric`, `.card`, `.button`, `.button--secondary`, `.field*`, `.visually-hidden`) | `src/frontend/src/styles/_base.scss` |
-| Summary card, insight card, transaction row, category breakdown | `src/frontend/src/app/shared/ui/` |
+| Summary card, insight card, transaction row, category breakdown (optionally linked rows), month bars | `src/frontend/src/app/shared/ui/` |
 | Money (`1 234,56 zł`, typographic minus, optional `+`) and date (`28.10.2026`) pipes | `src/frontend/src/app/shared/format/` |
 | Living style guide on fictional data (dev builds only) | `/styleguide` → `src/frontend/src/app/features/styleguide/` |
 | App icon and favicon (three category bars on paper); PNG/ICO are generated with `npm run icons` | `src/frontend/branding/*.svg`, `src/frontend/public/favicon.svg` |
