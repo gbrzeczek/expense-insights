@@ -10,9 +10,6 @@
     "import": "Import",
     "account": "Konto"
   },
-  "placeholder": {
-    "comingSoon": "Ta sekcja jest w przygotowaniu."
-  },
   "summary": {
     "change": {
       "up": "o {{percent}} więcej niż {{period}}",
@@ -371,6 +368,173 @@
       "few": "Usunięto regułę. Zmieniono {{count}} transakcje.",
       "many": "Usunięto regułę. Zmieniono {{count}} transakcji.",
       "other": "Usunięto regułę. Zmieniono {{count}} transakcji."
+    }
+  },
+  "insights": {
+    "title": "Przegląd",
+    "loading": "Wczytywanie…",
+    "loadError": "Nie udało się wczytać podsumowania. Spróbuj ponownie.",
+    "retry": "Spróbuj ponownie",
+    "months": {
+      "in": {
+        "1": "w styczniu",
+        "2": "w lutym",
+        "3": "w marcu",
+        "4": "w kwietniu",
+        "5": "w maju",
+        "6": "w czerwcu",
+        "7": "w lipcu",
+        "8": "w sierpniu",
+        "9": "we wrześniu",
+        "10": "w październiku",
+        "11": "w listopadzie",
+        "12": "w grudniu"
+      }
+    },
+    "switcher": {
+      "label": "Wybór miesiąca",
+      "previous": "Poprzedni miesiąc",
+      "next": "Następny miesiąc"
+    },
+    "headline": {
+      "up": "{{inMonth}} wydatki były o {{percent}} wyższe niż zwykle",
+      "down": "{{inMonth}} wydatki były o {{percent}} niższe niż zwykle",
+      "same": "{{inMonth}} wydatki były takie jak zwykle",
+      "noBaseline": "Wydatki {{inMonth}}",
+      "byDay": {
+        "up": "Do {{day}} wydatki są o {{percent}} wyższe niż zwykle o tej porze miesiąca",
+        "down": "Do {{day}} wydatki są o {{percent}} niższe niż zwykle o tej porze miesiąca",
+        "same": "Do {{day}} wydatki są takie jak zwykle o tej porze miesiąca"
+      }
+    },
+    "spent": "Wydatki",
+    "spentLink": "Wydatki: {{amount}}. Pokaż transakcje.",
+    "usual": "Zwykle {{usual}}: mediana {{months}} poprzednich miesięcy.",
+    "usualByDay": "Zwykle do tego dnia {{usual}} (według {{months}} poprzednich miesięcy). Szacunek na cały miesiąc: {{projected}}.",
+    "noBaseline": "Porównanie ze zwykłym miesiącem pojawi się, gdy historia obejmie 3 pełne miesiące.",
+    "partial": "Miesiąc w toku: dane do {{date}}.",
+    "income": "Wpływy w tym miesiącu: {{amount}}",
+    "historyTitle": "Ostatnie miesiące",
+    "historyUsual": "Linia: zwykły miesiąc ({{usual}}).",
+    "historyBar": "{{month}}: {{amount}}",
+    "historyBarPartial": "{{month}}: {{amount}} (niepełny)",
+    "insightsTitle": "Co się wyróżnia",
+    "insightsNone": "Nic nietypowego w tym miesiącu: wydatki mieszczą się w zwykłych granicach.",
+    "insightsNoBaseline": "Wnioski pojawią się, gdy historia obejmie 3 pełne miesiące.",
+    "categoriesTitle": "Kategorie",
+    "categoriesNone": "W tym miesiącu nie ma wydatków.",
+    "unclassified": "Bez kategorii",
+    "upcomingTitle": "Najbliższe płatności cykliczne",
+    "upcomingDate": "{{date}}",
+    "allSubscriptions": "Wszystkie płatności cykliczne",
+    "showTransactions": "Pokaż transakcje",
+    "showSubscriptions": "Pokaż płatności cykliczne",
+    "empty": {
+      "text": "Zaimportuj wyciąg z ING, a pokażemy tu podsumowanie miesiąca i to, co się w nim wyróżnia.",
+      "action": "Importuj wyciąg"
+    },
+    "cadence": {
+      "7": "co tydzień",
+      "30": "co miesiąc",
+      "365": "co rok"
+    },
+    "insight": {
+      "categoryChange": {
+        "up": "Wyższe wydatki niż zwykle",
+        "down": "Niższe wydatki niż zwykle",
+        "evidence": {
+          "up": "{{amount}} wobec zwykłych {{usual}} (mediana {{months}} poprzednich miesięcy), o {{percent}} więcej.",
+          "down": "{{amount}} wobec zwykłych {{usual}} (mediana {{months}} poprzednich miesięcy), o {{percent}} mniej.",
+          "fromZero": "{{amount}}, a zwykle nic (mediana {{months}} poprzednich miesięcy)."
+        },
+        "lastYear": {
+          "up": "Więcej także niż w tym miesiącu przed rokiem ({{lastYear}}).",
+          "down": "Mniej także niż w tym miesiącu przed rokiem ({{lastYear}})."
+        }
+      },
+      "pace": {
+        "overline": "Tempo wydatków",
+        "up": "W tym tempie miesiąc wyjdzie drożej niż zwykle",
+        "down": "W tym tempie miesiąc wyjdzie taniej niż zwykle",
+        "evidence": "Do tej pory {{soFar}}. Szacunek na cały miesiąc: {{amount}}, zwykle {{usual}} (mediana {{months}} poprzednich miesięcy)."
+      },
+      "largePayment": {
+        "headline": "Duża płatność: {{merchant}}",
+        "evidence": "{{amount}}: najwięcej w tej kategorii od roku. Typowa płatność to {{usual}} (mediana)."
+      },
+      "frequentSmall": {
+        "headline": "Częstsze drobne zakupy: {{merchant}}",
+        "evidence": {
+          "one": "{{count}} płatność na {{amount}}; zwykle {{usualCount}} na {{usual}} (mediana {{months}} poprzednich miesięcy).",
+          "few": "{{count}} płatności na {{amount}}; zwykle {{usualCount}} na {{usual}} (mediana {{months}} poprzednich miesięcy).",
+          "many": "{{count}} płatności na {{amount}}; zwykle {{usualCount}} na {{usual}} (mediana {{months}} poprzednich miesięcy).",
+          "other": "{{count}} płatności na {{amount}}; zwykle {{usualCount}} na {{usual}} (mediana {{months}} poprzednich miesięcy)."
+        }
+      },
+      "newSubscription": {
+        "headline": "Nowa płatność cykliczna: {{merchant}}",
+        "evidence": "{{amount}} {{cadence}}, czyli {{yearly}} rocznie."
+      },
+      "subscriptionPriceChange": {
+        "headline": "Zmiana ceny: {{merchant}}",
+        "evidence": {
+          "up": "Teraz {{amount}} zamiast {{usual}}, o {{percent}} więcej: {{yearly}} rocznie.",
+          "down": "Teraz {{amount}} zamiast {{usual}}, o {{percent}} mniej: {{yearly}} rocznie."
+        }
+      },
+      "uncategorized": {
+        "overline": "Do uporządkowania",
+        "headline": {
+          "one": "{{count}} transakcja czeka na kategorię",
+          "few": "{{count}} transakcje czekają na kategorię",
+          "many": "{{count}} transakcji czeka na kategorię",
+          "other": "{{count}} transakcji czeka na kategorię"
+        },
+        "evidence": "Razem {{amount}} w tym miesiącu. Bez kategorii nie trafiają do porównań.",
+        "action": "Przypisz kategorie"
+      }
+    },
+    "category": {
+      "usualPeriod": "zwykle",
+      "spentLabel": "Wydatki: {{month}}",
+      "partialUsual": "Miesiąc w toku. Zwykle za cały miesiąc: {{usual}}.",
+      "noUsual": "Za krótka historia, żeby porównać ze zwykłym miesiącem.",
+      "trendTitle": "Ostatnie miesiące",
+      "trendPartial": "niepełny",
+      "merchantsTitle": "Sklepy i odbiorcy",
+      "merchantsNone": "W tym miesiącu nic w tej kategorii.",
+      "payments": {
+        "one": "{{count}} płatność",
+        "few": "{{count}} płatności",
+        "many": "{{count}} płatności",
+        "other": "{{count}} płatności"
+      },
+      "allTransactions": "Wszystkie transakcje w kategorii",
+      "back": "Wróć do przeglądu",
+      "loadError": "Nie udało się wczytać kategorii. Spróbuj ponownie."
+    },
+    "transactions": {
+      "title": "Transakcje",
+      "total": "Razem",
+      "allSpending": "Wszystkie wydatki",
+      "empty": "Brak transakcji.",
+      "loadError": "Nie udało się wczytać transakcji. Spróbuj ponownie.",
+      "backToCategory": "Wróć do kategorii"
+    },
+    "subscriptions": {
+      "title": "Płatności cykliczne",
+      "explanation": "Ten sam odbiorca, podobna kwota, regularnie co tydzień, co miesiąc lub co rok.",
+      "monthly": "Miesięcznie",
+      "yearly": "Rocznie",
+      "perMonth": "{{amount}} miesięcznie",
+      "next": "Następna: {{date}}",
+      "last": "Ostatnia: {{date}}",
+      "previous": "wcześniej {{amount}}",
+      "new": "Nowa",
+      "priceChanged": "Zmiana ceny",
+      "inactive": "Nieaktywna",
+      "empty": "Nie wykryto płatności cyklicznych.",
+      "loadError": "Nie udało się wczytać płatności cyklicznych. Spróbuj ponownie."
     }
   }
 }

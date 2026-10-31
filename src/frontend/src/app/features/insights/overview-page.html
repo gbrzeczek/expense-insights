@@ -1,0 +1,145 @@
+<section class="page" *transloco="let t">
+  @switch (state().status) {
+    @case ('loading') {
+      <h1 class="page-title">{{ t('insights.title') }}</h1>
+      <p class="support" role="status">{{ t('insights.loading') }}</p>
+    }
+    @case ('error') {
+      <h1 class="page-title">{{ t('insights.title') }}</h1>
+      <p class="support" role="alert">{{ t('insights.loadError') }}</p>
+      <div>
+        <button type="button" class="button button--secondary" (click)="reload()">
+          {{ t('insights.retry') }}
+        </button>
+      </div>
+    }
+  }
+
+  @if (overview(); as o) {
+    @if (!o.hasData || !o.month) {
+      <h1 class="page-title">{{ t('insights.title') }}</h1>
+      <div class="card empty">
+        <p>{{ t('insights.empty.text') }}</p>
+        <a class="button" routerLink="/import">{{ t('insights.empty.action') }}</a>
+      </div>
+    } @else {
+      <header class="lead">
+        <app-month-switcher
+          [month]="o.month"
+          [earliest]="o.earliestMonth ?? o.month"
+          [latest]="o.latestMonth ?? o.month"
+        />
+        <h1 class="lead__headline">{{ headline() }}</h1>
+        <div class="lead__amount">
+          <p class="overline">{{ t('insights.spent') }}</p>
+          <a
+            class="lead__spent numeric"
+            routerLink="/overview/transactions"
+            [queryParams]="{ month: o.month }"
+            [attr.aria-label]="t('insights.spentLink', { amount: (o.spent | money: o.currency) })"
+          >
+            {{ o.spent | money: o.currency }}
+          </a>
+        </div>
+        <div class="lead__notes support">
+          @if (o.usual; as usual) {
+            @if (usual.byDay) {
+              <p>
+                {{
+                  t('insights.usualByDay', {
+                    usual: (usual.amount | money: o.currency),
+                    months: usual.months,
+                    projected: (o.projected | money: o.currency),
+                  })
+                }}
+              </p>
+            } @else {
+              <p>
+                {{
+                  t('insights.usual', {
+                    usual: (usual.amount | money: o.currency),
+                    months: usual.months,
+                  })
+                }}
+              </p>
+            }
+          } @else {
+            <p>{{ t('insights.noBaseline') }}</p>
+          }
+          @if (o.isPartial && o.through) {
+            <p>{{ t('insights.partial', { date: (o.through | displayDate) }) }}</p>
+          }
+          @if (o.income > 0) {
+            <p>{{ t('insights.income', { amount: (o.income | money: o.currency) }) }}</p>
+          }
+        </div>
+      </header>
+
+      @if (bars().length > 1) {
+        <section class="card section" [attr.aria-label]="t('insights.historyTitle')">
+          <h2 class="overline">{{ t('insights.historyTitle') }}</h2>
+          <app-month-bars [bars]="bars()" [usual]="usualMonth()" />
+          @if (usualMonth() !== null) {
+            <p class="support">
+              {{ t('insights.historyUsual', { usual: (usualMonth() | money: o.currency) }) }}
+            </p>
+          }
+        </section>
+      }
+
+      <section class="section" [attr.aria-labelledby]="'insights-title'">
+        <h2 id="insights-title" class="section-title">{{ t('insights.insightsTitle') }}</h2>
+        @for (insight of insights(); track $index) {
+          <app-insight-card
+            [overline]="insight.overline"
+            [headline]="insight.headline"
+            [evidence]="insight.evidence"
+          >
+            <a class="action" [routerLink]="insight.link" [queryParams]="insight.queryParams">
+              {{ insight.action }}
+            </a>
+          </app-insight-card>
+        } @empty {
+          <p class="card support">
+            {{ o.usual ? t('insights.insightsNone') : t('insights.insightsNoBaseline') }}
+          </p>
+        }
+      </section>
+
+      <section class="section" [attr.aria-labelledby]="'categories-title'">
+        <h2 id="categories-title" class="section-title">{{ t('insights.categoriesTitle') }}</h2>
+        <div class="card">
+          @if (categoryShares().length) {
+            <app-category-breakdown [categories]="categoryShares()" [currency]="o.currency" />
+          } @else {
+            <p class="support">{{ t('insights.categoriesNone') }}</p>
+          }
+        </div>
+      </section>
+
+      @if (o.upcoming.length) {
+        <section class="section" [attr.aria-labelledby]="'upcoming-title'">
+          <h2 id="upcoming-title" class="section-title">{{ t('insights.upcomingTitle') }}</h2>
+          <ul class="card list">
+            @for (s of o.upcoming; track s.merchantKey) {
+              <li class="list__row">
+                <span class="list__main">
+                  <span class="list__name">{{ s.merchant }}</span>
+                  <span class="support numeric">{{ s.nextDate | displayDate }}</span>
+                </span>
+                <span class="list__amount numeric">{{ s.latestAmount | money: o.currency }}</span>
+              </li>
+            }
+          </ul>
+          <a class="action" routerLink="/overview/subscriptions">{{
+            t('insights.allSubscriptions')
+          }}</a>
+        </section>
+      } @else {
+        <a class="action" routerLink="/overview/subscriptions">{{
+          t('insights.allSubscriptions')
+        }}</a>
+      }
+    }
+  }
+</section>

@@ -1,0 +1,68 @@
+<section class="page" *transloco="let t">
+  <a
+    class="action back"
+    [routerLink]="back().link"
+    [queryParams]="{ month: result()?.filter?.month }"
+  >
+    {{ t(back().label) }}
+  </a>
+  <header class="header">
+    @if (result(); as r) {
+      @if (r.data.month) {
+        <p class="overline">{{ text.monthName(r.data.month) }}</p>
+      }
+    }
+    <h1 class="page-title">{{ title() }}</h1>
+  </header>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <p class="support" role="status">{{ t('insights.loading') }}</p>
+    }
+    @case ('error') {
+      <p class="support" role="alert">{{ t('insights.transactions.loadError') }}</p>
+      <div>
+        <button type="button" class="button button--secondary" (click)="reload()">
+          {{ t('insights.retry') }}
+        </button>
+      </div>
+    }
+  }
+
+  @if (result(); as r) {
+    <div class="total card">
+      <span class="overline">{{ t('insights.transactions.total') }}</span>
+      <span class="total__amount numeric">{{ r.data.total | money: r.data.currency }}</span>
+    </div>
+
+    @if (r.data.items.length) {
+      <ul class="card list">
+        @for (row of r.data.items; track row.transaction.id) {
+          <li>
+            <button type="button" class="tx" (click)="openId.set(row.transaction.id)">
+              <app-transaction-row
+                [merchant]="row.transaction.merchant"
+                [date]="row.transaction.date"
+                [category]="categoryText(row.transaction)"
+                [colorIndex]="categories.colorIndex(row.transaction.categoryId)"
+                [amount]="row.transaction.amount"
+                [currency]="row.transaction.currency"
+              />
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="card support">{{ t('insights.transactions.empty') }}</p>
+    }
+  }
+
+  @if (openId(); as id) {
+    <app-transaction-sheet
+      [transactionId]="id"
+      (corrected)="onCorrected($event)"
+      (changed)="reload()"
+      (closed)="openId.set(null)"
+    />
+  }
+</section>

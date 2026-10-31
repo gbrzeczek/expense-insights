@@ -1,0 +1,45 @@
+@use 'insights';
+
+.lead {
+  display: grid;
+  gap: var(--space-4);
+}
+
+// The screen's one headline: the editorial serif, at page-heading size so it fits a phone.
+.lead__headline {
+  font-family: var(--font-editorial);
+  font-size: var(--text-page);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+.lead__amount {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.lead__spent {
+  justify-self: start;
+  font-size: var(--text-balance);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-balance);
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+
+.lead__notes {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}

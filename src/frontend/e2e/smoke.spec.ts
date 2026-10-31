@@ -7,6 +7,10 @@ test('app shell works on a phone-sized screen', async ({ page }) => {
   await page.route('**/api/transactions?**', (route) =>
     route.fulfill({ json: { items: [], nextOffset: null } }),
   );
+  // Before the first import the overview has no data and keeps its plain title.
+  await page.route('**/api/insights/overview**', (route) =>
+    route.fulfill({ json: { hasData: false, month: null, insights: [], upcoming: [] } }),
+  );
   await page.goto('/');
 
   await expect(page).toHaveURL(/\/overview$/);

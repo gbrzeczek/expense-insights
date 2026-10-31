@@ -1,0 +1,52 @@
+@use 'insights';
+
+.page {
+  gap: var(--card-gap);
+}
+
+.header {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.total {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.total__amount {
+  font-size: var(--text-page);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-balance);
+}
+
+.list {
+  padding-inline: var(--space-4);
+
+  li:not(:last-child) {
+    border-bottom: var(--border);
+  }
+}
+
+// The row keeps its own layout; the button only makes it tappable.
+.tx {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+
+  app-transaction-row {
+    border-bottom: 0;
+  }
+
+  &:focus-visible {
+    outline-offset: 0;
+    border-radius: var(--radius-control);
+  }
+}

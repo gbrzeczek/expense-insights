@@ -1,0 +1,9 @@
+@use 'insights';
+
+// The summary card is the link to the transactions behind its amount.
+.summary-link {
+  display: block;
+  border-radius: var(--radius-card);
+  color: inherit;
+  text-decoration: none;
+}
