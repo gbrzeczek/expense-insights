@@ -19,7 +19,7 @@ public sealed class FakeExportTests
 
         Assert.Empty(results.OfType<ParseError>());
         Assert.Empty(results.OfType<ParseWarning>());
-        Assert.Equal(335, results.Transactions().Count());
+        Assert.Equal(367, results.Transactions().Count());
         Assert.IsType<ParsedStatement>(results[0]);
     }
 
@@ -40,8 +40,8 @@ public sealed class FakeExportTests
                 new StatementAccount("Otwarte Konto Oszczędnościowe", "74 7940 2654 2351 1615 5940 7816", "PLN"),
             ],
             statement.Accounts);
-        Assert.Equal(new DeclaredTotal(30, 74590.67m, "PLN"), statement.Credits);
-        Assert.Equal(new DeclaredTotal(305, 42189.51m, "PLN"), statement.Debits);
+        Assert.Equal(new DeclaredTotal(33, 74787.45m, "PLN"), statement.Credits);
+        Assert.Equal(new DeclaredTotal(334, 43506.39m, "PLN"), statement.Debits);
     }
 
     [Fact]
@@ -69,7 +69,16 @@ public sealed class FakeExportTests
         {
             var (label, tx) = (labels[i], transactions[i]);
             Assert.Equal(DateOnly.Parse(label[1], CultureInfo.InvariantCulture), tx.TransactionDate);
-            Assert.Equal(label[2].Length == 0 ? null : label[2], tx.ExternalId);
+            if (label[2].Length > 0 || label[6] == "pending")
+            {
+                Assert.Equal(label[2].Length == 0 ? null : label[2], tx.ExternalId);
+            }
+            else
+            {
+                // Booked without a number: a key from the row's content.
+                Assert.StartsWith(IngCsvParser.ContentKeyPrefix, tx.ExternalId, StringComparison.Ordinal);
+            }
+
             Assert.Equal(decimal.Parse(label[3].Replace(',', '.'), CultureInfo.InvariantCulture), tx.Amount);
             Assert.Equal(label[4], tx.AccountRef);
             Assert.Equal(label[6] == "pending" ? TransactionStatus.Pending : TransactionStatus.Booked, tx.Status);
@@ -96,8 +105,8 @@ public sealed class FakeExportTests
         "p2p_in" => TransactionKind.BlikP2P,
         "p2p_out" => TransactionKind.PhoneTransfer,
         // Own transfers are recognised on import, where the user's accounts are known.
-        "transfer_in" or "transfer_out" or "own_transfer" => TransactionKind.Transfer,
-        "interest" or "interest_tax" => TransactionKind.Other,
+        "transfer_in" or "transfer_out" or "own_transfer" or "standing_order" or "express" or "transfer_order" => TransactionKind.Transfer,
+        "interest" or "interest_tax" or "correction" => TransactionKind.Other,
         _ => throw new ArgumentOutOfRangeException(nameof(generatorKind), generatorKind, null),
     };
 }
