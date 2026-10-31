@@ -93,6 +93,30 @@ public sealed class RouteIsolationTests(PostgresFixture postgres) : IntegrationT
             var csv = await s.B.GetStringAsync(new Uri("/api/classification/labels", UriKind.Relative), CancellationToken);
             Assert.Equal("tx_id;tx_date;amount;category\n", csv);
         }),
+        new("GET /api/insights/overview", "/api/insights/overview", async s =>
+        {
+            var overview = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/insights/overview", UriKind.Relative), CancellationToken);
+            Assert.False(overview.GetProperty("hasData").GetBoolean());
+            Assert.Equal(0m, overview.GetProperty("spent").GetDecimal());
+        }),
+        new("GET /api/insights/categories/{id:guid}", $"/api/insights/categories/{OtherCategory}", async s =>
+        {
+            // A's own subcategory doesn't exist for B; a global one has none of A's spending.
+            await AssertNotFoundAsync(s.B.GetAsync(new Uri($"/api/insights/categories/{s.ACategoryId}", UriKind.Relative), CancellationToken));
+            var other = await s.B.GetFromJsonAsync<JsonElement>(new Uri($"/api/insights/categories/{OtherCategory}", UriKind.Relative), CancellationToken);
+            Assert.Equal(0m, other.GetProperty("spent").GetDecimal());
+            Assert.Empty(other.GetProperty("merchants").EnumerateArray());
+        }),
+        new("GET /api/insights/transactions", "/api/insights/transactions", async s =>
+        {
+            var transactions = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/insights/transactions?merchant=zabka", UriKind.Relative), CancellationToken);
+            Assert.Empty(transactions.GetProperty("items").EnumerateArray());
+        }),
+        new("GET /api/insights/subscriptions", "/api/insights/subscriptions", async s =>
+        {
+            var subscriptions = await s.B.GetFromJsonAsync<JsonElement>(new Uri("/api/insights/subscriptions", UriKind.Relative), CancellationToken);
+            Assert.Empty(subscriptions.GetProperty("items").EnumerateArray());
+        }),
         new("GET /api/invitations", "/api/invitations", s => AssertForbiddenAsync(s.B.GetAsync(new Uri("/api/invitations", UriKind.Relative), CancellationToken))),
         new("POST /api/invitations", "/api/invitations", s => AssertForbiddenAsync(s.B.PostAsJsonAsync(new Uri("/api/invitations", UriKind.Relative), new { email = "x@example.test" }, CancellationToken))),
         new("DELETE /api/invitations/{id:guid}", $"/api/invitations/{Guid.Empty}", s => AssertForbiddenAsync(s.B.DeleteAsync(new Uri($"/api/invitations/{s.AInvitationId}", UriKind.Relative), CancellationToken))),

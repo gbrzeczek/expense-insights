@@ -1,0 +1,75 @@
+// Layout shared by the insight screens (overview, category, transactions, subscriptions).
+
+.page {
+  display: grid;
+  gap: var(--section-gap);
+  max-width: 720px;
+}
+
+.section {
+  display: grid;
+  gap: var(--space-3);
+}
+
+// A text link that leads to the numbers behind something; 44 px tall to tap.
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  min-height: var(--touch-target);
+  color: var(--color-accent-text);
+  font-size: var(--text-support);
+  font-weight: var(--weight-medium);
+}
+
+.back {
+  justify-self: start;
+}
+
+.list {
+  margin: 0;
+  padding-block: 0;
+  list-style: none;
+}
+
+.list__row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  padding: var(--space-3) 0;
+
+  &:not(:last-child) {
+    border-bottom: var(--border);
+  }
+}
+
+a.list__row {
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease);
+
+  &:hover {
+    background: var(--color-bg);
+  }
+}
+
+.list__main {
+  display: grid;
+  min-width: 0;
+}
+
+.list__name {
+  overflow: hidden;
+  font-weight: var(--weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list__amount {
+  font-size: var(--text-amount);
+  font-weight: var(--weight-medium);
+  text-align: right;
+  white-space: nowrap;
+}

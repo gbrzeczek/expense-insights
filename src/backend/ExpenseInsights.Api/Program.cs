@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using ExpenseInsights.Api;
 using ExpenseInsights.Api.Auth;
 using ExpenseInsights.Api.Classification;
+using ExpenseInsights.Api.Insights;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Import.Ing;
 using ExpenseInsights.Infrastructure;
@@ -49,6 +50,7 @@ api.MapImportEndpoints();
 api.MapTransactionEndpoints();
 api.MapCategoryEndpoints();
 api.MapMerchantEndpoints();
+api.MapInsightEndpoints();
 api.MapFallback(() => Results.Problem(statusCode: StatusCodes.Status404NotFound));
 
 // Client-side routes of the Angular app. The shell must always be revalidated so a new

@@ -3,9 +3,6 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, ownerGuard } from './core/auth/auth.guards';
 import { Shell } from './core/layout/shell';
 
-const placeholder = () =>
-  import('./features/placeholder/placeholder-page').then((m) => m.PlaceholderPage);
-
 export const routes: Routes = [
   {
     path: 'login',
@@ -19,7 +16,32 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'overview' },
-      { path: 'overview', title: 'nav.overview', loadComponent: placeholder },
+      {
+        path: 'overview',
+        title: 'nav.overview',
+        loadComponent: () =>
+          import('./features/insights/overview-page').then((m) => m.OverviewPage),
+      },
+      {
+        path: 'overview/categories/:id',
+        title: 'nav.overview',
+        loadComponent: () =>
+          import('./features/insights/category-page').then((m) => m.CategoryPage),
+      },
+      {
+        path: 'overview/transactions',
+        title: 'insights.transactions.title',
+        loadComponent: () =>
+          import('./features/insights/spending-transactions-page').then(
+            (m) => m.SpendingTransactionsPage,
+          ),
+      },
+      {
+        path: 'overview/subscriptions',
+        title: 'insights.subscriptions.title',
+        loadComponent: () =>
+          import('./features/insights/subscriptions-page').then((m) => m.SubscriptionsPage),
+      },
       {
         path: 'transactions',
         title: 'nav.transactions',

@@ -1,0 +1,99 @@
+<section class="page" *transloco="let t">
+  <a class="action back" routerLink="/overview">{{ t('insights.category.back') }}</a>
+  <header class="header">
+    <h1 class="page-title">{{ t('insights.subscriptions.title') }}</h1>
+    <p class="support">{{ t('insights.subscriptions.explanation') }}</p>
+  </header>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <p class="support" role="status">{{ t('insights.loading') }}</p>
+    }
+    @case ('error') {
+      <p class="support" role="alert">{{ t('insights.subscriptions.loadError') }}</p>
+      <div>
+        <button type="button" class="button button--secondary" (click)="reload()">
+          {{ t('insights.retry') }}
+        </button>
+      </div>
+    }
+  }
+
+  @if (data(); as s) {
+    @if (s.items.length) {
+      <dl class="card totals">
+        <div>
+          <dt class="overline">{{ t('insights.subscriptions.monthly') }}</dt>
+          <dd class="totals__amount numeric">{{ s.monthlyTotal | money: s.currency }}</dd>
+        </div>
+        <div>
+          <dt class="overline">{{ t('insights.subscriptions.yearly') }}</dt>
+          <dd class="totals__amount numeric">{{ s.yearlyTotal | money: s.currency }}</dd>
+        </div>
+      </dl>
+
+      <ul class="card list">
+        @for (item of s.items; track item.merchantKey) {
+          <li>
+            <a
+              class="list__row"
+              [class.list__row--inactive]="!item.isActive"
+              routerLink="/overview/transactions"
+              [queryParams]="{ month: item.lastDate.slice(0, 7), merchant: item.merchantKey }"
+            >
+              <span class="list__main">
+                <span class="name">
+                  <span class="list__name">{{ item.merchant }}</span>
+                  @if (item.isNew) {
+                    <span class="badge badge--new">{{ t('insights.subscriptions.new') }}</span>
+                  }
+                  @if (item.priceChanged) {
+                    <span class="badge">{{ t('insights.subscriptions.priceChanged') }}</span>
+                  }
+                  @if (!item.isActive) {
+                    <span class="badge">{{ t('insights.subscriptions.inactive') }}</span>
+                  }
+                </span>
+                <span class="support">
+                  {{ t('insights.cadence.' + item.cadenceDays) }} ·
+                  <span class="numeric">
+                    {{
+                      item.isActive
+                        ? t('insights.subscriptions.next', { date: (item.nextDate | displayDate) })
+                        : t('insights.subscriptions.last', { date: (item.lastDate | displayDate) })
+                    }}
+                  </span>
+                </span>
+                @if (item.cadenceDays !== 30) {
+                  <span class="support numeric">
+                    {{
+                      t('insights.subscriptions.perMonth', {
+                        amount: (item.monthlyCost | money: s.currency),
+                      })
+                    }}
+                  </span>
+                }
+              </span>
+              <span class="amount">
+                <span class="list__amount numeric">{{
+                  item.latestAmount | money: s.currency
+                }}</span>
+                @if (item.priceChanged) {
+                  <span class="support numeric">
+                    {{
+                      t('insights.subscriptions.previous', {
+                        amount: (item.previousAmount | money: s.currency),
+                      })
+                    }}
+                  </span>
+                }
+              </span>
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="card support">{{ t('insights.subscriptions.empty') }}</p>
+    }
+  }
+</section>

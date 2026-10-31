@@ -1,4 +1,4 @@
-import { formatPercent } from '@angular/common';
+import { formatPercent, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,6 +7,7 @@ import {
   input,
   LOCALE_ID,
 } from '@angular/core';
+import { Params, RouterLink } from '@angular/router';
 import { MoneyPipe } from '../format/money.pipe';
 
 export interface CategoryShare {
@@ -15,30 +16,48 @@ export interface CategoryShare {
   readonly amount: number;
   /** 1–6, see `--chart-n` tokens. */
   readonly colorIndex: number;
+  /** Makes the row a link, e.g. to the transactions behind the amount. */
+  readonly link?: string;
+  readonly queryParams?: Params;
 }
 
 /** Directly labelled horizontal bars; shares are computed here from the amounts. */
 @Component({
   selector: 'app-category-breakdown',
-  imports: [MoneyPipe],
+  imports: [MoneyPipe, NgTemplateOutlet, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <ul class="breakdown">
       @for (row of rows(); track row.name) {
-        <li class="breakdown__row">
-          <span class="breakdown__name">{{ row.name }}</span>
-          <span class="breakdown__amount numeric">{{ row.amount | money: currency() }}</span>
-          <span class="breakdown__share numeric support">{{ row.share }}</span>
-          <span class="breakdown__track" aria-hidden="true">
-            <span
-              class="breakdown__bar"
-              [style.width.%]="row.width"
-              [style.background]="'var(--chart-' + row.colorIndex + ')'"
-            ></span>
-          </span>
+        <li>
+          @if (row.link) {
+            <a
+              class="breakdown__row breakdown__row--link"
+              [routerLink]="row.link"
+              [queryParams]="row.queryParams"
+            >
+              <ng-container *ngTemplateOutlet="content; context: { $implicit: row }" />
+            </a>
+          } @else {
+            <div class="breakdown__row">
+              <ng-container *ngTemplateOutlet="content; context: { $implicit: row }" />
+            </div>
+          }
         </li>
       }
     </ul>
+    <ng-template #content let-row>
+      <span class="breakdown__name">{{ row.name }}</span>
+      <span class="breakdown__amount numeric">{{ row.amount | money: currency() }}</span>
+      <span class="breakdown__share numeric support">{{ row.share }}</span>
+      <span class="breakdown__track" aria-hidden="true">
+        <span
+          class="breakdown__bar"
+          [style.width.%]="row.width"
+          [style.background]="'var(--chart-' + row.colorIndex + ')'"
+        ></span>
+      </span>
+    </ng-template>
   `,
   styles: `
     .breakdown {
@@ -54,6 +73,19 @@ export interface CategoryShare {
       align-items: baseline;
       column-gap: var(--space-3);
       row-gap: var(--space-2);
+    }
+    .breakdown__row--link {
+      min-height: var(--touch-target);
+      margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2));
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-control);
+      color: inherit;
+      text-decoration: none;
+      transition: background-color var(--duration-fast) var(--ease);
+
+      &:hover {
+        background: var(--color-bg);
+      }
     }
     .breakdown__name {
       font-size: var(--text-support);

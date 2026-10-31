@@ -12,6 +12,8 @@
   `iconv -f cp1250 -t utf-8 fake_ing.csv | less`.
 - `fake_ing.labels.csv`: the correct merchant and category for each data row of `fake_ing.csv`
   (same order), for measuring classifier accuracy.
+- `fake_ing_history.csv` (+ labels): 25 months, seed 7 (2024-10-08 – 2026-10-28), for the insight
+  tests that need more than a year (seasonality, a normal month's number of insights).
 
 - `fake_ing_overlap_a.csv`, `fake_ing_overlap_b.csv` (+ labels): two exports of one fake history.
   B starts 14 days before A ends, and the six pending holds at the end of A are booked in B with
@@ -19,6 +21,7 @@
 
 ```bash
 python3 generate_ing_csv.py --months 6 --seed 42 --out fake_ing.csv
+python3 generate_ing_csv.py --months 25 --seed 7 --out fake_ing_history.csv
 python3 generate_ing_csv.py --months 2 --seed 10 --overlap --out fake_ing_overlap.csv
 python3 generate_ing_csv.py --encoding utf-8 --delimiter '\t' --no-preamble --out fake_ing_utf8.csv
 ```

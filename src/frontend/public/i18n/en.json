@@ -10,9 +10,6 @@
     "import": "Import",
     "account": "Account"
   },
-  "placeholder": {
-    "comingSoon": "This section is coming soon."
-  },
   "summary": {
     "change": {
       "up": "{{percent}} more than {{period}}",
@@ -215,5 +212,166 @@
     "revoke": "Revoke",
     "revokeLabel": "Revoke the invitation for {{email}}",
     "revokeFailed": "The invitation couldn't be revoked. Please try again."
+  },
+  "insights": {
+    "title": "Overview",
+    "loading": "Loading…",
+    "loadError": "Couldn't load the summary. Try again.",
+    "retry": "Try again",
+    "months": {
+      "in": {
+        "1": "in January",
+        "2": "in February",
+        "3": "in March",
+        "4": "in April",
+        "5": "in May",
+        "6": "in June",
+        "7": "in July",
+        "8": "in August",
+        "9": "in September",
+        "10": "in October",
+        "11": "in November",
+        "12": "in December"
+      }
+    },
+    "switcher": {
+      "label": "Choose a month",
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "headline": {
+      "up": "{{inMonth}} you spent {{percent}} more than usual",
+      "down": "{{inMonth}} you spent {{percent}} less than usual",
+      "same": "{{inMonth}} you spent about as usual",
+      "noBaseline": "Spending {{inMonth}}",
+      "byDay": {
+        "up": "By {{day}} you've spent {{percent}} more than usual at this point of the month",
+        "down": "By {{day}} you've spent {{percent}} less than usual at this point of the month",
+        "same": "By {{day}} you've spent about as usual at this point of the month"
+      }
+    },
+    "spent": "Spending",
+    "spentLink": "Spending: {{amount}}. Show transactions.",
+    "usual": "Usually {{usual}}: the median of the previous {{months}} months.",
+    "usualByDay": "Usually {{usual}} by this day (from the previous {{months}} months). Estimate for the whole month: {{projected}}.",
+    "noBaseline": "The comparison with a usual month appears once the history covers 3 full months.",
+    "partial": "Month in progress: data up to {{date}}.",
+    "income": "Money in this month: {{amount}}",
+    "historyTitle": "Recent months",
+    "historyUsual": "Line: a usual month ({{usual}}).",
+    "historyBar": "{{month}}: {{amount}}",
+    "historyBarPartial": "{{month}}: {{amount}} (incomplete)",
+    "insightsTitle": "What stands out",
+    "insightsNone": "Nothing unusual this month: spending is within its usual range.",
+    "insightsNoBaseline": "Insights appear once the history covers 3 full months.",
+    "categoriesTitle": "Categories",
+    "categoriesNone": "No spending this month.",
+    "unclassified": "No category",
+    "upcomingTitle": "Upcoming recurring payments",
+    "upcomingDate": "{{date}}",
+    "allSubscriptions": "All recurring payments",
+    "showTransactions": "Show transactions",
+    "showSubscriptions": "Show recurring payments",
+    "empty": {
+      "text": "Import an ING statement and this page will summarize the month and what stands out.",
+      "action": "Import a statement"
+    },
+    "cadence": {
+      "7": "a week",
+      "30": "a month",
+      "365": "a year"
+    },
+    "insight": {
+      "categoryChange": {
+        "up": "Higher spending than usual",
+        "down": "Lower spending than usual",
+        "evidence": {
+          "up": "{{amount}} against the usual {{usual}} (median of the previous {{months}} months), {{percent}} more.",
+          "down": "{{amount}} against the usual {{usual}} (median of the previous {{months}} months), {{percent}} less.",
+          "fromZero": "{{amount}}, usually nothing (median of the previous {{months}} months)."
+        },
+        "lastYear": {
+          "up": "Also more than in this month a year ago ({{lastYear}}).",
+          "down": "Also less than in this month a year ago ({{lastYear}})."
+        }
+      },
+      "pace": {
+        "overline": "Spending pace",
+        "up": "At this pace the month will cost more than usual",
+        "down": "At this pace the month will cost less than usual",
+        "evidence": "So far {{soFar}}. Estimate for the whole month: {{amount}}, usually {{usual}} (median of the previous {{months}} months)."
+      },
+      "largePayment": {
+        "headline": "Large payment: {{merchant}}",
+        "evidence": "{{amount}}: the most in this category in a year. A typical payment is {{usual}} (median)."
+      },
+      "frequentSmall": {
+        "headline": "More small purchases: {{merchant}}",
+        "evidence": {
+          "one": "{{count}} payment for {{amount}}; usually {{usualCount}} for {{usual}} (median of the previous {{months}} months).",
+          "other": "{{count}} payments for {{amount}}; usually {{usualCount}} for {{usual}} (median of the previous {{months}} months)."
+        }
+      },
+      "newSubscription": {
+        "headline": "New recurring payment: {{merchant}}",
+        "evidence": "{{amount}} {{cadence}}, {{yearly}} a year."
+      },
+      "subscriptionPriceChange": {
+        "headline": "Price change: {{merchant}}",
+        "evidence": {
+          "up": "Now {{amount}} instead of {{usual}}, {{percent}} more: {{yearly}} a year.",
+          "down": "Now {{amount}} instead of {{usual}}, {{percent}} less: {{yearly}} a year."
+        }
+      },
+      "uncategorized": {
+        "overline": "To sort out",
+        "headline": {
+          "one": "{{count}} transaction needs a category",
+          "other": "{{count}} transactions need a category"
+        },
+        "evidence": "{{amount}} in total this month. Without a category they are left out of comparisons.",
+        "action": "Assign categories"
+      }
+    },
+    "category": {
+      "usualPeriod": "usual",
+      "spentLabel": "Spending: {{month}}",
+      "partialUsual": "Month in progress. A usual whole month: {{usual}}.",
+      "noUsual": "The history is too short to compare with a usual month.",
+      "trendTitle": "Recent months",
+      "trendPartial": "incomplete",
+      "merchantsTitle": "Shops and payees",
+      "merchantsNone": "Nothing in this category this month.",
+      "payments": {
+        "one": "{{count}} payment",
+        "other": "{{count}} payments"
+      },
+      "allTransactions": "All transactions in the category",
+      "back": "Back to the overview",
+      "loadError": "Couldn't load the category. Try again."
+    },
+    "transactions": {
+      "title": "Transactions",
+      "total": "Total",
+      "allSpending": "All spending",
+      "empty": "No transactions.",
+      "loadError": "Couldn't load the transactions. Try again.",
+      "backToCategory": "Back to the category"
+    },
+    "subscriptions": {
+      "title": "Recurring payments",
+      "explanation": "Same payee, a similar amount, regularly every week, month or year.",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "perMonth": "{{amount}} a month",
+      "next": "Next: {{date}}",
+      "last": "Last: {{date}}",
+      "previous": "previously {{amount}}",
+      "new": "New",
+      "priceChanged": "Price changed",
+      "inactive": "Inactive",
+      "empty": "No recurring payments found.",
+      "loadError": "Couldn't load the recurring payments. Try again."
+    }
   }
 }

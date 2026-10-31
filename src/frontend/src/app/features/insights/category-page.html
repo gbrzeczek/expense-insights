@@ -1,0 +1,102 @@
+<section class="page" *transloco="let t">
+  <a class="action back" routerLink="/overview" [queryParams]="{ month: detail()?.month }">
+    {{ t('insights.category.back') }}
+  </a>
+  <h1 class="page-title">{{ name() }}</h1>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <p class="support" role="status">{{ t('insights.loading') }}</p>
+    }
+    @case ('error') {
+      <p class="support" role="alert">{{ t('insights.category.loadError') }}</p>
+      <div>
+        <button type="button" class="button button--secondary" (click)="reload()">
+          {{ t('insights.retry') }}
+        </button>
+      </div>
+    }
+  }
+
+  @if (detail(); as d) {
+    @if (!d.month) {
+      <div class="card">
+        <p class="support">{{ t('insights.empty.text') }}</p>
+      </div>
+    } @else {
+      <app-month-switcher
+        [month]="d.month"
+        [earliest]="d.earliestMonth ?? d.month"
+        [latest]="d.latestMonth ?? d.month"
+      />
+
+      <div class="section">
+        <a
+          class="summary-link"
+          routerLink="/overview/transactions"
+          [queryParams]="{ month: d.month, category: d.categoryId }"
+        >
+          <app-summary-card
+            [label]="t('insights.category.spentLabel', { month: text.monthName(d.month) })"
+            [amount]="d.spent"
+            [currency]="d.currency"
+            [previousAmount]="d.isPartial ? null : d.usual"
+            [previousLabel]="t('insights.category.usualPeriod')"
+          />
+        </a>
+        @if (d.usual === null) {
+          <p class="support">{{ t('insights.category.noUsual') }}</p>
+        } @else if (d.isPartial) {
+          <p class="support">
+            {{ t('insights.category.partialUsual', { usual: (d.usual | money: d.currency) }) }}
+          </p>
+        }
+      </div>
+
+      @if (bars().length > 1) {
+        <section class="card section" [attr.aria-label]="t('insights.category.trendTitle')">
+          <h2 class="overline">{{ t('insights.category.trendTitle') }}</h2>
+          <app-month-bars [bars]="bars()" [usual]="d.isPartial ? null : d.usual" />
+        </section>
+      }
+
+      <section class="section" [attr.aria-labelledby]="'merchants-title'">
+        <h2 id="merchants-title" class="section-title">
+          {{ t('insights.category.merchantsTitle') }}
+        </h2>
+        @if (d.merchants.length) {
+          <ul class="card list">
+            @for (m of d.merchants; track m.merchantKey) {
+              <li>
+                <a
+                  class="list__row"
+                  routerLink="/overview/transactions"
+                  [queryParams]="{
+                    month: d.month,
+                    category: d.categoryId,
+                    merchant: m.merchantKey,
+                  }"
+                >
+                  <span class="list__main">
+                    <span class="list__name">{{ m.merchant }}</span>
+                    <span class="support">{{ payments(m.count) }}</span>
+                  </span>
+                  <span class="list__amount numeric">{{ m.amount | money: d.currency }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="card support">{{ t('insights.category.merchantsNone') }}</p>
+        }
+        <a
+          class="action"
+          routerLink="/overview/transactions"
+          [queryParams]="{ month: d.month, category: d.categoryId }"
+        >
+          {{ t('insights.category.allTransactions') }}
+        </a>
+      </section>
+    }
+  }
+</section>

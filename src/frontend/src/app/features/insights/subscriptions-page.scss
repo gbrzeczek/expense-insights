@@ -1,0 +1,58 @@
+@use 'insights';
+
+.page {
+  gap: var(--card-gap);
+}
+
+.header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin: 0;
+
+  dd {
+    margin: var(--space-1) 0 0;
+  }
+}
+
+.totals__amount {
+  font-size: var(--text-section);
+  font-weight: var(--weight-medium);
+}
+
+.name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.amount {
+  display: grid;
+  justify-items: end;
+}
+
+.list__row--inactive .list__name {
+  color: var(--color-ink-muted);
+}
+
+.badge {
+  padding: 0 var(--space-2);
+  border: var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--color-ink);
+  font-size: var(--text-meta);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-support);
+}
+
+.badge--new {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}

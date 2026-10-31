@@ -28,7 +28,7 @@ source of truth for colours, typography, spacing, components and UX writing.
 | Backend | .NET 10 (LTS), ASP.NET Core minimal APIs, EF Core |
 | Database | PostgreSQL with `pg_trgm` (+ `pgvector` from plan 07) |
 | Frontend | Angular (latest stable, standalone components, signals), PWA, mobile-first |
-| Charts | ECharts via `ngx-echarts` |
+| Charts | Small CSS bar charts for now (D31); ECharts via `ngx-echarts` when a chart needs it |
 | i18n | Transloco, default `pl`, `en` later |
 | Auth | Google OIDC (Apple later: it needs a paid Apple Developer account) |
 | Background work | `BackgroundService` + `System.Threading.Channels` |

@@ -1,6 +1,6 @@
 # 06 · Summaries & insights UX
 
-**Status:** Not started. UX references received: follow [`docs/design-system.md`](../design-system.md) (Warm Paper Finance); reuse the components in `src/frontend/src/app/shared/ui/`.
+**Status:** In review. Visual direction: [`docs/design-system.md`](../design-system.md) (Warm Paper Finance); the screens reuse the components in `src/frontend/src/app/shared/ui/`. See *As built* for the decisions taken while implementing.
 
 ## Goal
 
@@ -34,7 +34,7 @@ it. So the thresholds come from robust statistics on the user's own history:
   comparable to a standard deviation. A month is unusual when `|month − baseline| ≥ k × spread`
   (start with k = 2.5; tune on fake data) **and** the difference is ≥ 100 zł. Volatile categories
   (fuel, restaurants) need a bigger jump than steady ones (rent, subscriptions). If the spread is
-  near zero (a fixed bill), fall back to `|Δ| ≥ 10%`.
+  near zero (a fixed bill), fall back to `|Δ| ≥ 10%`. *As built: k = 3, see below.*
 - **Seasonality:** with 13+ months of history, also compare with the same month last year. A
   spike is reported only if it is unusual against both, so every December isn't news. With 2+
   years, use the median of the same month in previous years.
@@ -74,23 +74,23 @@ All of it lives in one `InsightStatistics` class with unit tests on hand-built s
 
 ## Tasks
 
-- [ ] Collect references → write a short visual direction (type scale, colour, chart style) here.
-- [ ] Aggregation queries: monthly totals per category with spending/income/excluded semantics,
+- [x] Collect references → write a short visual direction (type scale, colour, chart style) here.
+      The direction is the design system (Warm Paper Finance, D13); charts: see *As built*.
+- [x] Aggregation queries: monthly totals per category with spending/income/excluded semantics,
       refunds offset against their original category.
-- [ ] `InsightStatistics`: baseline (median), spread (scaled MAD), seasonal comparison,
+- [x] `InsightStatistics`: baseline (median), spread (scaled MAD), seasonal comparison,
       day-of-month spending profile, ranking score. Unit tests on hand-built series.
-- [ ] `InsightEngine`: each insight is a class with `Evaluate(context) → Insight?` (type,
+- [x] `InsightEngine`: each insight is a class with `Evaluate(context) → Insight?` (type,
       severity, parameters). The text comes from i18n templates with ICU plurals (Polish
       plural forms!).
-- [ ] Recurring payment detector, with tests on generator subscriptions.
-- [ ] Screens above, mobile first, plus Playwright screenshots at 390 px in light and dark.
-- [ ] Empty states: no data, one month only (no baseline yet), everything categorized.
+- [x] Recurring payment detector, with tests on generator subscriptions.
+- [x] Screens above, mobile first, plus Playwright screenshots at 390 px in light and dark.
+- [x] Empty states: no data, one month only (no baseline yet), everything categorized.
 
 ## Open questions
 
-- Weekly view, or monthly only? Default: monthly only.
-- The MAD multiplier k (start at 2.5) and the 100 zł floor: tune on the owner's data so a normal
-  month shows 0–2 insights.
+- Tune k and the 100 zł floor on the owner's real data (the tuning in *As built* is on fake data):
+  count insights per month over the real history and aim for 0–2 in a normal month.
 
 ## Decided
 
@@ -100,3 +100,78 @@ All of it lives in one `InsightStatistics` class with unit tests on hand-built s
   month only" empty state is an edge case, not the default experience.
 - P2P transfers count as spending by default and can be broken down; reimbursements offset
   their category (D11, details in plan 04).
+- Monthly only, no weekly view (the open question's default).
+
+## As built
+
+**Code.** `ExpenseInsights.Core/Insights/`: `SpendingLedger` (what counts as spending),
+`SpendingHistory` (by month, with the imported period), `InsightStatistics`, the rules in
+`InsightRules.cs`, `InsightEngine`, `RecurringPayments`. `Infrastructure/Insights/SpendingData`
+loads the current user's rows (query filter, hard rule 7). API in
+`Api/Insights/InsightEndpoints.cs`. UI in `src/frontend/src/app/features/insights/`.
+
+**Aggregation.** A few thousand rows a user, so the ledger is built in memory on each request (no
+SQL aggregation, no stored results). Subcategories roll up to their top-level category. Own
+transfers (`Kind` or category) and expired holds don't count; pending holds do. Unclassified money
+out is spending without a category ("Bez kategorii"). A refund offsets the category its merchant's
+purchases are usually in (or `OffsetsCategoryId` when set); a refund from a merchant with no
+purchases offsets `Inne`. Income with `OffsetsCategoryId` offsets that category (D11). Splits
+replace the transaction's category. Summaries are in the user's main currency (the one most
+transactions are in); rows in another currency are left out. Months are by `TransactionDate`.
+
+**History coverage.** A month counts towards a baseline only when the imports cover all of it: the
+earliest `ImportBatch.PeriodStart` (a period starting on the 2nd makes the next month the first
+full one) to the latest `PeriodEnd` or transaction date. A month with no spending in a category is a
+zero. The baseline needs 3 complete months before the month; with fewer, the overview says so and
+shows no insights. The last month is "in progress" until the data reaches its last day: then the
+headline compares by day (spent so far vs. the usual share by this day × the baseline) and no drop is
+reported.
+
+**Thresholds (tuned on fake data).** `threshold = max(k × spread, 10% × baseline, 100 zł)`: the
+10% term is the near-zero-spread fallback, applied smoothly. k = **3** instead of 2.5: on the
+25-month fake history (`test-data/fake_ing_history.csv`, random with no real events) k = 2.5 showed
+1.7 insights a month, k = 3 shows 1.3, with quiet months. A test keeps the average ≤ 2. Seasonal:
+with a complete same month a year (or years) back, a spike must be unusual against both the baseline
+and the seasonal reference, with the baseline's spread.
+
+**Large payment.** The plan's p95 fired almost every month for groceries: a category with ~25
+payments a month has one above its p95 by definition. The bar is the 12-month maximum (p100) and
+3 × the median payment, with ≥ 5 payments of history.
+
+**Frequent small spending.** A merchant whose median payment is ≤ 50 zł with ≥ 3 payments in a
+usual month; this month's count (≥ 3 more) and sum (the usual rule) both unusually high.
+
+**Recurring payments.** The merchant's payments split into price segments (each within ±10% of the
+one before). A subscription is the current segment (≥ 2 payments, cadence from the median gap
+7/30/365 ± 20%), possibly ending in one changed price (up to ±50%, on schedule, after ≥ 2 at the
+old price); every earlier segment must have held at least twice. So a varying bill (Tauron) or a
+shop with random baskets doesn't become a subscription by chance. Active until 1.5 cadences pass
+without a payment. "New" only when it starts at least a cadence after the imports do (otherwise
+it may just predate the first import).
+
+**Ranking.** Score = min(robust z, 10) × ln(amount at stake). One insight per subject (a category's
+spike and its largest payment are one story; a merchant's subscription or small payments another),
+top 3 by score, then the uncategorized reminder (so 3–4 cards). There is no separate severity: the
+score is it. Insights are recomputed for the month being looked at and never stored, so "not
+repeated unless it grew" reduces to one card per subject per month; a notifications feed would need
+a stored "shown" record (not built).
+
+**Rules.** `IInsightRule.Evaluate(context)` returns a list (a rule such as the category rule finds
+one per category). The UI words each type through `insights.insight.*` i18n templates; Polish plural
+forms use CLDR plural keys (`.one/.few/.many/.other`, like the rest of the app) rather than ICU
+message syntax. Every number in a card comes from the API, including percentages (`change`) and
+yearly costs.
+
+**API** (all scoped to the current user, each with a route isolation test):
+`GET /api/insights/overview?month=yyyy-MM` (headline numbers, usual, projection, the last six
+months, categories, ranked insights, upcoming recurring payments), `GET /api/insights/categories/{id}`
+(month vs. usual, 12-month trend, top merchants), `GET /api/insights/transactions?month&category&merchant`
+(the transactions behind any number, with what each counts for; `category=none` is unclassified),
+`GET /api/insights/subscriptions`.
+
+**Screens.** `/overview` (Przegląd, month switcher via `?month=`), `/overview/categories/:id`,
+`/overview/transactions`, `/overview/subscriptions`. Charts are small CSS bar charts
+(`shared/ui/month-bars.ts`, horizontal `category-breakdown`), not ECharts (D31). Tests: `e2e/insights.spec.ts`
+walks summary → category → merchant → transactions at 390 px in light and dark and attaches
+full-page screenshots to the report.
+
