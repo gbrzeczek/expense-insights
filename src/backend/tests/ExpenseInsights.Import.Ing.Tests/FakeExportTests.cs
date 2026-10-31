@@ -105,7 +105,7 @@ public sealed class FakeExportTests
         "p2p_in" => TransactionKind.BlikP2P,
         "p2p_out" => TransactionKind.PhoneTransfer,
         // Own transfers are recognised on import, where the user's accounts are known.
-        "transfer_in" or "transfer_out" or "own_transfer" or "standing_order" or "express" or "direct_debit" => TransactionKind.Transfer,
+        "transfer_in" or "transfer_out" or "own_transfer" or "standing_order" or "express" or "transfer_order" => TransactionKind.Transfer,
         "interest" or "interest_tax" or "correction" => TransactionKind.Other,
         _ => throw new ArgumentOutOfRangeException(nameof(generatorKind), generatorKind, null),
     };

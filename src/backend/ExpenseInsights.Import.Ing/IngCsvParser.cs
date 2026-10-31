@@ -155,9 +155,9 @@ public sealed class IngCsvParser(IngParserOptions options) : IStatementParser
             return Error(ImportIssueCodes.MissingCurrency, line);
         }
 
-        // Some booked rows come without a number (seen in a real export, in a cluster of debits and
-        // credits that cancel out). They are real movements in the balance chain, so they are kept,
-        // with a key made from their content for dedup across overlapping exports.
+        // Some booked rows come without a number (seen in a real export, otherwise ordinary rows).
+        // They are real movements in the balance chain and the totals, so they are kept, with a key
+        // made from their content for dedup across overlapping exports.
         if (!pending && externalId is null)
         {
             externalId = ContentKey(fields, contentKeys);

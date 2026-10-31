@@ -87,7 +87,7 @@ row;tx_date;tx_id;amount;account;kind;status;merchant;category
 86;2026-09-16;202626297220456760;-81,74;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
 87;2026-09-16;202625999403632224;-239,03;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
 88;2026-09-15;202626197794656343;-88,89;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-89;2026-09-15;202625831236443399;-186,00;KONTO Mobi pow.26;direct_debit;booked;PZU;Rachunki i opłaty
+89;2026-09-15;202625831236443399;-186,00;KONTO Mobi pow.26;transfer_order;booked;PZU;Rachunki i opłaty
 90;2026-09-15;202625864866800964;-326,70;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
 91;2026-09-14;202625999874726647;-22,42;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
 92;2026-09-14;202626099355961632;-71,51;KONTO Mobi pow.26;card;booked;Reserved;Odzież i obuwie
@@ -281,7 +281,7 @@ row;tx_date;tx_id;amount;account;kind;status;merchant;category
 280;2026-06-17;202616864091842179;-90,54;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
 281;2026-06-17;202616864134031298;-34,59;KONTO Mobi pow.26;blik;booked;Koleo;Transport
 282;2026-06-15;202616999621626156;-23,74;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-283;2026-06-15;202616631415713234;-186,00;KONTO Mobi pow.26;direct_debit;booked;PZU;Rachunki i opłaty
+283;2026-06-15;202616631415713234;-186,00;KONTO Mobi pow.26;transfer_order;booked;PZU;Rachunki i opłaty
 284;2026-06-12;202616499671463117;-294,26;KONTO Mobi pow.26;card;booked;Reserved;Odzież i obuwie
 285;2026-06-12;202616497479378686;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
 286;2026-06-11;202616499102725681;-112,03;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze

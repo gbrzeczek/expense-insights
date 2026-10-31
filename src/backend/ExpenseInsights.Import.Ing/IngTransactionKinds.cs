@@ -13,8 +13,8 @@ internal static partial class IngTransactionKinds
         ["TR.BLIK"] = TransactionKind.BlikOnline,
         ["P.BLIK"] = TransactionKind.BlikP2P,
         ["PRZELEW"] = TransactionKind.Transfer,
-        // Standing order (stałe zlecenie), express transfer (Express Elixir) and, by its sign and
-        // counterparties, direct debit (polecenie zapłaty): all transfers to an account.
+        // Standing order (stałe zlecenie), express transfer (Express Elixir) and transfer order
+        // (zlecenie przelewu): all transfers to an account.
         ["ST.ZLEC"] = TransactionKind.Transfer,
         ["EXPRESS"] = TransactionKind.Transfer,
         ["PZ"] = TransactionKind.Transfer,

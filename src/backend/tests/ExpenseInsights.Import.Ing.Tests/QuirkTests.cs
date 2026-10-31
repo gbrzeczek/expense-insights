@@ -208,8 +208,8 @@ public sealed class QuirkTests
     [Theory]
     [InlineData("ST.ZLEC", " SPÓŁDZIELNIA MIESZKANIOWA PODGÓRZE ", " CZYNSZ 10/2026 LOK. 15", "-742,18")]
     [InlineData("EXPRESS", " Anna Nowak ", " za bilety", "-150,00")]
-    [InlineData("PZ", " PZU SA AL. JANA PAWŁA II 24 WARSZAWA ", " Polecenie zapłaty polisa 09/2026", "-186,00")]
-    public async Task StandingOrder_ExpressTransfer_AndDirectDebit_AreTransfers(string code, string counterparty, string title, string amount)
+    [InlineData("PZ", " PZU SA AL. JANA PAWŁA II 24 WARSZAWA ", " Składka polisa 09/2026", "-186,00")]
+    public async Task StandingOrder_ExpressTransfer_AndTransferOrder_AreTransfers(string code, string counterparty, string title, string amount)
     {
         var row = $"2026-10-01;2026-10-01;\"{counterparty}\";\"{title}\";'87184959310341316475255341 ';\"PKO BP S.A.\";\"{code}  \";'202627497213806556';{amount};PLN;;;;;\"KONTO Mobi pow.26\";32955,86;PLN;;;;";
 

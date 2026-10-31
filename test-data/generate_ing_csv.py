@@ -22,7 +22,7 @@ Mirrors the quirks seen in a real export:
     real shop only visible at the end of the title
   - transaction id = YYYY + day-of-year(booking) + 2-digit channel + 9 digits
   - more "Szczegóły" codes: ST.ZLEC (standing order: the rent), EXPRESS (express
-    transfer to a friend), PZ (direct debit: a quarterly insurance premium)
+    transfer to a friend), PZ (transfer order: a quarterly insurance premium)
   - booked rows without a transaction number: a cluster of corrections that
     cancel out (debits and credits of equal sums), with a running balance
   - rows a little out of balance order: some same-day rows on one account are
@@ -43,7 +43,8 @@ Usage:
 Unverified (guessed): quoting of "Nazwa banku", "Szczegóły", "Konto" and
 currency columns; header quoting; whether the "Suma" totals include pending
 holds (we include them); interest/tax titles on the savings account; titles,
-codes and counterparties of the rows without a number; what PZ stands for.
+codes and counterparties of the rows without a number (shaped like corrections
+here; in the real export they look like ordinary transactions).
 
 The newer quirks draw from their own random stream (seeded from --seed), so the
 rows that existed before them keep their values and ids.
@@ -179,9 +180,9 @@ def generate_quirks(quirks, d, start, end):
                       "Przelewy do osób", friend, "express", -float(quirks.choice([50, 80, 150, 200])),
                       account_no=f"'{fake_nrb(quirks)} '", bank=quirks.choice(BANKS), details="EXPRESS  ",
                       channel="98", tx_id=quirk_id(quirks, d, "98")))
-    if d.day == 15 and d.month % 3 == 0:  # quarterly insurance premium, collected by direct debit
-        txs.append(Tx(d, d, " PZU SA AL. JANA PAWŁA II 24 WARSZAWA ", f"Polecenie zapłaty polisa {d:%m/%Y}",
-                      "Rachunki i opłaty", "PZU", "direct_debit", -186.00, account_no=f"'{INSURER_NRB} '",
+    if d.day == 15 and d.month % 3 == 0:  # quarterly insurance premium, paid by transfer order
+        txs.append(Tx(d, d, " PZU SA AL. JANA PAWŁA II 24 WARSZAWA ", f"Składka polisa {d:%m/%Y}",
+                      "Rachunki i opłaty", "PZU", "transfer_order", -186.00, account_no=f"'{INSURER_NRB} '",
                       bank="PKO BP S.A.", details="PZ  ", channel="31", tx_id=quirk_id(quirks, d, "31")))
     # Once, in exports of more than three months: bank corrections without a transaction number that
     # cancel out. Early on, so the classifier tests count them among the user's first month of labels.

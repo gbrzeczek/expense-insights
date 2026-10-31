@@ -74,7 +74,7 @@ row;tx_date;tx_id;amount;account;kind;status;merchant;category
 73;2026-09-15;202626199326467642;-19,35;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
 74;2026-09-15;202626097990243014;-15,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
 75;2026-09-15;202626099138595035;-42,87;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-76;2026-09-15;202625831352358612;-186,00;KONTO Mobi pow.26;direct_debit;booked;PZU;Rachunki i opłaty
+76;2026-09-15;202625831352358612;-186,00;KONTO Mobi pow.26;transfer_order;booked;PZU;Rachunki i opłaty
 77;2026-09-15;202625864825699227;-83,04;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
 78;2026-09-14;202625799951016431;-103,39;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
 79;2026-09-13;202625897377284412;-101,24;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda

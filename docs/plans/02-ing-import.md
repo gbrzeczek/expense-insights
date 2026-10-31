@@ -95,8 +95,8 @@ Quirks to handle (each one gets a test):
 | Booking date before transaction date | Savings interest: transaction `2024-07-01`, booked `2024-06-30` | Allowed; no validation of `BookingDate >= TransactionDate` |
 | Own transfer on both accounts | −2000 on the current account, +2000 on savings | Both rows kept; linked as a pair, both `Przelew własny` |
 | Transaction id structure | `YYYY` + day-of-year (booking) + 2-digit channel + 9 digits | Use only as an opaque dedup key |
-| More `Szczegóły` codes | `ST.ZLEC` (standing order), `EXPRESS` (express transfer), `PZ` | `Kind = Transfer` (see *Decided*) |
-| **Booked row without a number** | Booking date, amount in col 8, a balance, but empty `Nr transakcji` (a cluster of debits and credits that cancel out) | Kept as booked; `ExternalId` = `ing-row:` + a hash of its content (see *Decided*) |
+| More `Szczegóły` codes | `ST.ZLEC` (standing order), `EXPRESS` (express transfer), `PZ` (transfer order, *zlecenie przelewu*) | `Kind = Transfer` (see *Decided*) |
+| **Booked row without a number** | Booking date, amount in col 8, a balance, but empty `Nr transakcji`; otherwise an ordinary-looking row (in the real file: 6 rows, 3 credits and 3 debits of equal sums) | Kept as booked; `ExternalId` = `ing-row:` + a hash of its content (see *Decided*) |
 | **Rows out of balance order** | A row listed a few places from where its `Saldo` belongs (pairs of equal and opposite balance differences) | The balance check follows the chain instead of the file order (see *Decided*) |
 
 The parser should still tolerate UTF-8 and CRLF (the file may be re-saved by Excel or a phone),
@@ -140,7 +140,7 @@ but cp1250 + `;` + LF is the main path. Both variants get fixtures.
       codes; six booked rows without a number were row errors, which made the `Suma` counts and
       sums miss 3 credits and 3 debits (equal sums) and broke the balance chain around them; and
       rows listed out of balance order gave pairs of balance warnings. The generator reproduces all
-      three (rent as a standing order, express transfers, a quarterly direct debit, one cluster of
+      three (rent as a standing order, express transfers, a quarterly transfer order, one cluster of
       corrections without a number, some same-day rows swapped).
 - [x] `ImportBatch` entity: file hash, row counts (new / updated / duplicate / error), warnings.
 - [x] API: `POST /api/imports` (multipart, 5 MB limit) → batch summary; `GET /api/imports`.
@@ -170,11 +170,9 @@ the i3: 2 600 rows in 0.6 s and 10 000 rows in 2.0 s (`ImportBenchmarkTests`, ex
   locally (never committed).
 - `Szczegóły` codes and titles for savings interest and tax: the generator guesses
   `ODSETKI` / `PODATEK`.
-- The booked rows without a number: what they are (the generator guesses bank corrections that
-  cancel out, with no code or counterparty account) and whether they ever get a number later.
-  The importer only needs them to stay identical between exports.
-- `PZ`: read as *polecenie zapłaty* (direct debit), from the code and the counterparties; any
-  other kind of transfer maps the same way.
+- The booked rows without a number look like ordinary transactions in the real export, so why
+  they have none is unknown (the generator shapes them as corrections that cancel out). The
+  importer only needs them to stay identical between exports.
 - Credit card exports: same format? Out of scope until a sample exists.
 
 ## Decided
