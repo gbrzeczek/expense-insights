@@ -630,6 +630,23 @@
         "kapitalizacja odsetek",
         "podatek od odsetek"
       ]
+    },
+    "investments": {
+      "direction": "any",
+      "contains": [
+        "xtb",
+        "x trade brokers",
+        "dom maklerski",
+        "biuro maklerskie",
+        "trading 212",
+        "interactive brokers",
+        "finax"
+      ],
+      "title": [
+        "obligacje skarbowe",
+        "zakup obligacji",
+        "ikze"
+      ]
     }
   }
 }

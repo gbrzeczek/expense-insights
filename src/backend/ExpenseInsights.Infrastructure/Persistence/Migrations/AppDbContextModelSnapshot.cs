@@ -297,6 +297,15 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                             Key = "ownTransfer",
                             Kind = "Excluded",
                             SortOrder = 200
+                        },
+                        new
+                        {
+                            Id = new Guid("0000000c-0000-0000-0000-000000000021"),
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsHidden = false,
+                            Key = "investments",
+                            Kind = "Excluded",
+                            SortOrder = 210
                         });
                 });
 

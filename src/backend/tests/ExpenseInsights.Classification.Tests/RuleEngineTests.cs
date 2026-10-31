@@ -138,6 +138,18 @@ public sealed class RuleEngineTests
         Assert.Equal(CategoryCatalog.Groceries.Id, matches[1].CategoryId);
     }
 
+    [Theory]
+    [InlineData("x trade brokers dom maklerski", -5000, "Przelew na rachunek inwestycyjny")]
+    [InlineData("xtb", 1200, "Wypłata środków")]
+    [InlineData("pko bank polski", -1000, "Zakup obligacji skarbowych")]
+    public void Investments_AreExcluded_BothWays(string merchant, double amount, string title)
+    {
+        var best = Best(new RuleInput(TransactionKind.Transfer, (decimal)amount, merchant, title, "broker"));
+
+        Assert.Equal(CategoryCatalog.Investments.Id, best.CategoryId);
+        Assert.Equal(CategoryKind.Excluded, CategoryCatalog.Investments.Kind);
+    }
+
     [Fact]
     public void Matches_AreOnePerCategory()
     {

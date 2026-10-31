@@ -57,9 +57,10 @@ internal static class MerchantEndpoints
             })
             .ToList();
 
-        // Spending excludes own transfers and money coming in.
+        // Spending excludes own transfers, investments and money coming in.
         var spending = (await db.Transactions.AsNoTracking()
-                .Where(t => t.Amount < 0 && t.Kind != TransactionKind.OwnTransfer && t.CategoryId != CategoryCatalog.OwnTransfer.Id)
+                .Where(t => t.Amount < 0 && t.Kind != TransactionKind.OwnTransfer
+                    && t.CategoryId != CategoryCatalog.OwnTransfer.Id && t.CategoryId != CategoryCatalog.Investments.Id)
                 .Select(t => new
                 {
                     t.Currency,
