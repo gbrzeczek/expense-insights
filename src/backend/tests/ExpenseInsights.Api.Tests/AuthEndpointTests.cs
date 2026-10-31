@@ -204,18 +204,7 @@ public sealed class AuthEndpointTests(PostgresFixture postgres) : IntegrationTes
     [Fact]
     public async Task GoogleLogin_RedirectsToGoogle_WithOurCallback()
     {
-        using var factory = _factory.WithWebHostBuilder(builder =>
-        {
-            builder.UseSetting("Auth:Google:ClientId", "test-client.apps.googleusercontent.com");
-            builder.UseSetting("Auth:Google:ClientSecret", "test-secret");
-            // No discovery request to Google from a test.
-            builder.ConfigureTestServices(services => services.PostConfigure<OpenIdConnectOptions>(AuthSetup.GoogleScheme, options =>
-                options.Configuration = new OpenIdConnectConfiguration
-                {
-                    Issuer = "https://accounts.google.com",
-                    AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth",
-                }));
-        });
+        using var factory = WithGoogle(_factory);
         using var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
         using var response = await client.GetAsync(new Uri("/api/auth/login/google?returnUrl=/import", UriKind.Relative), CancellationToken);
@@ -233,6 +222,26 @@ public sealed class AuthEndpointTests(PostgresFixture postgres) : IntegrationTes
         Assert.Equal("select_account", query["prompt"]);
         Assert.Equal("S256", query["code_challenge_method"]);
         Assert.All(response.Headers.GetValues("Set-Cookie"), c => Assert.Contains("samesite=lax", c, StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public async Task GoogleLogin_BehindTheTlsProxy_UsesHttpsAndSecureCookies()
+    {
+        // Production: Caddy terminates TLS and sets X-Forwarded-Proto; docker-compose.prod.yml sets
+        // ASPNETCORE_FORWARDEDHEADERS_ENABLED, which reaches configuration as this key.
+        using var factory = WithGoogle(Production().WithWebHostBuilder(builder => builder.UseSetting("FORWARDEDHEADERS_ENABLED", "true")));
+        using var client = factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("/api/auth/login/google", UriKind.Relative));
+        request.Headers.Host = "expenses.example.com";
+        request.Headers.Add("X-Forwarded-Proto", "https");
+        request.Headers.Add("X-Forwarded-For", "100.64.0.7");
+
+        using var response = await client.SendAsync(request, CancellationToken);
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        var query = QueryHelpers.ParseQuery(response.Headers.Location!.Query);
+        Assert.Equal("https://expenses.example.com/api/auth/callback/google", query["redirect_uri"]);
+        Assert.All(response.Headers.GetValues("Set-Cookie"), c => Assert.Contains("secure", c, StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -258,6 +267,20 @@ public sealed class AuthEndpointTests(PostgresFixture postgres) : IntegrationTes
         Assert.Equal(expected, AuthEndpoints.LocalUrl(returnUrl));
 
     private WebApplicationFactory<Program> Production() => _factory.WithWebHostBuilder(builder => builder.UseEnvironment("Production"));
+
+    private static WebApplicationFactory<Program> WithGoogle(WebApplicationFactory<Program> factory) =>
+        factory.WithWebHostBuilder(builder =>
+        {
+            builder.UseSetting("Auth:Google:ClientId", "test-client.apps.googleusercontent.com");
+            builder.UseSetting("Auth:Google:ClientSecret", "test-secret");
+            // No discovery request to Google from a test.
+            builder.ConfigureTestServices(services => services.PostConfigure<OpenIdConnectOptions>(AuthSetup.GoogleScheme, options =>
+                options.Configuration = new OpenIdConnectConfiguration
+                {
+                    Issuer = "https://accounts.google.com",
+                    AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth",
+                }));
+        });
 
     public ValueTask DisposeAsync() => _factory.DisposeAsync();
 }

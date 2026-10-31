@@ -1,0 +1,148 @@
+name: Deploy
+
+# After CI passes on main: build the app and Caddy images, push them to GHCR tagged with the
+# commit, then deploy them to the home server over SSH, reaching it through Tailscale.
+# Setup: deploy/README.md, "Automatic deploys".
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+  APP_IMAGE: ghcr.io/gbrzeczek/expense-insights
+  CADDY_IMAGE: ghcr.io/gbrzeczek/expense-insights-caddy
+
+jobs:
+  images:
+    name: Build and push images
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.COMMIT }}
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # The default cache scope is shared with CI's image job, so this is mostly cache hits.
+      - name: App image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ env.APP_IMAGE }}:${{ env.COMMIT }},${{ env.APP_IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Caddy image
+        uses: docker/build-push-action@v7
+        with:
+          context: deploy/caddy
+          push: true
+          tags: ${{ env.CADDY_IMAGE }}:${{ env.COMMIT }},${{ env.CADDY_IMAGE }}:latest
+          cache-from: type=gha,scope=caddy
+          cache-to: type=gha,mode=max,scope=caddy
+
+  # Skipped until the repository variable DEPLOY_HOST is set (a job-level `if` sees repository
+  # variables, not the environment's). Everything else comes from the `production` environment.
+  deploy:
+    name: Deploy to the home server
+    needs: images
+    if: vars.DEPLOY_HOST != ''
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.COMMIT }}
+
+      - uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          ping: ${{ vars.DEPLOY_HOST }}
+
+      - name: Set up SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      # deploy/.env is written here from the environment's secrets and variables; the server
+      # keeps only this generated copy. Single-quoted, so Compose reads the values literally.
+      - name: Bundle deploy files and settings
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          AUTH_OWNER_EMAIL: ${{ vars.AUTH_OWNER_EMAIL }}
+          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          APP_HOST: ${{ vars.APP_HOST }}
+          TAILSCALE_IP: ${{ vars.TAILSCALE_IP }}
+          ACME_EMAIL: ${{ vars.ACME_EMAIL }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          BACKUP_DIR: ${{ vars.BACKUP_DIR || '/var/backups/expense-insights' }}
+          AGE_RECIPIENT: ${{ vars.AGE_RECIPIENT }}
+          RCLONE_REMOTE: ${{ vars.RCLONE_REMOTE }}
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          BACKUP_PING_URL: ${{ secrets.BACKUP_PING_URL }}
+          HEALTH_PING_URL: ${{ secrets.HEALTH_PING_URL }}
+          IMAGE_TAG: ${{ env.COMMIT }}
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          required=(POSTGRES_PASSWORD AUTH_OWNER_EMAIL GOOGLE_CLIENT_ID GOOGLE_CLIENT_SECRET APP_HOST
+            TAILSCALE_IP ACME_EMAIL CLOUDFLARE_API_TOKEN AGE_RECIPIENT)
+          optional=(BACKUP_DIR RCLONE_REMOTE R2_ENDPOINT R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY
+            BACKUP_PING_URL HEALTH_PING_URL IMAGE_TAG)
+          for name in "${required[@]}"; do
+            [[ -n "${!name}" ]] || { echo "::error::$name is not set in the production environment"; exit 1; }
+          done
+          umask 077
+          mkdir -p bundle
+          git archive HEAD deploy | tar -x -C bundle
+          for name in "${required[@]}" "${optional[@]}"; do
+            value="${!name}"
+            if [[ "$value" == *$'\n'* || "$value" == *"'"* ]]; then
+              echo "::error::$name contains a newline or a single quote"
+              exit 1
+            fi
+            printf "%s='%s'\n" "$name" "$value"
+          done > bundle/deploy/.env
+          printf '%s:%s' "$REGISTRY_USER" "$REGISTRY_TOKEN" > bundle/registry-auth
+
+      - name: Deploy
+        env:
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+        run: |
+          tar -czf - -C bundle deploy registry-auth |
+            ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$TARGET" "deploy $COMMIT"
+
+      - name: Clean up
+        if: always()
+        run: rm -rf bundle ~/.ssh/id_deploy

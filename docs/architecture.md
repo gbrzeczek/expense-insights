@@ -4,7 +4,7 @@
 
 ```
  Phone / desktop browser (Angular PWA, pl-PL)
-              │  HTTPS (Cloudflare Tunnel / Tailscale)
+              │  HTTPS via Tailscale → Caddy (TLS)
               ▼
  ┌──────────────────────── home server (Docker Compose) ────────────────────────┐
  │  ExpenseInsights.Api (ASP.NET Core)                                          │
@@ -111,10 +111,15 @@ Accuracy is measured offline against `test-data/fake_ing.labels.csv` and reporte
 
 ## Deployment
 
-Docker Compose: `api`, `db`, and optionally `llm` (llama.cpp, 2 threads, low CPU priority). The
-Angular build is served by the API as static files, so there is one origin and no CORS. Remote
-access goes through Cloudflare Tunnel or Tailscale, with no open ports. Nightly `pg_dump`,
-encrypted, plus an off-site copy.
+Docker Compose (`deploy/docker-compose.prod.yml`): `caddy`, `api`, `db`, and optionally `llm`
+(llama.cpp, 2 threads, low CPU priority). The Angular build is served by the API as static files,
+so there is one origin and no CORS. The app is reachable only inside the tailnet: Caddy listens on
+the server's Tailscale address and terminates TLS for `expenses.gbrzeczek.dev`, a Cloudflare
+DNS-only record pointing at that address, with a Let's Encrypt certificate from the DNS-01
+challenge. No open ports, nothing on the LAN. Nightly `pg_dump`, `age`-encrypted, kept locally and
+copied to Cloudflare R2. Merges to `main` deploy themselves: GitHub Actions builds the images, pushes
+them to GHCR and deploys over SSH through Tailscale, with settings from a GitHub environment.
+Setup, backups, restore and monitoring: `deploy/README.md`.
 
 ## Decision log
 
@@ -142,7 +147,11 @@ encrypted, plus an off-site copy.
 | D20 | Only accounts in the export make an own transfer; the user's name with another account is a guess for review (incoming → `Inne przychody`, outgoing → `Przelew własny`), settled by a rule per account | A business account isn't in the ING export, and money from it is income, not a move between own accounts |
 | D21 | Global merchant rules ship as an embedded JSON file; only user rules are rows | A new rule list ships with a deploy, needs no migration, and is reviewed in diffs |
 | D22 | Classification runs in a background `BackgroundService` fed by a channel after import; `xmin` guards against overwriting a concurrent correction | The import returns at once; no broker needed for this load (D2) |
+| D23 | ~~Cloudflare Tunnel~~ → **Tailscale only**, under a Cloudflare DNS-only name pointing at the server's tailnet address; Caddy bound to that address with a Let's Encrypt certificate via the Cloudflare DNS-01 challenge (revised) | Bank data shouldn't be on the public internet; a real name and certificate keep Google sign-in and PWA install working; no open port is needed for the certificate |
+| D24 | Backups: `pg_dump` custom format piped into `age` (public key only on the server), 14 daily + 6 monthly, `rclone copy` (never sync) to Cloudflare R2, run by a host systemd timer | No extra container; a stolen server or bucket doesn't expose data; a wiped disk can't delete the off-site copies |
+| D25 | Monitoring by dead man's switch: systemd timers check `/health` through Caddy and ping healthchecks.io, instead of Uptime Kuma | An outside checker can't reach a tailnet-only host; pings stopping also catches the whole server being down; no extra container |
 | D26 | Insights use robust statistics (median baseline, MAD spread, seasonal comparison, day-of-month pace profile), not ML | A few hundred monthly data points per user is too little to train on; every number must be explainable and lead to its transactions |
 | D27 | Classification after rules: kNN memory over corrections + local embeddings with category anchors; no trained ML.NET model; the local LLM (plan 08) handles what is left | Both tiers work from the first correction with no training step; anchors cover cold start |
 | D28 | The local LLM (plan 08) is required: a ≤ 3B quantized model on the current 8 GB, used as a chooser (constrained output, log-probability confidence) and for phrasing; the app works unchanged when its container is down | No transaction text leaves the server; brand knowledge covers what embeddings miss; 16 GB only if a bigger model clearly wins |
 | D29 | Cloud insights (plan 09): opt-in per user, category-level monthly aggregates only, the model explores through fixed query tools and writes with placeholders that code fills; OpenAI-compatible client on a prepaid provider plus app-side caps | More interesting insights than fixed rules, without trusting model arithmetic or sending merchants; a few users cost cents a month |
+| D30 | Deploys from GitHub Actions after CI on `main`: images built on GitHub and pushed to GHCR by commit; the job joins the tailnet as `tag:ci` and deploys over SSH with a key restricted to one forced command; settings live in the GitHub environment `production` and each deploy writes the server's `.env` | Same pattern as sheetsolver on the same server; builds on fast runners, not the i3; one place to edit settings; no open port and no shell for the deploy key |

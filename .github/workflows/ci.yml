@@ -72,6 +72,30 @@ jobs:
           path: src/frontend/playwright-report
           retention-days: 7
 
+  deploy:
+    name: Deploy files (shellcheck + compose + Caddy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: shellcheck -x -P deploy/scripts deploy/scripts/*.sh deploy/systemd/install.sh
+      - name: Production compose config
+        env:
+          POSTGRES_PASSWORD: ci
+          AUTH_OWNER_EMAIL: ci@example.com
+          GOOGLE_CLIENT_ID: ci
+          GOOGLE_CLIENT_SECRET: ci
+          APP_HOST: expenses.example.com
+          TAILSCALE_IP: 127.0.0.1
+        run: docker compose -f deploy/docker-compose.prod.yml config -q
+      - name: Build Caddy and validate the Caddyfile
+        run: |
+          docker build -t expense-insights-caddy:ci deploy/caddy
+          for mode in acme internal; do
+            docker run --rm --network none -e APP_HOST=expenses.example.com -e TLS_MODE="$mode" \
+              -e ACME_EMAIL=ci@example.com -e CLOUDFLARE_API_TOKEN="$(printf 'x%.0s' {1..40})" \
+              expense-insights-caddy:ci caddy validate --config /etc/caddy/Caddyfile
+          done
+
   image:
     name: Production image
     runs-on: ubuntu-latest

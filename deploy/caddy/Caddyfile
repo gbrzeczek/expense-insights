@@ -1,0 +1,38 @@
+# TLS edge for the API. Values come from deploy/.env via docker-compose.prod.yml.
+# TLS_MODE=acme (default): Let's Encrypt certificate through the Cloudflare DNS-01 challenge.
+# TLS_MODE=internal: Caddy's own CA, for trying the stack locally (browsers will warn).
+
+(tls_acme) {
+	tls {$ACME_EMAIL} {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+		# Public resolvers for the propagation check; the server's own (MagicDNS) may answer differently.
+		resolvers 1.1.1.1 1.0.0.1
+	}
+}
+
+(tls_internal) {
+	tls internal
+}
+
+{$APP_HOST} {
+	import tls_{$TLS_MODE:acme}
+
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "same-origin"
+		-Server
+	}
+
+	# Sets X-Forwarded-For/-Proto; the API trusts them (ASPNETCORE_FORWARDEDHEADERS_ENABLED).
+	# During a redeploy, requests wait for the new API container instead of failing at once.
+	reverse_proxy api:8080 {
+		lb_try_duration 30s
+	}
+
+	# No access log: URIs can carry search terms (an account number, say). Errors still go to
+	# stderr, so to `docker compose logs caddy`.
+}
