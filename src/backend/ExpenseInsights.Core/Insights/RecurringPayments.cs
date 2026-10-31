@@ -1,3 +1,5 @@
+using ExpenseInsights.Core.Classification;
+
 namespace ExpenseInsights.Core.Insights;
 
 /// <summary>A payment that repeats on a regular cadence (a subscription, rent).</summary>
@@ -43,10 +45,11 @@ public sealed record RecurringPayment(
 }
 
 /// <summary>
-/// Finds recurring payments: the same merchant, a similar amount (±10%), a regular cadence (the
-/// median gap is 7, 30 or 365 days ± 20%), at least twice. The latest payment may differ by more
-/// (a price change, up to ±50%) when it comes on schedule after at least two at the old price.
-/// Only the payments at the current price (and the one before a change) count.
+/// Finds recurring payments: the same merchant, a similar amount (±10%), a regular cadence (every
+/// gap is 7, 30 or 365 days ± 20%, and no payment to the merchant ever came sooner), at least twice.
+/// The latest payment may differ by more (a price change, up to ±50%) when it comes on schedule after
+/// at least two at the old price. Only the payments at the current price (and the one before a
+/// change) count. Everyday spending (groceries, restaurants) needs more: see <see cref="EverydayCategories"/>.
 /// </summary>
 public static class RecurringPayments
 {
@@ -62,6 +65,15 @@ public static class RecurringPayments
     public const decimal PriceChangeLimit = 0.50m;
 
     public const int MinimumOccurrences = 2;
+
+    /// <summary>
+    /// Categories bought often at similar prices (coffee, lunch, a usual basket), where a regular
+    /// pattern is easily a coincidence. A subscription there needs <see cref="EverydayMinimumOccurrences"/>
+    /// payments within <see cref="PriceChangeTolerance"/> of each other.
+    /// </summary>
+    public static readonly Guid[] EverydayCategories = [CategoryCatalog.Groceries.Id, CategoryCatalog.Restaurants.Id];
+
+    public const int EverydayMinimumOccurrences = 4;
 
     /// <summary>A subscription is still active until this many cadences pass without a payment.</summary>
     public const double ActiveFor = 1.5;
@@ -114,10 +126,16 @@ public static class RecurringPayments
 
         List<LedgerEntry> run = priceChange ? [.. current, latest] : current;
         var previous = run[^2];
-        var gaps = run.Zip(run.Skip(1), (a, b) => (decimal)(b.Date.DayNumber - a.Date.DayNumber)).ToArray();
+        var gaps = Gaps(run);
         var medianGap = (double)InsightStatistics.Median(gaps);
         var cadence = Cadences.FirstOrDefault(c => Math.Abs(medianGap - c) <= CadenceTolerance * c);
-        if (cadence == 0 || (priceChange && Math.Abs((double)gaps[^1] - cadence) > CadenceTolerance * cadence))
+
+        // Every payment on schedule, not just the typical one: coffee bought most weeks has a
+        // median gap of about 7 days, but gaps of 2 and 13 days too. And a subscription is never
+        // paid sooner than its cadence, also before the current price.
+        if (cadence == 0
+            || gaps.Any(g => Math.Abs((double)g - cadence) > CadenceTolerance * cadence)
+            || Gaps(series).Any(g => (double)g < (1 - CadenceTolerance) * cadence))
         {
             return null;
         }
@@ -129,6 +147,12 @@ public static class RecurringPayments
             _ => latest.Date.AddMonths(1),
         };
         var category = run.Where(e => e.CategoryId is not null).GroupBy(e => e.CategoryId).OrderByDescending(g => g.Count()).Select(g => g.Key).FirstOrDefault();
+        if (category is { } everyday && EverydayCategories.Contains(everyday)
+            && (run.Count < EverydayMinimumOccurrences || run.Any(e => !Similar(e.Amount, latest.Amount, PriceChangeTolerance))))
+        {
+            return null;
+        }
+
         var merchantName = run.GroupBy(e => e.Merchant).OrderByDescending(g => g.Count()).First().Key;
         return new RecurringPayment(
             latest.MerchantKey,
@@ -143,6 +167,9 @@ public static class RecurringPayments
             run.Count,
             asOf.DayNumber - latest.Date.DayNumber <= ActiveFor * cadence);
     }
+
+    private static decimal[] Gaps(IReadOnlyList<LedgerEntry> payments) =>
+        [.. payments.Zip(payments.Skip(1), (a, b) => (decimal)(b.Date.DayNumber - a.Date.DayNumber))];
 
     private static bool Similar(decimal amount, decimal reference, decimal tolerance) =>
         Math.Abs(amount - reference) <= tolerance * Math.Abs(reference);

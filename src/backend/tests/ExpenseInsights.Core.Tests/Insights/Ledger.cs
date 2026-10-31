@@ -11,6 +11,7 @@ internal sealed class Ledger
     public static readonly Guid Bills = CategoryCatalog.Bills.Id;
     public static readonly Guid Electronics = CategoryCatalog.Electronics.Id;
     public static readonly Guid Subscriptions = CategoryCatalog.Subscriptions.Id;
+    public static readonly Guid Leisure = CategoryCatalog.Leisure.Id;
 
     private readonly List<LedgerEntry> _entries = [];
 
