@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# The only thing the Deploy workflow's SSH key may run (a forced command in authorized_keys):
+# Run by the Deploy workflow over SSH. The job copies this commit's version to
+# $DEPLOY_ROOT/.ci-deploy.sh first, so nothing has to be on the server beforehand:
 #
-#   restrict,command="/opt/apps/expense-insights/deploy/scripts/ci-deploy.sh" ssh-ed25519 AAAA… github-deploy
+#   DEPLOY_ROOT=/opt/apps/expense-insights bash /opt/apps/expense-insights/.ci-deploy.sh deploy <commit>
 #
 # Accepts exactly `deploy <commit>`. Reads a gzipped tar on stdin holding `deploy/` (compose file,
 # scripts, systemd units, the generated .env) and `registry-auth` (`<user>:<token>`, the job's
@@ -9,7 +10,7 @@
 set -euo pipefail
 
 main() {
-  local command="${SSH_ORIGINAL_COMMAND-}"
+  local command="$*"
   if [[ ! "$command" =~ ^deploy\ ([0-9a-f]{40})$ ]]; then
     echo "refused: expected 'deploy <commit>'" >&2
     exit 2
@@ -17,7 +18,7 @@ main() {
   local commit="${BASH_REMATCH[1]}"
 
   local root staging
-  root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+  root="$(cd "${DEPLOY_ROOT:?}" && pwd)"
   umask 077
   staging="$(mktemp -d "$root/.incoming.XXXXXX")"
   # shellcheck disable=SC2064 # expand now: $staging is local

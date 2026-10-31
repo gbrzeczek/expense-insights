@@ -53,8 +53,8 @@ Every merge to `main` that passes CI deploys itself (`.github/workflows/deploy.y
    variables, see step 8), so GitHub is where settings are edited and the server only holds the
    generated copy.
 4. **SSH.** It sends `deploy/` (compose file, scripts, systemd units, the new `.env`) and the job's
-   short-lived registry token to the server in one SSH call. The key can run nothing but
-   `deploy/scripts/ci-deploy.sh` (a forced command), which swaps the new `deploy/` in (keeping the
+   short-lived registry token to the server, together with this commit's
+   `deploy/scripts/ci-deploy.sh`. That script swaps the new `deploy/` in (keeping the
    old one as `deploy.previous`) and runs `deploy/scripts/deploy.sh`: pull the new images, back up
    (the API runs migrations on start), start, wait for `/health`. A failed health check fails
    the job.
@@ -77,14 +77,8 @@ sudo install -d -o deploy -m 750 /opt/apps/expense-insights
 sudo install -d -o deploy -m 700 /var/backups/expense-insights
 ```
 
-Docker Engine with the Compose plugin and Tailscale are assumed to be there already. The first
-copy of `deploy/` comes from your laptop's clone, because the forced command it contains has to
-exist before the first deploy:
-
-```bash
-git -C ~/code/expense-insights archive main deploy |
-  ssh debianhome 'sudo -u deploy tar -x -C /opt/apps/expense-insights'
-```
+Docker Engine with the Compose plugin and Tailscale are assumed to be there already. Nothing
+else has to be copied by hand: the first deploy brings `deploy/` along.
 
 ### 2. The Tailscale address, and binding to it at boot
 
@@ -152,28 +146,11 @@ No `rclone config` is needed: the scripts define the `r2` remote from `deploy/.e
 
 ### 7. Deploy key and Tailscale access for the job
 
-**SSH key**, on your laptop. The private half goes only into the GitHub secret; delete the local
-file afterwards (if it is ever lost, make a new one):
-
-```bash
-ssh-keygen -t ed25519 -N '' -C github-expense-insights -f expense-insights-deploy
-```
-
-On the server, allow it for `deploy`, restricted to the deploy script:
-
-```bash
-echo "restrict,command=\"/opt/apps/expense-insights/deploy/scripts/ci-deploy.sh\" $(cat expense-insights-deploy.pub)" |
-  ssh debianhome "sudo -u deploy sh -c 'mkdir -p -m 700 ~/.ssh && cat >> ~/.ssh/authorized_keys'"
-```
-
-`restrict` turns off terminals and forwarding; `command=` means whatever the job asks for, only
-`ci-deploy.sh` runs, and it accepts only `deploy <commit>`. The key is therefore not a shell on the
-server, though a deploy can still run any image built from `main`.
-
-Use a key of its own, not sheetsolver's. sshd applies the options of the first `authorized_keys`
-line that matches a key, and sheetsolver's key needs a plain shell (no `command=`). With a shared
-key the job gets that shell, runs `deploy <commit>` as a command and fails with
-`deploy: command not found`.
+**SSH key.** Reuse the server's shared deploy key, the one sheetsolver's workflow uses: its
+private half → secret `DEPLOY_SSH_KEY`. It is a plain shell as `deploy`, which is in the `docker`
+group and so effectively root on the server; a leak of this secret (or sheetsolver's) gives the
+whole server. That is accepted because SSH is reachable only from the tailnet, and only `tag:ci`
+may reach port 22. If the key is ever rotated, update the secret in every repository that uses it.
 
 **Host key**, from a machine in the tailnet: `ssh-keyscan <name>` → secret `DEPLOY_KNOWN_HOSTS`,
 so the job knows it talks to the real server. SSH looks the server up by the exact name it
@@ -204,7 +181,7 @@ read these values. Then add:
 | Kind | Name | Value |
 |---|---|---|
 | Secret | `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRET` | Tailscale OAuth client (step 7) |
-| Secret | `DEPLOY_SSH_KEY` | The private key `expense-insights-deploy`, whole |
+| Secret | `DEPLOY_SSH_KEY` | The shared deploy key's private half, whole (step 7) |
 | Secret | `DEPLOY_KNOWN_HOSTS` | Output of `ssh-keyscan <DEPLOY_HOST>` (step 7) |
 | Secret | `POSTGRES_PASSWORD` | `openssl rand -base64 32 \| tr -d '/+='`. Set once: the database keeps it |
 | Secret | `GOOGLE_CLIENT_SECRET` | Google OAuth client |
@@ -212,6 +189,7 @@ read these values. Then add:
 | Secret | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Step 6 |
 | Secret | `BACKUP_PING_URL`, `HEALTH_PING_URL` | healthchecks.io ping URLs (optional, see *Monitoring*) |
 | Variable | `DEPLOY_USER` | `deploy` |
+| Variable | `DEPLOY_DIR` | Optional; default `/opt/apps/expense-insights` |
 | Variable | `AUTH_OWNER_EMAIL` | Your Google address |
 | Variable | `GOOGLE_CLIENT_ID` | Google OAuth client id (public) |
 | Variable | `APP_HOST` | `expenses.gbrzeczek.dev` |
