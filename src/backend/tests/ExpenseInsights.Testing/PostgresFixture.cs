@@ -25,7 +25,7 @@ public sealed class PostgresFixture : IAsyncLifetime
     /// <param name="loggerFactory">Captures EF Core's logs, if given.</param>
     public AppDbContext CreateDbContext(Guid? userId = null, ILoggerFactory? loggerFactory = null)
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(ConnectionString);
+        var options = new DbContextOptionsBuilder<AppDbContext>().UseNpgsql(ConnectionString, npgsql => npgsql.UseVector());
         if (loggerFactory is not null)
         {
             options.UseLoggerFactory(loggerFactory);

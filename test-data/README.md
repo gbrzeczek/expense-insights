@@ -15,6 +15,10 @@
 - `fake_ing_history.csv` (+ labels): 25 months, seed 7 (2024-10-08 – 2026-10-28), for the insight
   tests that need more than a year (seasonality, a normal month's number of insights).
 
+- `fake_local_merchants.csv`: 56 invented local shop names (`APTEKA POD ORLEM`, `KEBAB U ALIEGO`)
+  with their category, written by hand, not generated. No chain the rules know: the Eval tool
+  measures the embedding tier's category anchors on them (plan 07).
+
 - `fake_ing_overlap_a.csv`, `fake_ing_overlap_b.csv` (+ labels): two exports of one fake history.
   B starts 14 days before A ends, and the six pending holds at the end of A are booked in B with
   their transaction ids. Used by the dedup and pending → booked import tests.

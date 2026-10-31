@@ -26,13 +26,35 @@ COPY src/backend/ ./
 # and pre-compresses them.
 COPY --from=frontend /src/dist/expense-insights/browser/ ExpenseInsights.Api/wwwroot/
 RUN dotnet publish ExpenseInsights.Api/ExpenseInsights.Api.csproj -c Release -o /app --no-restore
+# ONNX Runtime (plan 07) ships native libraries for every OS (~200 MB); keep only this image's.
+ARG TARGETARCH
+RUN rid="linux-$([ "$TARGETARCH" = arm64 ] && echo arm64 || echo x64)" \
+ && find /app/runtimes -mindepth 1 -maxdepth 1 ! -name "$rid" -exec rm -rf {} + \
+ && test -f "/app/runtimes/$rid/native/libonnxruntime.so"
+
+# --- Embedding model (plan 07) -------------------------------------------------
+# multilingual-e5-small (MIT licence), the int8 ONNX export from the model's own repository, pinned
+# by revision and SHA-256 (the same as E5Model.cs; a test checks they match). Built into the image so
+# the server needs no download at run time; a layer of ~135 MB that only changes with the model.
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS model
+ARG E5_URL=https://huggingface.co/intfloat/multilingual-e5-small/resolve/614241f622f53c4eeff9890bdc4f31cfecc418b3/onnx
+WORKDIR /models
+RUN curl -fsSL -o model_qint8_avx512_vnni.onnx "$E5_URL/model_qint8_avx512_vnni.onnx" \
+ && curl -fsSL -o tokenizer.json "$E5_URL/tokenizer.json" \
+ && printf '%s\n' \
+      "dd476dd0c2514e9b9be83aeb3853fac0763e0bdf4a71645407587d77c48a2d88  model_qint8_avx512_vnni.onnx" \
+      "0b44a9d7b51c3c62626640cda0e2c2f70fdacdc25bbbd68038369d14ebdf4c39  tokenizer.json" \
+    | sha256sum -c -
 
 # --- Runtime ------------------------------------------------------------------
 # Chiseled (distroless, non-root) with ICU and tzdata for pl-PL culture support.
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra AS runtime
 WORKDIR /app
 COPY --from=backend /app ./
+COPY --from=model /models ./models
 ENV ASPNETCORE_HTTP_PORTS=8080 \
-    TZ=Europe/Warsaw
+    TZ=Europe/Warsaw \
+    Classification__Embeddings__ModelDirectory=/app/models \
+    Classification__Embeddings__Download=false
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "ExpenseInsights.Api.dll"]

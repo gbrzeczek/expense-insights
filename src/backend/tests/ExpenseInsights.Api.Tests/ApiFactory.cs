@@ -20,6 +20,8 @@ public class ApiFactory(PostgresFixture postgres) : WebApplicationFactory<Progra
         builder.UseEnvironment("Development");
         builder.UseSetting("ConnectionStrings:Default", Postgres.ConnectionString);
         builder.UseSetting("Auth:OwnerEmail", OwnerEmail);
+        // The embedding tier would download its model; the tiers are tested in Classification and Infrastructure.
+        builder.UseSetting("Classification:Embeddings:Enabled", "false");
         // Not from a developer's user-secrets.
         builder.UseSetting("Auth:Google:ClientId", "");
         builder.UseSetting("Auth:Google:ClientSecret", "");

@@ -1,4 +1,5 @@
-export type ClassificationSource = 'unclassified' | 'globalRule' | 'userRule' | 'userCorrection';
+export type ClassificationSource =
+  'unclassified' | 'globalRule' | 'userRule' | 'userCorrection' | 'similarity' | 'embedding';
 export type TransactionFilter = 'all' | 'unclassified' | 'review';
 
 export interface TransactionItem {

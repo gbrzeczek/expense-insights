@@ -52,7 +52,8 @@ commit.
       this is checked with Chrome's own installability API (`Page.getInstallabilityErrors`):
       no errors, service worker active.
 - [x] The prod image is under ~250 MB (172 MB unpacked; CI fails above 250 MB), and the API
-      idles below ~200 MB RAM (~58 MiB measured).
+      idles below ~200 MB RAM (~58 MiB measured). *Since plan 07:* ~330 MB with the embedding
+      model and ONNX Runtime built in, so CI fails above 400 MB (D33).
 
 ## Notes
 

@@ -33,6 +33,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
 
     public DbSet<TransactionSplit> TransactionSplits => Set<TransactionSplit>();
 
+    /// <summary>Embeddings of the user's labelled merchants (plan 07, tier C).</summary>
+    public DbSet<MerchantEmbedding> MerchantEmbeddings => Set<MerchantEmbedding>();
+
     /// <summary>ASP.NET Core Data Protection keys (auth cookie, antiforgery), so sessions survive restarts.</summary>
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
@@ -44,6 +47,9 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
         // Trigram similarity for merchant matching (classification plan 04).
         modelBuilder.HasPostgresExtension("pg_trgm");
 
+        // Embeddings of labelled merchants (plan 07).
+        modelBuilder.HasPostgresExtension("vector");
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         modelBuilder.Entity<Account>().HasQueryFilter(e => e.UserId == CurrentUserId);
@@ -53,6 +59,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, ICurren
         modelBuilder.Entity<MerchantRule>().HasQueryFilter(e => e.UserId == CurrentUserId);
         modelBuilder.Entity<ClassificationHistory>().HasQueryFilter(e => e.UserId == CurrentUserId);
         modelBuilder.Entity<TransactionSplit>().HasQueryFilter(e => e.UserId == CurrentUserId);
+        modelBuilder.Entity<MerchantEmbedding>().HasQueryFilter(e => e.UserId == CurrentUserId);
 
         // Shared global rows (UserId null) plus the user's own.
         modelBuilder.Entity<Category>().HasQueryFilter(e => e.UserId == null || e.UserId == CurrentUserId);

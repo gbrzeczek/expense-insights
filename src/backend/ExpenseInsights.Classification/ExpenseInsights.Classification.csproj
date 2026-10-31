@@ -1,7 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <!-- For the generated interop of one libc call (malloc_trim after unloading the model). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ExpenseInsights.Core\ExpenseInsights.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Tier C (plan 07): runs the multilingual-e5-small embedding model on the CPU. -->
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" />
   </ItemGroup>
 
   <ItemGroup>

@@ -34,6 +34,12 @@ public static class Reasons
     public const string AccountHolderOutgoing = "accountHolderOutgoing";
     public const string PersonOutgoing = "personOutgoing";
     public const string PersonIncoming = "personIncoming";
+
+    /// <summary>Tiers A and C: like one of the user's labelled merchants (the value).</summary>
+    public const string SimilarTo = "similarTo";
+
+    /// <summary>Tier C: close to a category's anchor (the value: the example merchant or description).</summary>
+    public const string CategoryAnchor = "categoryAnchor";
 }
 
 /// <summary>

@@ -1,4 +1,5 @@
 using ExpenseInsights.Classification;
+using ExpenseInsights.Classification.Tiers;
 using ExpenseInsights.Core.Accounts;
 using ExpenseInsights.Core.Classification;
 using ExpenseInsights.Core.Transactions;
@@ -9,18 +10,24 @@ namespace ExpenseInsights.Infrastructure.Classification;
 
 /// <summary>
 /// Runs the classification pipeline over the current user's transactions: sets the merchant key and
-/// the category from the rules, and records every change in <see cref="ClassificationHistory"/>.
-/// A <see cref="ClassificationSource.UserCorrection"/> is never overwritten.
+/// the category from the rules, then from the tiers after them (plan 07) for what the rules leave
+/// open, and records every change in <see cref="ClassificationHistory"/>. A
+/// <see cref="ClassificationSource.UserCorrection"/> is never overwritten.
 /// </summary>
-public sealed class TransactionClassifier(AppDbContext db, TimeProvider clock)
+/// <param name="db">The current user's data.</param>
+/// <param name="clock">For timestamps.</param>
+/// <param name="tiers">The tiers after the rules; <see cref="ClassificationTiers.RulesAndMemory"/> if not given.</param>
+public sealed class TransactionClassifier(AppDbContext db, TimeProvider clock, ClassificationTiers? tiers = null)
 {
+    private readonly ClassificationTiers _tiers = tiers ?? ClassificationTiers.RulesAndMemory;
+
     private const int BatchSize = 500;
 
     /// <summary>Classifies the given transactions, or all of the user's when <paramref name="transactionIds"/> is <c>null</c>.</summary>
     /// <returns>How many transactions changed category.</returns>
     public async Task<int> ClassifyAsync(IReadOnlyCollection<Guid>? transactionIds, CancellationToken ct)
     {
-        var context = await LoadContextAsync(ct);
+        var context = await LoadContextAsync(withLabels: true, ct);
         var query = db.Transactions.AsQueryable();
         if (transactionIds is not null)
         {
@@ -28,22 +35,34 @@ public sealed class TransactionClassifier(AppDbContext db, TimeProvider clock)
         }
 
         var ids = await query.OrderBy(t => t.Id).Select(t => t.Id).ToListAsync(ct);
+        var pipeline = Pipeline(context);
         var changed = 0;
         foreach (var chunk in ids.Chunk(BatchSize))
         {
-            changed += await ClassifyChunkAsync(chunk, context, ct);
+            changed += await ClassifyChunkAsync(chunk, context, pipeline, ct);
         }
 
         return changed;
     }
 
-    private async Task<int> ClassifyChunkAsync(Guid[] ids, Context context, CancellationToken ct)
+    private async Task<int> ClassifyChunkAsync(Guid[] ids, Context context, TierPipeline pipeline, CancellationToken ct)
     {
         for (var attempt = 1; ; attempt++)
         {
             var batch = await db.Transactions.Where(t => ids.Contains(t.Id)).ToListAsync(ct);
+            var open = batch.Where(t => t.ClassificationSource != ClassificationSource.UserCorrection).ToList();
+            var inputs = open.Select(Input).ToList();
+            var matches = inputs.Select(i => RuleEngine.Evaluate(i, context.Rules, GlobalRules.Default, context.Holder)).ToList();
+            var results = await pipeline.ClassifyAsync(inputs, matches, ct);
+
             var now = clock.GetUtcNow();
-            var changed = batch.Count(t => Apply(t, context, now));
+            foreach (var corrected in batch.Except(open))
+            {
+                corrected.MerchantKey = Input(corrected).MerchantKey;
+                corrected.ClassifiedAt ??= now;
+            }
+
+            var changed = open.Select((t, i) => Apply(t, inputs[i].MerchantKey, results[i], now)).Count(c => c);
             try
             {
                 await db.SaveChangesAsync(ct);
@@ -63,7 +82,7 @@ public sealed class TransactionClassifier(AppDbContext db, TimeProvider clock)
     /// <summary>The rule matches for one transaction, best first: the classification and the suggestions.</summary>
     public async Task<IReadOnlyList<RuleMatch>> MatchesAsync(Transaction transaction, CancellationToken ct)
     {
-        var context = await LoadContextAsync(ct);
+        var context = await LoadContextAsync(withLabels: false, ct);
         return RuleEngine.Evaluate(Input(transaction), context.Rules, GlobalRules.Default, context.Holder);
     }
 
@@ -84,18 +103,10 @@ public sealed class TransactionClassifier(AppDbContext db, TimeProvider clock)
             ChangedAt = now,
         });
 
-    private bool Apply(Transaction transaction, Context context, DateTimeOffset now)
+    /// <summary>Sets the pipeline's result on a transaction that isn't a user correction; whether its category changed.</summary>
+    private bool Apply(Transaction transaction, string merchantKey, RuleMatch? best, DateTimeOffset now)
     {
-        var input = Input(transaction);
-        transaction.MerchantKey = input.MerchantKey;
-        if (transaction.ClassificationSource == ClassificationSource.UserCorrection)
-        {
-            transaction.ClassifiedAt ??= now;
-            return false;
-        }
-
-        var matches = RuleEngine.Evaluate(input, context.Rules, GlobalRules.Default, context.Holder);
-        var best = matches.Count > 0 ? matches[0] : null;
+        transaction.MerchantKey = merchantKey;
         var previous = transaction.CategoryId;
         var previousSource = transaction.ClassificationSource;
 
@@ -116,13 +127,30 @@ public sealed class TransactionClassifier(AppDbContext db, TimeProvider clock)
         return previous != transaction.CategoryId;
     }
 
-    private async Task<Context> LoadContextAsync(CancellationToken ct)
+    /// <summary>The tiers for one run: A over the user's labels, C with the model and the stored neighbours.</summary>
+    private TierPipeline Pipeline(Context context)
+    {
+        var memory = _tiers.Memory && context.Labelled.Count > 0 ? new MemoryClassifier(context.Labelled) : null;
+        var embedding = _tiers is { Embedder: { } embedder, Anchors: { } anchors }
+            ? new EmbeddingClassifier(embedder, anchors, context.Labelled.Count > 0 ? new StoredNeighbours(db, embedder, context.Labelled, clock) : null)
+            : null;
+        return new TierPipeline(memory, embedding);
+    }
+
+    private async Task<Context> LoadContextAsync(bool withLabels, CancellationToken ct)
     {
         var rules = await db.MerchantRules.AsNoTracking().ToListAsync(ct);
         var userId = db.CurrentUserId;
         var name = await db.Users.Where(u => u.Id == userId).Select(u => u.DisplayName).SingleOrDefaultAsync(ct);
-        return new Context(rules, RuleEngine.NameWords(name));
+
+        // What the user confirmed: their corrections and what their own rules classified.
+        var labelled = !withLabels ? [] : await db.Transactions.AsNoTracking()
+            .Where(t => t.CategoryId != null && t.MerchantKey != ""
+                && (t.ClassificationSource == ClassificationSource.UserCorrection || t.ClassificationSource == ClassificationSource.UserRule))
+            .Select(t => new LabelledExample(t.MerchantKey, t.Amount, t.Kind, t.CategoryId!.Value))
+            .ToListAsync(ct);
+        return new Context(rules, RuleEngine.NameWords(name), labelled);
     }
 
-    private sealed record Context(IReadOnlyCollection<MerchantRule> Rules, IReadOnlyCollection<string> Holder);
+    private sealed record Context(IReadOnlyCollection<MerchantRule> Rules, IReadOnlyCollection<string> Holder, IReadOnlyList<LabelledExample> Labelled);
 }

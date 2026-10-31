@@ -22,7 +22,11 @@ public sealed class CorrectionException(string code, string message) : Exception
 /// The user's corrections: one transaction, everything from a merchant ("apply to all"), and
 /// rules. Each turns into a <see cref="MerchantRule"/> where it generalizes, so future imports follow.
 /// </summary>
-public sealed class Corrections(AppDbContext db, TransactionClassifier classifier, TimeProvider clock)
+/// <param name="db">The current user's data.</param>
+/// <param name="classifier">Reclassifies what a rule change affects.</param>
+/// <param name="clock">For timestamps.</param>
+/// <param name="requests">After a correction, the user's open transactions are reclassified in the background: the memory tier learns from it at once (plan 07).</param>
+public sealed class Corrections(AppDbContext db, TransactionClassifier classifier, TimeProvider clock, ClassificationRequests? requests = null)
 {
     public const string TransactionNotFound = "transactionNotFound";
     public const string CategoryNotFound = "categoryNotFound";
@@ -49,6 +53,7 @@ public sealed class Corrections(AppDbContext db, TransactionClassifier classifie
         transaction.UpdatedAt = now;
         classifier.Record(transaction, previous, now);
         await db.SaveChangesAsync(ct);
+        requests?.Enqueue(db.CurrentUserId);
         return transaction;
     }
 
