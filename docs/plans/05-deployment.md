@@ -48,7 +48,7 @@ outside the home network, with backups that have actually been restored once.
 
 - The owner can log in from a phone on mobile data and install the PWA.
 - A backup restore into a fresh container reproduces the data.
-- The whole stack (without the LLM) idles under 1 GB RAM.
+- The whole stack idles under 1 GB RAM.
 
 The first two need the server and a phone; the third measured about 160 MB locally (api 92 MB,
 db 58 MB, caddy 11 MB) and still has to be confirmed on `debianhome`.

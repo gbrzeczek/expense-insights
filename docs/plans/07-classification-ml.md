@@ -54,7 +54,8 @@ Features beyond text, used as tie-breakers only: `Kind`, the sign, the amount bu
       labelled export~~. Coverage and precision at several thresholds, latency, peak RAM. The
       real export is the owner's to run locally (`--csv`, `--labels`); see *Results*.
 - [x] **Leftover report:** after rules + A + C, how many transactions a month still land in
-      review, and what they look like. Plan 08 benchmarks its candidates on these.
+      review, and what they look like. ~~Plan 08 benchmarks its candidates on these.~~ They
+      decided that there is no plan 08 (D34).
 - [x] Write the results up in this file. This doubles as portfolio material.
 - [x] Wire the tiers that measurably help into the pipeline after the rules. Both do (D33).
 
@@ -185,9 +186,10 @@ What the numbers say:
 **Leftover report** (after rules + A + C): with the shipped rules, 0.8 rows a month: the
 `P.H.U. ANNA NOWAK` card payments (a review guess of "Przelewy do osób" from the person of the same
 name, 0.6) and one small online shop. Without merchant rules, 4.1 a month, all brands the model
-can't place: Bolt, Reserved, IKEA, Bershka, Media Expert, Decathlon. That is plan 08's job: brand
-knowledge from the local LLM (D28). Plan 08 should benchmark on these rows and on the low-margin
-local names (`lodziarnia`, `krawiec`, `biletomat ztm`, `escape room`).
+can't place: Bolt, Reserved, IKEA, Bershka, Media Expert, Decathlon, plus low-margin local names
+(`lodziarnia`, `krawiec`, `biletomat ztm`, `escape room`). They are left to the user: one
+correction per merchant ("Zastosuj do wszystkich", or the by-merchant list) and tier A covers
+the rest. So there is no local LLM tier (plan 08 dropped, D34).
 
 **Acceptance on real data** (≥ 95% coverage at ≥ 95% precision after a month of corrections, and
 under 10 s for 300 rows on the i3) is still to be checked by the owner: export the labels

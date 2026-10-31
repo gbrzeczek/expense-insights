@@ -14,8 +14,8 @@ summaries and insights.
   without a plan in `docs/plans/`.
 - UI language: **Polish first**. Every user-facing string goes through i18n; no hardcoded text.
 - Runs on a home server: Intel i3-6100T (2C/4T, AVX2), 8 GB RAM (16 GB planned), Debian.
-  Everything must stay lightweight. Assume a ~3 GB memory budget for the app stack, plus up to
-  ~3 GB for the local LLM (plan 08, a ≤ 3B model).
+  Everything must stay lightweight. Assume a ~3 GB memory budget for the app stack. There is no
+  local LLM (D34): what the rules, memory and embeddings can't classify is left to the user.
 
 Read `docs/architecture.md` and the relevant plan in `docs/plans/` before starting work.
 For any UI work, also read `docs/design-system.md` (**Warm Paper Finance**): it is the
@@ -32,7 +32,7 @@ source of truth for colours, typography, spacing, components and UX writing.
 | i18n | Transloco, default `pl`, `en` later |
 | Auth | Google OIDC (Apple later: it needs a paid Apple Developer account) |
 | Background work | `BackgroundService` + `System.Threading.Channels` |
-| Local LLM | llama.cpp server (OpenAI-compatible API), small quantized model (≤ 3B) |
+| Embeddings | `multilingual-e5-small` (int8 ONNX) on ONNX Runtime, in the API process (plan 07) |
 | Cloud LLM (opt-in) | Any OpenAI-compatible API with tool calling, prepaid (plan 09) |
 | Tests | xUnit + Testcontainers (backend), Vitest (frontend), Playwright with a mobile viewport (e2e) |
 | Deployment | Docker Compose on the home server, Caddy, reachable only via Tailscale |
@@ -47,7 +47,7 @@ src/
     ExpenseInsights.Core/            # domain model, application services (no infra deps)
     ExpenseInsights.Infrastructure/  # EF Core, Postgres, external services
     ExpenseInsights.Import.Ing/      # ING CSV parser (one project per bank)
-    ExpenseInsights.Classification/  # rules, similarity, embeddings, LLM fallback
+    ExpenseInsights.Classification/  # rules, similarity, embeddings
     tests/
       ExpenseInsights.*.Tests/
       ExpenseInsights.Testing/       # shared test helpers (Testcontainers Postgres fixture)

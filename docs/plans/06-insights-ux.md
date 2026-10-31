@@ -18,8 +18,8 @@ not overwhelming.
 4. **Drill-down:** summary → category → merchant → transactions. Every number is tappable
    and leads to the transactions behind it.
 5. **Everything deterministic.** Insights are computed in code from typed rules (decision D6).
-   No ML model decides what is unusual (D26); the statistics below are plain, tested code. The
-   local LLM (plan 08) may only rephrase them, and plan 09 adds opt-in cloud insights in a
+   No ML model decides what is unusual (D26); the statistics below are plain, tested code, and
+   the texts are templates (no local LLM, D34). Plan 09 adds opt-in cloud insights in a
    separate section, with every number still computed here.
 
 ## Statistics (how "unusual" is decided)

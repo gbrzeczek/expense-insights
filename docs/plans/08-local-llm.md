@@ -1,7 +1,15 @@
 # 08 · Local LLM fallback
 
-**Status:** Not started. Required (D28); a ≤ 3B model fits the current 8 GB. The 16 GB upgrade
-is only needed if the benchmark shows a 7–8B model is clearly better.
+**Status:** Dropped (D34, 2026-10-31). Kept for the record.
+
+After plan 07, the rules, memory (tier A) and embeddings (tier C) leave 0.8 rows a month on the
+fake data with the shipped rules (4.1 without merchant rules): ambiguous texts and brands the
+user has to decide anyway, and one correction teaches tier A the merchant. A ≤ 3B model would
+cost ~2–3 GB of RAM, a container and a queue for a handful of guesses, so what's left goes to
+"Do sprawdzenia" and the by-merchant list instead. Insight texts stay template-based (plan 06).
+Revisit only if real data leaves far more than plan 07 measured.
+
+The original plan follows.
 
 ## Goal
 
