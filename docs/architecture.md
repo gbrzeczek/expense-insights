@@ -19,7 +19,7 @@
  └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-One deployable API (a modular monolith) plus Postgres, and optionally llama.cpp. No message
+One deployable API (a modular monolith) plus Postgres and llama.cpp (plan 08). No message
 broker or microservices: the load is a few users importing a few hundred rows a month.
 
 ## Bank import abstraction
@@ -85,7 +85,7 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
   (this keeps ML and insights consistent). Special categories that are excluded from spending:
   `Przelew własny`, `Zwroty`, and income categories.
 - **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Unclassified` so far
-  (`Similarity`, `Ml` and `Llm` come with plans 07 and 08). A `UserCorrection` is never
+  (`Similarity` and `Embedding` come with plan 07, `Llm` with plan 08). A `UserCorrection` is never
   recomputed; the rule-based sources are re-derived when the rules change.
 
 ## Classification pipeline
@@ -96,11 +96,15 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
 2. **Rules.** Own accounts and refunds, the user's rules, the account holder's own name (for
    review), transfers to and from people, then global merchant and title-keyword rules; trigram
    similarity only when nothing matched (see plan 04, *As built*).
-3. **Similarity.** kNN over the user's own labelled transactions (char n-grams first;
-   embeddings in plan 06).
-4. **LLM fallback** (optional, async). Only for low-confidence leftovers. The output is
-   constrained to the category enum, and the prompt includes the nearest labelled examples.
-5. **User correction.** Saves a correction, offers "apply to all from this merchant", and
+3. **Memory.** kNN over the user's own labelled transactions (char n-gram TF-IDF). No training;
+   every correction is another example (plan 07).
+4. **Embeddings.** `multilingual-e5-small` (ONNX) + `pgvector`: nearest labelled transactions
+   and category anchors (descriptions + example merchants), for merchants nobody has labelled
+   (plan 07).
+5. **Local LLM** (required, async). Low-confidence leftovers only. Output constrained to the
+   category ids; confidence from the token log-probabilities; nearest labelled examples and the
+   category anchors in the prompt. The result is a suggestion (plan 08).
+6. **User correction.** Saves a correction, offers "apply to all from this merchant", and
    creates or updates a `MerchantRule`.
 
 Accuracy is measured offline against `test-data/fake_ing.labels.csv` and reported per tier.
@@ -126,7 +130,7 @@ Setup, backups, restore and monitoring: `deploy/README.md`.
 | D3 | PostgreSQL over SQLite | `pg_trgm` and `pgvector`; better portfolio signal |
 | D4 | ING only, behind `IStatementParser` | Ship one bank well; keep the seam for more |
 | D5 | Rules → similarity → LLM, LLM last | Old CPU; merchant strings are repetitive; small models are unreliable |
-| D6 | LLM never computes numbers | Small models hallucinate figures |
+| D6 | ~~LLM never computes numbers~~ → **numbers come from code; an LLM may choose what to compute (fixed query tools) and write free text, with numbers inserted by code** (revised, D29) | Models slip on arithmetic and sound just as sure; code-inserted numbers are cheap and always right |
 | D7 | Google login first, Apple later | Sign in with Apple requires a paid developer account |
 | D8 | No Biedronka scraping | No public API, ToS risk, would require holding users' credentials; receipt upload is possible later |
 | D9 | PWA, not native | One codebase, mobile install without app stores |
@@ -146,4 +150,8 @@ Setup, backups, restore and monitoring: `deploy/README.md`.
 | D23 | ~~Cloudflare Tunnel~~ → **Tailscale only**, under a Cloudflare DNS-only name pointing at the server's tailnet address; Caddy bound to that address with a Let's Encrypt certificate via the Cloudflare DNS-01 challenge (revised) | Bank data shouldn't be on the public internet; a real name and certificate keep Google sign-in and PWA install working; no open port is needed for the certificate |
 | D24 | Backups: `pg_dump` custom format piped into `age` (public key only on the server), 14 daily + 6 monthly, `rclone copy` (never sync) to Cloudflare R2, run by a host systemd timer | No extra container; a stolen server or bucket doesn't expose data; a wiped disk can't delete the off-site copies |
 | D25 | Monitoring by dead man's switch: systemd timers check `/health` through Caddy and ping healthchecks.io, instead of Uptime Kuma | An outside checker can't reach a tailnet-only host; pings stopping also catches the whole server being down; no extra container |
+| D26 | Insights use robust statistics (median baseline, MAD spread, seasonal comparison, day-of-month pace profile), not ML | A few hundred monthly data points per user is too little to train on; every number must be explainable and lead to its transactions |
+| D27 | Classification after rules: kNN memory over corrections + local embeddings with category anchors; no trained ML.NET model; the local LLM (plan 08) handles what is left | Both tiers work from the first correction with no training step; anchors cover cold start |
+| D28 | The local LLM (plan 08) is required: a ≤ 3B quantized model on the current 8 GB, used as a chooser (constrained output, log-probability confidence) and for phrasing; the app works unchanged when its container is down | No transaction text leaves the server; brand knowledge covers what embeddings miss; 16 GB only if a bigger model clearly wins |
+| D29 | Cloud insights (plan 09): opt-in per user, category-level monthly aggregates only, the model explores through fixed query tools and writes with placeholders that code fills; OpenAI-compatible client on a prepaid provider plus app-side caps | More interesting insights than fixed rules, without trusting model arithmetic or sending merchants; a few users cost cents a month |
 | D30 | Deploys from GitHub Actions after CI on `main`: images built on GitHub and pushed to GHCR by commit; the job joins the tailnet as `tag:ci` and deploys over SSH with a key restricted to one forced command; settings live in the GitHub environment `production` and each deploy writes the server's `.env` | Same pattern as sheetsolver on the same server; builds on fast runners, not the i3; one place to edit settings; no open port and no shell for the deploy key |
