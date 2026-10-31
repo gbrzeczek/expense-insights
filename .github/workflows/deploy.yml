@@ -136,12 +136,18 @@ jobs:
           done > bundle/deploy/.env
           printf '%s:%s' "$REGISTRY_USER" "$REGISTRY_TOKEN" > bundle/registry-auth
 
+      # The key is the server's shared deploy key (a plain shell), so the job brings this commit's
+      # ci-deploy.sh along instead of relying on a copy already on the server.
       - name: Deploy
         env:
           TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+          DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '/opt/apps/expense-insights' }}
         run: |
+          ssh_() { ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$TARGET" "$@"; }
+          ssh_ "mkdir -p '$DEPLOY_DIR'"
+          scp -i ~/.ssh/id_deploy -o BatchMode=yes bundle/deploy/scripts/ci-deploy.sh "$TARGET:$DEPLOY_DIR/.ci-deploy.sh"
           tar -czf - -C bundle deploy registry-auth |
-            ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$TARGET" "deploy $COMMIT"
+            ssh_ "DEPLOY_ROOT='$DEPLOY_DIR' bash '$DEPLOY_DIR/.ci-deploy.sh' deploy $COMMIT"
 
       - name: Clean up
         if: always()
