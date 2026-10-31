@@ -1,5 +1,6 @@
 using System.Text.Json;
 using ExpenseInsights.Core.Classification;
+using ExpenseInsights.Core.Transactions;
 
 namespace ExpenseInsights.Classification.Eval;
 
@@ -45,6 +46,28 @@ public static class Labels
         }
 
         return labels;
+    }
+
+    /// <summary>
+    /// A list of fake merchant names with their categories (<c>test-data/fake_local_merchants.csv</c>:
+    /// <c>counterparty;category</c>), as card payments: local shops no rule knows, for the category
+    /// anchors of the embedding tier (plan 07).
+    /// </summary>
+    public static async Task<IReadOnlyList<LabelledRow>> ReadMerchantsAsync(string path, IReadOnlyDictionary<string, Guid> categories, CancellationToken ct)
+    {
+        var lines = await File.ReadAllLinesAsync(path, ct);
+        var date = new DateOnly(2026, 1, 1);
+        return [.. lines.Skip(1).Where(l => l.Length > 0).Select((line, i) =>
+        {
+            var fields = line.Split(';');
+            if (!categories.TryGetValue(fields[1].Trim(), out var categoryId))
+            {
+                throw new FormatException($"{path}: unknown category '{fields[1]}'.");
+            }
+
+            var key = MerchantNormalizer.Normalize(fields[0], null);
+            return new LabelledRow(i + 1, date, new RuleInput(TransactionKind.Card, -50m, key, "Płatność kartą", null), categoryId);
+        })];
     }
 
     /// <summary>Category keys and their Polish names (the frontend's <c>pl.json</c>) → category id.</summary>

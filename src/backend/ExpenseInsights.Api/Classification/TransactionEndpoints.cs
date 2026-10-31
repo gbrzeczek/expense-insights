@@ -46,7 +46,7 @@ internal static class TransactionEndpoints
                 query = query.Where(t => t.CategoryId == null);
                 break;
             case "review":
-                query = query.Where(t => (t.ClassificationSource == ClassificationSource.GlobalRule || t.ClassificationSource == ClassificationSource.UserRule)
+                query = query.Where(t => (t.ClassificationSource != ClassificationSource.Unclassified && t.ClassificationSource != ClassificationSource.UserCorrection)
                     && t.ClassificationConfidence < Confidence.ReviewBelow);
                 break;
             default:
@@ -245,7 +245,7 @@ internal sealed record TransactionItem(
         t.CategoryId,
         t.ClassificationSource,
         t.ClassificationConfidence,
-        (t.ClassificationSource == ClassificationSource.GlobalRule || t.ClassificationSource == ClassificationSource.UserRule)
+        (t.ClassificationSource != ClassificationSource.Unclassified && t.ClassificationSource != ClassificationSource.UserCorrection)
             && t.ClassificationConfidence < Core.Classification.Confidence.ReviewBelow,
         t.ClassificationReason,
         t.ClassificationReasonValue,

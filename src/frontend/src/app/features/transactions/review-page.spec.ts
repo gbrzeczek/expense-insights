@@ -39,6 +39,10 @@ describe('ReviewPage', () => {
             needsReview: true,
             merchant: 'P.H.U. ANNA NOWAK',
             merchantKey: 'anna nowak',
+            source: 'similarity',
+            confidence: 0.6,
+            reason: 'similarTo',
+            reasonValue: 'anna nowak',
           }),
         ],
         nextOffset: null,
@@ -64,6 +68,10 @@ describe('ReviewPage', () => {
 
     expect(text(el.querySelector('[aria-live]'))).toBe('2 z 2');
     expect(text(el.querySelector('.item h2'))).toBe('P.H.U. ANNA NOWAK');
+    // A guess of the memory tier (plan 07) says which labelled merchant it resembles.
+    expect(text(el.querySelector('.item__guess .support'))).toBe(
+      'Podobne do: „anna nowak” (z kategorii, które już nadano).',
+    );
   });
 
   it('picks another category, or skips, until everything is reviewed', async () => {

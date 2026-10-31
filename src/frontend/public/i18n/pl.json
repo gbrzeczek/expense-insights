@@ -292,6 +292,8 @@
       "accountHolderOutgoing": "Do osoby o Twoim imieniu i nazwisku na konto spoza wyciągu. Do sprawdzenia.",
       "personOutgoing": "Przelew do osoby.",
       "personIncoming": "Przelew od osoby.",
+      "similarTo": "Podobne do: „{{value}}” (z kategorii, które już nadano).",
+      "categoryAnchor": "Nazwa pasuje do: „{{value}}”.",
       "userCorrection": "Kategoria wybrana przez Ciebie."
     },
     "sheet": {

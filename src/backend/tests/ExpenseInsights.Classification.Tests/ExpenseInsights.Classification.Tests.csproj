@@ -16,6 +16,8 @@
     <!-- Generated fake exports only (see test-data/README.md), and the category names they are labelled with. -->
     <None Include="..\..\..\..\test-data\*.csv" LinkBase="test-data" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\..\frontend\public\i18n\pl.json" Link="i18n\pl.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Checked against the pinned embedding model (plan 07). -->
+    <None Include="..\..\..\..\Dockerfile" Link="Dockerfile" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

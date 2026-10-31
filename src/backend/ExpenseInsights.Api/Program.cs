@@ -7,6 +7,7 @@ using ExpenseInsights.Api.Insights;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Import.Ing;
 using ExpenseInsights.Infrastructure;
+using ExpenseInsights.Infrastructure.Classification;
 using ExpenseInsights.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +18,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddInfrastructure(
     builder.Configuration.GetConnectionString("Default")
-        ?? throw new InvalidOperationException("Connection string 'Default' is not configured."));
+        ?? throw new InvalidOperationException("Connection string 'Default' is not configured."),
+    builder.Configuration.GetSection(ClassificationOptions.Section).Get<ClassificationOptions>() ?? new());
 builder.Services.AddSingleton(builder.Configuration.GetSection(IngParserOptions.Section).Get<IngParserOptions>() ?? new());
 builder.Services.AddSingleton<IStatementParser, IngCsvParser>();
 builder.Services.AddHostedService<ClassificationWorker>();

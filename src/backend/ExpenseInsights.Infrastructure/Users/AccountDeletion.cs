@@ -27,6 +27,7 @@ public sealed partial class AccountDeletion(AppDbContext db, ILogger<AccountDele
         await db.TransactionSplits.Where(s => s.UserId == userId).ExecuteDeleteAsync(ct);
         await db.Transactions.Where(t => t.UserId == userId).ExecuteDeleteAsync(ct);
         await db.MerchantRules.Where(r => r.UserId == userId).ExecuteDeleteAsync(ct);
+        await db.MerchantEmbeddings.Where(e => e.UserId == userId).ExecuteDeleteAsync(ct);
         await db.CategorySettings.Where(s => s.UserId == userId).ExecuteDeleteAsync(ct);
         // Subcategories before their parents.
         await db.Categories.Where(c => c.UserId == userId && c.ParentId != null).ExecuteDeleteAsync(ct);

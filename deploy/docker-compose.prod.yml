@@ -56,7 +56,9 @@ services:
     # Loopback only, for deploy.sh's health check and debugging on the server.
     ports:
       - "127.0.0.1:${API_PORT:-8080}:8080"
-    mem_limit: 512m
+    # 1 GB, not 512 MB: the embedding model (plan 07) adds ~270 MB while it's loaded, during
+    # classification only; it's unloaded after 2 minutes idle.
+    mem_limit: 1g
     logging: *logging
 
   caddy:

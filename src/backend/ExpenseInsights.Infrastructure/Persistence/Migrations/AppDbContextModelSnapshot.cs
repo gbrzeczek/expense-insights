@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Pgvector;
 
 #nullable disable
 
@@ -22,6 +23,7 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "vector");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ExpenseInsights.Core.Accounts.Account", b =>
@@ -369,6 +371,40 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                     b.HasIndex("TransactionId", "ChangedAt");
 
                     b.ToTable("ClassificationHistory", (string)null);
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.MerchantEmbedding", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MerchantKey")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Vector>("Vector")
+                        .IsRequired()
+                        .HasColumnType("vector(384)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "MerchantKey", "Model")
+                        .IsUnique();
+
+                    b.ToTable("MerchantEmbeddings");
                 });
 
             modelBuilder.Entity("ExpenseInsights.Core.Classification.MerchantRule", b =>
@@ -917,6 +953,15 @@ namespace ExpenseInsights.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ExpenseInsights.Core.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExpenseInsights.Core.Classification.MerchantEmbedding", b =>
+                {
                     b.HasOne("ExpenseInsights.Core.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

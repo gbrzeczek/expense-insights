@@ -1,5 +1,5 @@
 {
-  "$comment": "Global seed rules for Polish merchants and chains. Patterns are merchant keys (lowercase, no diacritics; see MerchantNormalizer). 'contains' matches the start of a word of the key, so 'apteka' matches 'apteka doz'; the longest matching pattern wins. 'title' matches the start of a word of the transaction title. 'direction' is out (expenses), in (income) or any; it defaults to out for spending categories and in for income ones.",
+  "$comment": "Global seed rules for Polish merchants and chains. Patterns are merchant keys (lowercase, no diacritics; see MerchantNormalizer). 'contains' matches the start of a word of the key, so 'apteka' matches 'apteka doz'; the longest matching pattern wins. 'title' matches the start of a word of the transaction title. 'direction' is out (expenses), in (income) or any; it defaults to out for spending categories and in for income ones. 'anchor' (plan 07) is what the embedding tier compares merchants nobody has labelled with: the category's Polish name and the kinds of merchant it covers, each embedded on its own. Kinds of merchant, not brands: the small embedding model doesn't know brands and matches them by spelling (lidl ~ tidal), which made brand examples worse (plan 07, Results).",
   "categories": {
     "groceries": {
       "contains": [
@@ -41,7 +41,19 @@
       ],
       "exact": [
         "spar"
-      ]
+      ],
+      "anchor": {
+        "description": "Spożywcze",
+        "examples": [
+          "sklep spożywczy",
+          "supermarket",
+          "dyskont",
+          "warzywniak",
+          "piekarnia",
+          "sklep mięsny",
+          "delikatesy"
+        ]
+      }
     },
     "restaurants": {
       "contains": [
@@ -88,7 +100,19 @@
         "grycan",
         "blikle",
         "wedel"
-      ]
+      ],
+      "anchor": {
+        "description": "Restauracje i jedzenie na wynos",
+        "examples": [
+          "restauracja",
+          "bar",
+          "kawiarnia",
+          "pizzeria",
+          "kebab",
+          "dostawa jedzenia",
+          "cukiernia"
+        ]
+      }
     },
     "transport": {
       "contains": [
@@ -136,7 +160,19 @@
         "bp",
         "lot",
         "mol"
-      ]
+      ],
+      "anchor": {
+        "description": "Transport",
+        "examples": [
+          "stacja paliw",
+          "taxi",
+          "bilet komunikacji miejskiej",
+          "bilety kolejowe",
+          "parking",
+          "myjnia samochodowa",
+          "warsztat samochodowy"
+        ]
+      }
     },
     "health": {
       "contains": [
@@ -167,7 +203,19 @@
         "rehabilitacja",
         "fizjoterapia",
         "weterynarz"
-      ]
+      ],
+      "anchor": {
+        "description": "Zdrowie",
+        "examples": [
+          "apteka",
+          "lekarz",
+          "przychodnia",
+          "dentysta",
+          "laboratorium",
+          "szpital",
+          "optyk"
+        ]
+      }
     },
     "beauty": {
       "contains": [
@@ -187,7 +235,18 @@
       "exact": [
         "natura",
         "dm"
-      ]
+      ],
+      "anchor": {
+        "description": "Drogeria i uroda",
+        "examples": [
+          "drogeria",
+          "kosmetyki",
+          "fryzjer",
+          "salon kosmetyczny",
+          "perfumeria",
+          "barber"
+        ]
+      }
     },
     "home": {
       "contains": [
@@ -220,7 +279,19 @@
         "obi",
         "kik",
         "agata"
-      ]
+      ],
+      "anchor": {
+        "description": "Dom i ogród",
+        "examples": [
+          "meble",
+          "wyposażenie domu",
+          "materiały budowlane",
+          "sklep ogrodniczy",
+          "kwiaciarnia",
+          "artykuły domowe",
+          "sklep zoologiczny"
+        ]
+      }
     },
     "clothing": {
       "contains": [
@@ -274,7 +345,18 @@
         "h",
         "hm",
         "aldo"
-      ]
+      ],
+      "anchor": {
+        "description": "Odzież i obuwie",
+        "examples": [
+          "ubrania",
+          "buty",
+          "sklep odzieżowy",
+          "sklep obuwniczy",
+          "moda",
+          "butik"
+        ]
+      }
     },
     "electronics": {
       "contains": [
@@ -299,7 +381,17 @@
         "electro",
         "xiaomi",
         "mi store"
-      ]
+      ],
+      "anchor": {
+        "description": "Elektronika",
+        "examples": [
+          "sklep RTV AGD",
+          "komputery",
+          "telefony komórkowe",
+          "sprzęt elektroniczny",
+          "serwis GSM"
+        ]
+      }
     },
     "leisure": {
       "contains": [
@@ -343,7 +435,20 @@
         "hotel",
         "hostel",
         "pensjonat"
-      ]
+      ],
+      "anchor": {
+        "description": "Sport, hobby i rozrywka",
+        "examples": [
+          "sklep sportowy",
+          "siłownia",
+          "kino",
+          "teatr",
+          "księgarnia",
+          "gry",
+          "bilety na koncert",
+          "basen"
+        ]
+      }
     },
     "subscriptions": {
       "contains": [
@@ -383,7 +488,19 @@
         "apple",
         "player",
         "itunes"
-      ]
+      ],
+      "anchor": {
+        "description": "Subskrypcje",
+        "examples": [
+          "abonament",
+          "subskrypcja",
+          "streaming",
+          "muzyka",
+          "filmy i seriale",
+          "aplikacja",
+          "chmura"
+        ]
+      }
     },
     "bills": {
       "contains": [
@@ -443,7 +560,20 @@
         "oplata za prad",
         "rachunek za",
         "faktura za"
-      ]
+      ],
+      "anchor": {
+        "description": "Rachunki i opłaty",
+        "examples": [
+          "czynsz",
+          "prąd",
+          "gaz",
+          "woda",
+          "internet",
+          "telefon",
+          "ubezpieczenie",
+          "podatek"
+        ]
+      }
     },
     "onlineShopping": {
       "contains": [
@@ -462,7 +592,16 @@
         "erli",
         "morizon",
         "shopee"
-      ]
+      ],
+      "anchor": {
+        "description": "Zakupy online (inne)",
+        "examples": [
+          "sklep internetowy",
+          "marketplace",
+          "zakupy przez internet",
+          "paczkomat"
+        ]
+      }
     },
     "salary": {
       "title": [

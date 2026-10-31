@@ -38,7 +38,7 @@ internal static class MerchantEndpoints
     private static async Task<IResult> ToReviewAsync(AppDbContext db, CancellationToken ct)
     {
         var open = db.Transactions.AsNoTracking().Where(t => t.CategoryId == null
-            || ((t.ClassificationSource == ClassificationSource.GlobalRule || t.ClassificationSource == ClassificationSource.UserRule)
+            || ((t.ClassificationSource != ClassificationSource.Unclassified && t.ClassificationSource != ClassificationSource.UserCorrection)
                 && t.ClassificationConfidence < Confidence.ReviewBelow));
         // A few thousand rows at most: grouped in memory, which keeps the SQL simple.
         var rows = await open
@@ -65,7 +65,7 @@ internal static class MerchantEndpoints
                     t.Currency,
                     t.Amount,
                     Categorized = t.CategoryId != null
-                        && !((t.ClassificationSource == ClassificationSource.GlobalRule || t.ClassificationSource == ClassificationSource.UserRule)
+                        && !((t.ClassificationSource != ClassificationSource.Unclassified && t.ClassificationSource != ClassificationSource.UserCorrection)
                             && t.ClassificationConfidence < Confidence.ReviewBelow),
                 })
                 .ToListAsync(ct))
