@@ -123,14 +123,6 @@ public sealed class FileFormatTests
     }
 
     [Fact]
-    public async Task BookedRowWithoutId_IsAnError()
-    {
-        var results = await Parse.AllAsync(IngCsv.File(IngCsv.CardRow(id: "")));
-
-        Assert.Equal(ImportIssueCodes.MissingTransactionId, Assert.Single(results.OfType<ParseError>()).Issue.Code);
-    }
-
-    [Fact]
     public async Task ShortRow_IsAFieldCountError()
     {
         var results = await Parse.AllAsync(IngCsv.File("2026-10-26;2026-10-26;\"LIDL\";-1,00"));
@@ -141,14 +133,14 @@ public sealed class FileFormatTests
     [Fact]
     public async Task UnknownDetailsCode_IsOther_AndWarnedOncePerImport()
     {
-        var row = IngCsv.CardRow().Replace("Płatność kartą", "Zlecenie", StringComparison.Ordinal).Replace("\"TR.KART  \"", "\"ST.ZLEC  \"", StringComparison.Ordinal);
+        var row = IngCsv.CardRow().Replace("Płatność kartą", "Zlecenie", StringComparison.Ordinal).Replace("\"TR.KART  \"", "\"NOWY.KOD  \"", StringComparison.Ordinal);
 
         var results = await Parse.AllAsync(IngCsv.File(row, row, row));
 
         Assert.All(results.Transactions(), t => Assert.Equal(TransactionKind.Other, t.Kind));
         var warning = Assert.Single(results.OfType<ParseWarning>()).Issue;
         Assert.Equal(ImportIssueCodes.UnknownDetailsCode, warning.Code);
-        Assert.Equal("ST.ZLEC", warning.Value);
+        Assert.Equal("NOWY.KOD", warning.Value);
     }
 
     [Fact]

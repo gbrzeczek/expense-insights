@@ -162,6 +162,8 @@ public sealed class RecurringPaymentsTests
     {
         var found = RecurringPayments.Detect(FakeHistory.SixMonths.Entries, FakeHistory.SixMonths.DataEnd);
 
+        // The generator's Costa Coffee: most weeks, at prices within 10% of each other.
+        Assert.True(FakeHistory.SixMonths.Entries.Count(e => e.MerchantKey == "costacoffee") >= 15);
         Assert.Equal(
             [("czynsz", 742.18m), ("netflix", 49m), ("spotify", 23.99m), ("youtubepremium", 29.99m)],
             found.Select(r => (r.MerchantKey, r.LatestAmount)));

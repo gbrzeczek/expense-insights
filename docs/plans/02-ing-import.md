@@ -95,6 +95,9 @@ Quirks to handle (each one gets a test):
 | Booking date before transaction date | Savings interest: transaction `2024-07-01`, booked `2024-06-30` | Allowed; no validation of `BookingDate >= TransactionDate` |
 | Own transfer on both accounts | −2000 on the current account, +2000 on savings | Both rows kept; linked as a pair, both `Przelew własny` |
 | Transaction id structure | `YYYY` + day-of-year (booking) + 2-digit channel + 9 digits | Use only as an opaque dedup key |
+| More `Szczegóły` codes | `ST.ZLEC` (standing order), `EXPRESS` (express transfer), `PZ` | `Kind = Transfer` (see *Decided*) |
+| **Booked row without a number** | Booking date, amount in col 8, a balance, but empty `Nr transakcji` (a cluster of debits and credits that cancel out) | Kept as booked; `ExternalId` = `ing-row:` + a hash of its content (see *Decided*) |
+| **Rows out of balance order** | A row listed a few places from where its `Saldo` belongs (pairs of equal and opposite balance differences) | The balance check follows the chain instead of the file order (see *Decided*) |
 
 The parser should still tolerate UTF-8 and CRLF (the file may be re-saved by Excel or a phone),
 but cp1250 + `;` + LF is the main path. Both variants get fixtures.
@@ -133,6 +136,12 @@ but cp1250 + `;` + LF is the main path. Both variants get fixtures.
       within 0–5 days, and similar counterparty (trigram). If there's a match, promote it in
       place: keep the id, category and user edits. Pending rows that never get booked
       (after 14 days, missing from newer exports) are flagged as `Expired`, not deleted.
+- [x] **Fixes from the first real import (Oct 2026):** `ST.ZLEC`, `EXPRESS` and `PZ` were unknown
+      codes; six booked rows without a number were row errors, which made the `Suma` counts and
+      sums miss 3 credits and 3 debits (equal sums) and broke the balance chain around them; and
+      rows listed out of balance order gave pairs of balance warnings. The generator reproduces all
+      three (rent as a standing order, express transfers, a quarterly direct debit, one cluster of
+      corrections without a number, some same-day rows swapped).
 - [x] `ImportBatch` entity: file hash, row counts (new / updated / duplicate / error), warnings.
 - [x] API: `POST /api/imports` (multipart, 5 MB limit) → batch summary; `GET /api/imports`.
 - [x] Frontend: Import screen. Mobile file picker, upload progress, result summary card
@@ -161,6 +170,11 @@ the i3: 2 600 rows in 0.6 s and 10 000 rows in 2.0 s (`ImportBenchmarkTests`, ex
   locally (never committed).
 - `Szczegóły` codes and titles for savings interest and tax: the generator guesses
   `ODSETKI` / `PODATEK`.
+- The booked rows without a number: what they are (the generator guesses bank corrections that
+  cancel out, with no code or counterparty account) and whether they ever get a number later.
+  The importer only needs them to stay identical between exports.
+- `PZ`: read as *polecenie zapłaty* (direct debit), from the code and the counterparties; any
+  other kind of transfer maps the same way.
 - Credit card exports: same format? Out of scope until a sample exists.
 
 ## Decided
@@ -185,7 +199,21 @@ the i3: 2 600 rows in 0.6 s and 10 000 rows in 2.0 s (`ImportBenchmarkTests`, ex
 - **Kinds:** `TR.KART` → Card, `TR.BLIK` → BlikOnline, `P.BLIK` → BlikP2P, `PRZELEW` → Transfer;
   the title wins for card payments, BLIK payments and phone transfers (pending rows have no code).
   `OwnTransfer` is set on import, when the counterparty account is one of the user's accounts.
-  `ODSETKI`/`PODATEK` map to `Other`; the `Przelew własny` category comes with plan 04.
+  `ODSETKI`/`PODATEK` map to `Other`; the `Przelew własny` category comes with plan 04. `ST.ZLEC`,
+  `EXPRESS` and `PZ` are transfers to an account (`Transfer`): a standing order to a person is
+  classified like any transfer (the user's rule for the recipient), never as a card payment.
+- **Booked rows without a number** are kept, not row errors: they are real movements in the
+  balance chain and the `Suma` totals. Their `ExternalId` is `ing-row:` + the first 16 bytes of a
+  SHA-256 of the dates, counterparty, title, counterparty account, code, amount, currency, account
+  and balance after (cleaned), plus `#2`, `#3` … for identical rows in one file. That is stable
+  between overlapping exports (the line number isn't part of it), so dedup works unchanged.
+  `missingTransactionId` is no longer raised; the code stays for older batches.
+- **Balance check follows the chain.** Walking oldest first, the next row is the nearest one
+  (within 20 rows of that account) whose balance before it equals the running balance; only when
+  none continues the chain is the next row in file order a mismatch. A row listed out of order is
+  then no warning, a missing row is one, and nothing is ever reordered or fixed in the data.
+- **The `Suma` totals include every data row**, pending ones too: the real file's counts and sums
+  matched the rows exactly once the rows without a number were kept.
 - **Upload** goes through `HttpClient` with the XHR backend (`withXhr()`), because the fetch
   backend can't report upload progress.
 

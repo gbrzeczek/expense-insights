@@ -205,6 +205,74 @@ public sealed class QuirkTests
         Assert.Equal(["12104332181960013389083863", "74794026542351161559407816"], transactions.Select(t => t.CounterpartyAccount));
     }
 
+    [Theory]
+    [InlineData("ST.ZLEC", " SPÓŁDZIELNIA MIESZKANIOWA PODGÓRZE ", " CZYNSZ 10/2026 LOK. 15", "-742,18")]
+    [InlineData("EXPRESS", " Anna Nowak ", " za bilety", "-150,00")]
+    [InlineData("PZ", " PZU SA AL. JANA PAWŁA II 24 WARSZAWA ", " Polecenie zapłaty polisa 09/2026", "-186,00")]
+    public async Task StandingOrder_ExpressTransfer_AndDirectDebit_AreTransfers(string code, string counterparty, string title, string amount)
+    {
+        var row = $"2026-10-01;2026-10-01;\"{counterparty}\";\"{title}\";'87184959310341316475255341 ';\"PKO BP S.A.\";\"{code}  \";'202627497213806556';{amount};PLN;;;;;\"KONTO Mobi pow.26\";32955,86;PLN;;;;";
+
+        var results = await Parse.AllAsync(IngCsv.File(row));
+
+        Assert.Empty(results.OfType<ParseWarning>());
+        var tx = Assert.Single(results.Transactions());
+        Assert.Equal(TransactionKind.Transfer, tx.Kind);
+        Assert.Null(tx.PurchaseDate);
+        Assert.Equal("87184959310341316475255341", tx.CounterpartyAccount);
+    }
+
+    [Fact]
+    public async Task BookedWithoutNumber_IsKept_WithAKeyFromItsContent()
+    {
+        // Corrections that cancel out: booked, with a balance, but no Nr transakcji and no code.
+        string[] rows =
+        [
+            Correction(" Storno korekty księgowania", "58,88", "33607,11"),
+            Correction(" Korekta księgowania", "-58,88", "33548,23"),
+        ];
+
+        var results = await Parse.AllAsync(IngCsv.File(rows));
+
+        Assert.Empty(results.OfType<ParseError>());
+        var transactions = results.Transactions().ToList();
+        Assert.Equal([58.88m, -58.88m], transactions.Select(t => t.Amount));
+        Assert.All(transactions, t =>
+        {
+            Assert.Equal(TransactionStatus.Booked, t.Status);
+            Assert.Equal(TransactionKind.Other, t.Kind);
+            Assert.StartsWith(IngCsvParser.ContentKeyPrefix, t.ExternalId, StringComparison.Ordinal);
+            Assert.True(t.ExternalId!.Length <= 64);
+        });
+        Assert.NotEqual(transactions[0].ExternalId, transactions[1].ExternalId);
+        Assert.Equal(CheckResult.Passed, StatementChecks.CheckBalances(transactions).Result);
+    }
+
+    [Fact]
+    public async Task BookedWithoutNumber_KeepsItsKey_InAnotherExport()
+    {
+        var row = Correction(" Korekta księgowania", "-58,88", "33548,23");
+
+        var alone = await Parse.SingleAsync(row);
+        var later = (await Parse.AllAsync(IngCsv.File(IngCsv.CardRow(), IngCsv.CardRow(id: "'202629999127231239'"), row))).Transactions().Last();
+
+        Assert.NotEqual(alone.RawRow.LineNumber, later.RawRow.LineNumber);
+        Assert.Equal(alone.ExternalId, later.ExternalId);
+    }
+
+    [Fact]
+    public async Task BookedWithoutNumber_IdenticalRowsInOneFile_GetDistinctKeys()
+    {
+        var row = Correction(" Korekta księgowania", "-58,88", "33548,23");
+
+        var transactions = (await Parse.AllAsync(IngCsv.File(row, row))).Transactions().ToList();
+
+        Assert.Equal(transactions[0].ExternalId + "#2", transactions[1].ExternalId);
+    }
+
+    private static string Correction(string title, string amount, string balance) =>
+        $"2026-08-24;2026-08-24;\" ING BANK ŚLĄSKI S.A. UL.SOKOLSKA 34 40-086 KATOWICE \";\"{title}\";;;;;{amount};PLN;;;;;\"KONTO Mobi pow.26\";{balance};PLN;;;;";
+
     [Fact]
     public async Task TransactionId_IsKeptOpaque()
     {

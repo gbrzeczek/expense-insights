@@ -1,4 +1,7 @@
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using ExpenseInsights.Core.Import;
 using ExpenseInsights.Core.Transactions;
 
@@ -78,6 +81,7 @@ public sealed class IngCsvParser(IngParserOptions options) : IStatementParser
         yield return new ParsedStatement(preamble.ToStatement());
 
         var unknownCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var contentKeys = new Dictionary<string, int>(StringComparer.Ordinal);
         while (await reader.ReadLineAsync(ct) is { } line)
         {
             // The data ends at the first blank line; the footer after it is ignored.
@@ -86,7 +90,7 @@ public sealed class IngCsvParser(IngParserOptions options) : IStatementParser
                 yield break;
             }
 
-            var result = ParseRow(CsvLine.Split(line, delimiter), reader.LineNumber, out var unknownCode);
+            var result = ParseRow(CsvLine.Split(line, delimiter), reader.LineNumber, contentKeys, out var unknownCode);
             if (unknownCode is not null && unknownCodes.Add(unknownCode))
             {
                 yield return new ParseWarning(new ImportIssue(
@@ -105,12 +109,12 @@ public sealed class IngCsvParser(IngParserOptions options) : IStatementParser
         }
     }
 
-    private ParseResult ParseRow(List<string> fields, int line, out string? unknownCode)
+    private ParseResult ParseRow(List<string> fields, int line, Dictionary<string, int> contentKeys, out string? unknownCode)
     {
         unknownCode = null;
         if (fields.Count < Header.Length)
         {
-            return Error(ImportIssueCodes.FieldCount, line, fields.Count.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            return Error(ImportIssueCodes.FieldCount, line, fields.Count.ToString(CultureInfo.InvariantCulture));
         }
 
         if (!IngFields.TryParseDate(fields[TransactionDate], out var transactionDate) || transactionDate is null)
@@ -151,9 +155,12 @@ public sealed class IngCsvParser(IngParserOptions options) : IStatementParser
             return Error(ImportIssueCodes.MissingCurrency, line);
         }
 
+        // Some booked rows come without a number (seen in a real export, in a cluster of debits and
+        // credits that cancel out). They are real movements in the balance chain, so they are kept,
+        // with a key made from their content for dedup across overlapping exports.
         if (!pending && externalId is null)
         {
-            return Error(ImportIssueCodes.MissingTransactionId, line);
+            externalId = ContentKey(fields, contentKeys);
         }
 
         var counterpartyName = IngFields.CollapseSpaces(fields[Counterparty]);
@@ -188,6 +195,24 @@ public sealed class IngCsvParser(IngParserOptions options) : IStatementParser
             BalanceAfter = balance,
             RawRow = new RawRow(line, TrimTrailingEmpty(fields)),
         });
+    }
+
+    /// <summary>The prefix of <see cref="ContentKey"/>s; ING's own numbers are digits only.</summary>
+    internal const string ContentKeyPrefix = "ing-row:";
+
+    /// <summary>
+    /// A stable id for a booked row without a number: a hash of the columns that don't change between
+    /// exports (the balance after it makes it unique in practice), plus <c>#2</c>, <c>#3</c> … for
+    /// identical rows in one file.
+    /// </summary>
+    private static string ContentKey(List<string> fields, Dictionary<string, int> seen)
+    {
+        int[] columns = [TransactionDate, BookingDate, Counterparty, Title, CounterpartyAccount, Details, Amount, Currency, Account, Balance];
+        var content = string.Join('\u001f', columns.Select(c => IngFields.CollapseSpaces(IngFields.Clean(fields[c]))));
+        var hash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(content)).AsSpan(0, 16));
+        var key = ContentKeyPrefix + hash;
+        var count = seen[key] = seen.GetValueOrDefault(key) + 1;
+        return count == 1 ? key : $"{key}#{count.ToString(CultureInfo.InvariantCulture)}";
     }
 
     private static List<string> TrimTrailingEmpty(List<string> fields)

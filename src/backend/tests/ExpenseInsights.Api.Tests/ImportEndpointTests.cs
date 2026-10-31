@@ -26,7 +26,7 @@ public sealed class ImportEndpointTests(PostgresFixture postgres) : IntegrationT
 
         Assert.Equal(HttpStatusCode.OK, first.StatusCode);
         var batch = await ReadAsync(first);
-        Assert.Equal(335, batch.GetProperty("newCount").GetInt32());
+        Assert.Equal(367, batch.GetProperty("newCount").GetInt32());
         Assert.Equal(0, batch.GetProperty("errorCount").GetInt32());
         Assert.Equal("passed", batch.GetProperty("totalsCheck").GetString());
         Assert.Equal("passed", batch.GetProperty("balanceCheck").GetString());

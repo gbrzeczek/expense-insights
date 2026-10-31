@@ -32,7 +32,7 @@ public sealed class AccountDeletionTests(PostgresFixture postgres) : ImportTestB
 
         Assert.All(await CountRowsAsync(deleted), table => Assert.Equal(0, table.Value));
         Assert.Equal(keptBefore, await CountRowsAsync(kept));
-        Assert.Contains(keptBefore, table => table.Key == "Transactions" && table.Value == 335);
+        Assert.Contains(keptBefore, table => table.Key == "Transactions" && table.Value == 367);
     }
 
     [Fact]

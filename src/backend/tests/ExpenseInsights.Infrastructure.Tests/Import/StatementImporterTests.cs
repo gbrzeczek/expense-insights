@@ -17,8 +17,8 @@ public sealed class StatementImporterTests(PostgresFixture postgres) : ImportTes
 
         Assert.False(alreadyImported);
         Assert.Equal("ing-pl", batch.BankId);
-        Assert.Equal(335, batch.RowCount);
-        Assert.Equal(335, batch.NewCount);
+        Assert.Equal(367, batch.RowCount);
+        Assert.Equal(367, batch.NewCount);
         Assert.Equal(0, batch.ErrorCount);
         Assert.Empty(batch.Errors);
         Assert.Empty(batch.Warnings);
@@ -29,7 +29,7 @@ public sealed class StatementImporterTests(PostgresFixture postgres) : ImportTes
         Assert.Equal("0123456789_281026", batch.DocumentId);
 
         await using var db = CreateDbContext(user);
-        Assert.Equal(335, await db.Transactions.CountAsync(CancellationToken));
+        Assert.Equal(367, await db.Transactions.CountAsync(CancellationToken));
         Assert.Equal(4, await db.Transactions.CountAsync(t => t.Status == TransactionStatus.Pending, CancellationToken));
         var stored = await db.ImportBatches.SingleAsync(CancellationToken);
         Assert.Equal(CheckResult.Passed, stored.TotalsCheck);
@@ -103,7 +103,7 @@ public sealed class StatementImporterTests(PostgresFixture postgres) : ImportTes
         Assert.True(second.AlreadyImported);
         Assert.Equal(first.Batch.Id, second.Batch.Id);
         await using var db = CreateDbContext(user);
-        Assert.Equal(335, await db.Transactions.CountAsync(CancellationToken));
+        Assert.Equal(367, await db.Transactions.CountAsync(CancellationToken));
         Assert.Equal(1, await db.ImportBatches.CountAsync(CancellationToken));
     }
 
@@ -121,9 +121,9 @@ public sealed class StatementImporterTests(PostgresFixture postgres) : ImportTes
         Assert.False(alreadyImported);
         Assert.Equal(0, batch.NewCount);
         Assert.Equal(0, batch.UpdatedCount);
-        Assert.Equal(335, batch.DuplicateCount);
+        Assert.Equal(367, batch.DuplicateCount);
         await using var db = CreateDbContext(user);
-        Assert.Equal(335, await db.Transactions.CountAsync(CancellationToken));
+        Assert.Equal(367, await db.Transactions.CountAsync(CancellationToken));
     }
 
     [Fact]
@@ -188,6 +188,24 @@ public sealed class StatementImporterTests(PostgresFixture postgres) : ImportTes
         var statuses = await db.Transactions.OrderBy(t => t.TransactionDate).Select(t => t.Status).ToListAsync(CancellationToken);
         // The 20 Oct hold is only 8 days old: it may still be booked.
         Assert.Equal([TransactionStatus.Expired, TransactionStatus.Pending, TransactionStatus.Booked], statuses);
+    }
+
+    [Fact]
+    public async Task BookedRowsWithoutNumber_AreImported_AndDedupedInALaterExport()
+    {
+        var user = await NewUserAsync();
+        const string correction = "2026-10-05;2026-10-05;\" ING BANK ŚLĄSKI S.A. UL.SOKOLSKA 34 40-086 KATOWICE \";\" Korekta księgowania\";;;;;-58,88;PLN;;;;;\"KONTO Mobi pow.26\";941,12;PLN;;;;";
+        const string storno = "2026-10-05;2026-10-05;\" ING BANK ŚLĄSKI S.A. UL.SOKOLSKA 34 40-086 KATOWICE \";\" Storno korekty księgowania\";;;;;58,88;PLN;;;;;\"KONTO Mobi pow.26\";1000,00;PLN;;;;";
+        var first = await ImportAsync(user, Encode(FakeIngExport.File("2026-10-01", "2026-10-10", storno, correction)));
+
+        // A later export: another row on top, so the same rows sit on other lines.
+        var later = await ImportAsync(user, Encode(FakeIngExport.File(
+            "2026-10-01", "2026-10-20", FakeIngExport.CardRow("2026-10-15", "-1,00", "'1'", balance: "999,00"), storno, correction)));
+
+        Assert.Equal((2, 0, CheckResult.Passed, CheckResult.Passed), (first.Batch.NewCount, first.Batch.ErrorCount, first.Batch.TotalsCheck, first.Batch.BalanceCheck));
+        Assert.Equal((1, 2), (later.Batch.NewCount, later.Batch.DuplicateCount));
+        await using var db = CreateDbContext(user);
+        Assert.Equal(3, await db.Transactions.CountAsync(CancellationToken));
     }
 
     [Fact]
