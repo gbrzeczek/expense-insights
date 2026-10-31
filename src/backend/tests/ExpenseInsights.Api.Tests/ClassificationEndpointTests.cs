@@ -145,7 +145,7 @@ public sealed class ClassificationEndpointTests(PostgresFixture postgres) : Inte
         Assert.Equal(HttpStatusCode.BadRequest, empty.StatusCode);
         var other = all.EnumerateArray().Single(c => c.GetProperty("id").GetGuid() == Other);
         Assert.Equal(("other", "Różne", true), (other.GetProperty("key").GetString(), other.GetProperty("name").GetString(), other.GetProperty("hidden").GetBoolean()));
-        Assert.Equal(21, all.GetArrayLength());
+        Assert.Equal(22, all.GetArrayLength());
     }
 
     [Fact]

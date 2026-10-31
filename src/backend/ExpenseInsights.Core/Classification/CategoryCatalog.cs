@@ -38,11 +38,14 @@ public static class CategoryCatalog
     /// <summary>Between the user's own accounts in the export: excluded from spending and income.</summary>
     public static readonly CatalogCategory OwnTransfer = New(20, "ownTransfer", CategoryKind.Excluded);
 
+    /// <summary>Money into and out of investments (a broker, treasury bonds): still the user's, so excluded like own transfers.</summary>
+    public static readonly CatalogCategory Investments = New(21, "investments", CategoryKind.Excluded);
+
     public static readonly IReadOnlyList<CatalogCategory> All =
     [
         Groceries, Restaurants, Transport, Health, Beauty, Home, Clothing, Electronics, Leisure, Subscriptions,
         Bills, OnlineShopping, TransfersToPeople, Other, Salary, TransfersFromPeople, OtherIncome, Interest,
-        Refunds, OwnTransfer,
+        Refunds, OwnTransfer, Investments,
     ];
 
     private static readonly Dictionary<string, CatalogCategory> ByKeyMap = All.ToDictionary(c => c.Key, StringComparer.Ordinal);

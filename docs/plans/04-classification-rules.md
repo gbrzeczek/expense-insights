@@ -32,6 +32,7 @@ tiers (plans 07 and 08) are measured with.
 | *Odsetki* | savings interest (net of the interest tax row) | income |
 | *Zwroty* | refunds | offsets the original category |
 | *Przelew własny* | between the user's accounts in the export | excluded |
+| *Inwestycje* | money into and out of investments: a broker, treasury bonds, IKZE | excluded |
 
 ### Transfers to and from people (decision D11)
 

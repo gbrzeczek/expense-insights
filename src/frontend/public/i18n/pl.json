@@ -239,7 +239,8 @@
     "otherIncome": "Inne przychody",
     "interest": "Odsetki",
     "refunds": "Zwroty",
-    "ownTransfer": "Przelew własny"
+    "ownTransfer": "Przelew własny",
+    "investments": "Inwestycje"
   },
   "picker": {
     "suggestions": "Proponowane kategorie",
