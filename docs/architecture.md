@@ -84,9 +84,9 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
   Users can rename or hide categories and add subcategories, but not change top-level semantics
   (this keeps ML and insights consistent). Special categories that are excluded from spending:
   `Przelew własny`, `Zwroty`, and income categories.
-- **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Unclassified` so far
-  (`Similarity` and `Embedding` come with plan 07, `Llm` with plan 08). A `UserCorrection` is never
-  recomputed; the rule-based sources are re-derived when the rules change.
+- **Classification source:** `UserCorrection` > `UserRule` > `GlobalRule` > `Similarity` (tier A) >
+  `Embedding` (tier C) > `Unclassified` (`Llm` comes with plan 08). A `UserCorrection` is never
+  recomputed; every other source is re-derived when the rules or the user's labels change.
 
 ## Classification pipeline
 
@@ -96,11 +96,17 @@ Category (global taxonomy, seeded)    global-rules.json (global merchant rules, 
 2. **Rules.** Own accounts and refunds, the user's rules, the account holder's own name (for
    review), transfers to and from people, then global merchant and title-keyword rules; trigram
    similarity only when nothing matched (see plan 04, *As built*).
-3. **Memory.** kNN over the user's own labelled transactions (char n-gram TF-IDF). No training;
-   every correction is another example (plan 07).
-4. **Embeddings.** `multilingual-e5-small` (ONNX) + `pgvector`: nearest labelled transactions
-   and category anchors (descriptions + example merchants), for merchants nobody has labelled
-   (plan 07).
+3. **Memory (tier A).** kNN over the merchant keys the user labelled (their corrections and what
+   their rules classified), char 3–4-gram TF-IDF, k = 5, same direction of money only, a neighbour
+   of another kind (card payment vs transfer) at 0.6. No training; every correction is another
+   example and reclassifies the user's open transactions in the background. Explains itself:
+   "Podobne do: „…”" (plan 07).
+4. **Embeddings (tier C).** `multilingual-e5-small` (int8 ONNX, ONNX Runtime) for what A isn't sure
+   of: the merchant key against the category anchors (each category's name and the kinds of
+   merchant it covers, in `global-rules.json`) and against the user's labelled merchants, whose
+   embeddings are stored in `pgvector`. Confidence from the margin over the second-best category.
+   Loaded on the first batch, unloaded after 2 minutes idle. It doesn't know brands, so it helps
+   with descriptive local names (`APTEKA POD ORLEM`, `SALON FRYZJERSKI`), not chains (plan 07).
 5. **Local LLM** (required, async). Low-confidence leftovers only. Output constrained to the
    category ids; confidence from the token log-probabilities; nearest labelled examples and the
    category anchors in the prompt. The result is a suggestion (plan 08).
@@ -157,3 +163,4 @@ Setup, backups, restore and monitoring: `deploy/README.md`.
 | D30 | Deploys from GitHub Actions after CI on `main`: images built on GitHub and pushed to GHCR by commit; the job joins the tailnet as `tag:ci` and deploys over SSH with the server's shared deploy key (~~restricted to one forced command~~, revised: a plain shell, like sheetsolver's); settings live in the GitHub environment `production` and each deploy writes the server's `.env` | Same pattern as sheetsolver on the same server; builds on fast runners, not the i3; one place to edit settings; no open port; one deploy key for the server's apps, accepted because SSH is reachable only from `tag:ci` in the tailnet |
 | D31 | Plan 06 charts are small hand-made CSS bar charts (`month-bars`, `category-breakdown`); ECharts (`ngx-echarts`) is deferred until a chart needs it | Two chart shapes with direct labels and tappable bars; a ~1 MB dependency didn't earn its place |
 | D32 | Insights are computed on each request from the user's ledger in memory, never stored; k = 3 and the large-payment bar is the 12-month maximum (tuned on fake data, plan 06 *As built*) | A few thousand rows per user; nothing to keep in sync after a correction; every number stays traceable to its transactions |
+| D33 | Both plan 07 tiers stay (measured, plan 07 *Results*). Tier C: `multilingual-e5-small` int8 ONNX from the model's repository at a pinned revision and hash, built into the image (downloaded on first use elsewhere), never committed; anchors are kinds of merchant, not brands; embeddings stored per labelled merchant key in `pgvector` with an exact per-user scan, no HNSW index; the api container's limit raised to 1 GB | A covers merchants the user labelled at 100% precision on fake data; C adds descriptive local shops (50% → 84% classified without review on the fake local merchants) for ~270 MB while loaded; brand names matched by spelling (lidl ~ tidal), so brand anchors made it worse; a filtered HNSW scan can miss a user's few hundred rows, an exact one can't |

@@ -144,6 +144,10 @@ Import speed benchmarks are explicit tests (skipped by default and in CI):
 Classification accuracy on the fake data (coverage, precision, per tier, confusion):
 `dotnet run --project ExpenseInsights.Classification.Eval -- --errors`. Pass `--csv` and `--labels`
 for a real export plus the labels from `GET /api/classification/labels`, kept outside the repo.
+It also reports the tiers after the rules (plan 07; `--leftover` for what's still left). Tier C's
+model (`multilingual-e5-small`, ~135 MB) is downloaded on first use into
+`~/.cache/expense-insights/models`, never committed; `--no-embeddings` skips it. Its accuracy test
+is explicit: `dotnet test --project tests/ExpenseInsights.Classification.Tests -- --explicit only`.
 
 ### Frontend (`src/frontend`)
 
