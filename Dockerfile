@@ -26,6 +26,11 @@ COPY src/backend/ ./
 # and pre-compresses them.
 COPY --from=frontend /src/dist/expense-insights/browser/ ExpenseInsights.Api/wwwroot/
 RUN dotnet publish ExpenseInsights.Api/ExpenseInsights.Api.csproj -c Release -o /app --no-restore
+# ONNX Runtime (plan 07) ships native libraries for every OS (~200 MB); keep only this image's.
+ARG TARGETARCH
+RUN rid="linux-$([ "$TARGETARCH" = arm64 ] && echo arm64 || echo x64)" \
+ && find /app/runtimes -mindepth 1 -maxdepth 1 ! -name "$rid" -exec rm -rf {} + \
+ && test -f "/app/runtimes/$rid/native/libonnxruntime.so"
 
 # --- Embedding model (plan 07) -------------------------------------------------
 # multilingual-e5-small (MIT licence), the int8 ONNX export from the model's own repository, pinned

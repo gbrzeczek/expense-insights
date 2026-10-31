@@ -116,7 +116,9 @@ Features beyond text, used as tie-breakers only: `Kind`, the sign, the amount bu
   by-merchant list.
 - **Deployment.** The production image downloads the two model files in a build stage, checks
   their SHA-256 (a test keeps the Dockerfile and `E5Model` in step) and sets
-  `Classification__Embeddings__ModelDirectory=/app/models` with downloads off. Elsewhere (dev, the
+  `Classification__Embeddings__ModelDirectory=/app/models` with downloads off. It keeps only
+  its own platform's ONNX Runtime library (the package ships ~200 MB for every OS); the image is
+  ~330 MB unpacked, and CI's budget went from 250 to 400 MB. Elsewhere (dev, the
   Eval tool) the files are downloaded on first use into `~/.cache/expense-insights/models`. The
   api container's limit is now 1 GB (D33). The API tests turn tier C off
   (`Classification:Embeddings:Enabled=false`); its tests use a stand-in model, plus an explicit
