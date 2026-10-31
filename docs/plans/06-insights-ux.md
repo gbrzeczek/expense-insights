@@ -89,9 +89,8 @@ All of it lives in one `InsightStatistics` class with unit tests on hand-built s
 
 ## Open questions
 
-- Tune k and the 100 zł floor on the owner's real data (the eval below is on fake data). Use the
-  Eval-style approach: count insights per month over the real history and aim for 0–2 in a normal
-  month.
+- Tune k and the 100 zł floor on the owner's real data (the tuning in *As built* is on fake data):
+  count insights per month over the real history and aim for 0–2 in a normal month.
 
 ## Decided
 
