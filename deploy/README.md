@@ -65,7 +65,7 @@ the repository variable `DEPLOY_HOST` is set, so the images build before the ser
 ## Production setup (once)
 
 Server commands run as an admin user with `sudo`, unless they say `sudo -u deploy`. The app lives
-in `/srv/expense-insights`, owned by a `deploy` user (the same one sheetsolver uses is fine).
+in `/opt/apps/expense-insights`, owned by a `deploy` user (the same one sheetsolver uses is fine).
 
 ### 1. Server: packages, user, directories
 
@@ -73,7 +73,7 @@ in `/srv/expense-insights`, owned by a `deploy` user (the same one sheetsolver u
 sudo apt install curl age rclone
 id deploy || sudo adduser --disabled-password --gecos '' deploy
 sudo usermod -aG docker deploy
-sudo install -d -o deploy -m 750 /srv/expense-insights
+sudo install -d -o deploy -m 750 /opt/apps/expense-insights
 sudo install -d -o deploy -m 700 /var/backups/expense-insights
 ```
 
@@ -83,7 +83,7 @@ exist before the first deploy:
 
 ```bash
 git -C ~/code/expense-insights archive main deploy |
-  ssh debianhome 'sudo -u deploy tar -x -C /srv/expense-insights'
+  ssh debianhome 'sudo -u deploy tar -x -C /opt/apps/expense-insights'
 ```
 
 ### 2. The Tailscale address, and binding to it at boot
@@ -162,7 +162,7 @@ ssh-keygen -t ed25519 -N '' -C github-expense-insights -f expense-insights-deplo
 On the server, allow it for `deploy`, restricted to the deploy script:
 
 ```bash
-echo "restrict,command=\"/srv/expense-insights/deploy/scripts/ci-deploy.sh\" $(cat expense-insights-deploy.pub)" |
+echo "restrict,command=\"/opt/apps/expense-insights/deploy/scripts/ci-deploy.sh\" $(cat expense-insights-deploy.pub)" |
   ssh debianhome "sudo -u deploy sh -c 'mkdir -p -m 700 ~/.ssh && cat >> ~/.ssh/authorized_keys'"
 ```
 
@@ -170,8 +170,16 @@ echo "restrict,command=\"/srv/expense-insights/deploy/scripts/ci-deploy.sh\" $(c
 `ci-deploy.sh` runs, and it accepts only `deploy <commit>`. The key is therefore not a shell on the
 server, though a deploy can still run any image built from `main`.
 
-**Host key**, from a machine in the tailnet: `ssh-keyscan debianhome` → secret
-`DEPLOY_KNOWN_HOSTS`, so the job knows it talks to the real server.
+Use a key of its own, not sheetsolver's. sshd applies the options of the first `authorized_keys`
+line that matches a key, and sheetsolver's key needs a plain shell (no `command=`). With a shared
+key the job gets that shell, runs `deploy <commit>` as a command and fails with
+`deploy: command not found`.
+
+**Host key**, from a machine in the tailnet: `ssh-keyscan <name>` → secret `DEPLOY_KNOWN_HOSTS`,
+so the job knows it talks to the real server. SSH looks the server up by the exact name it
+connects to, so `<name>` must be the same string as the `DEPLOY_HOST` variable (step 8), e.g.
+`debianhome.<tailnet>.ts.net` as in sheetsolver; otherwise the job fails with
+`Host key verification failed`.
 
 **Tailscale.** Reuse sheetsolver's setup: the `tag:ci` tag, its OAuth client (copy the id and
 secret into this repository's secrets), and an access rule letting `tag:ci` reach only port 22 on
@@ -197,7 +205,7 @@ read these values. Then add:
 |---|---|---|
 | Secret | `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRET` | Tailscale OAuth client (step 7) |
 | Secret | `DEPLOY_SSH_KEY` | The private key `expense-insights-deploy`, whole |
-| Secret | `DEPLOY_KNOWN_HOSTS` | Output of `ssh-keyscan debianhome` |
+| Secret | `DEPLOY_KNOWN_HOSTS` | Output of `ssh-keyscan <DEPLOY_HOST>` (step 7) |
 | Secret | `POSTGRES_PASSWORD` | `openssl rand -base64 32 \| tr -d '/+='`. Set once: the database keeps it |
 | Secret | `GOOGLE_CLIENT_SECRET` | Google OAuth client |
 | Secret | `CLOUDFLARE_API_TOKEN` | Step 3 |
@@ -216,18 +224,19 @@ read these values. Then add:
 
 Values must not contain a single quote or a line break (the job refuses them). Finally, a
 **repository** variable (Settings → Secrets and variables → Actions → Variables), because the
-job's `if` is decided before the environment is loaded: `DEPLOY_HOST` = `debianhome` (the server's
-MagicDNS name). Setting it turns deploys on.
+job's `if` is decided before the environment is loaded: `DEPLOY_HOST` = the server's MagicDNS name,
+e.g. `debianhome.<tailnet>.ts.net`, the same name `DEPLOY_KNOWN_HOSTS` was scanned with. Setting it
+turns deploys on.
 
 ### 9. First deploy, timers, first backup
 
 **Actions → Deploy → Run workflow** on `main` (or merge something). Then on the server:
 
 ```bash
-sudo -u deploy docker compose -f /srv/expense-insights/deploy/docker-compose.prod.yml logs caddy | grep -i certificate
+sudo -u deploy docker compose -f /opt/apps/expense-insights/deploy/docker-compose.prod.yml logs caddy | grep -i certificate
 curl -fsS https://expenses.gbrzeczek.dev/health                          # Healthy
-sudo /srv/expense-insights/deploy/systemd/install.sh deploy              # nightly backup + uptime timers
-sudo -u deploy /srv/expense-insights/deploy/scripts/backup.sh            # first backup now
+sudo /opt/apps/expense-insights/deploy/systemd/install.sh deploy              # nightly backup + uptime timers
+sudo -u deploy /opt/apps/expense-insights/deploy/scripts/backup.sh            # first backup now
 ```
 
 The API migrates the database on start. The owner (`AUTH_OWNER_EMAIL`) signs in with Google and
@@ -257,7 +266,7 @@ invites the others from the app. Re-run `install.sh` only if a deploy changes th
   needs a `docker login ghcr.io` with a token that can read packages first.
 
   ```bash
-  sudo -u deploy /srv/expense-insights/deploy/scripts/deploy.sh        # --no-backup to skip the backup
+  sudo -u deploy /opt/apps/expense-insights/deploy/scripts/deploy.sh        # --no-backup to skip the backup
   ```
 
 - **From source**, without GHCR: in a checkout with a `deploy/.env`,
@@ -269,7 +278,7 @@ invites the others from the app. Re-run `install.sh` only if a deploy changes th
 |---|---|---|
 | GitHub environment `production` | Everything in step 8 | Where you edit settings; write-only, can't be read back |
 | Password manager | All of step 8 except the deploy key, plus the `age` private key | The master copy, for rebuilding everything |
-| Server, `/srv/expense-insights/deploy/.env` (mode 600) | Generated by each deploy | Runtime copy; overwritten on every deploy |
+| Server, `/opt/apps/expense-insights/deploy/.env` (mode 600) | Generated by each deploy | Runtime copy; overwritten on every deploy |
 | Nowhere near the server or GitHub | The `age` private key | Only for restores, briefly in `/dev/shm` |
 
 To change or rotate a value: change it where it was issued (Google, Cloudflare, R2, healthchecks.io),
@@ -295,7 +304,7 @@ if the server was off then):
    wiped local disk can't delete the off-site files.
 5. On success it pings `BACKUP_PING_URL`, on failure `BACKUP_PING_URL/fail`.
 
-Run it by hand with `sudo -u deploy /srv/expense-insights/deploy/scripts/backup.sh`; see past runs
+Run it by hand with `sudo -u deploy /opt/apps/expense-insights/deploy/scripts/backup.sh`; see past runs
 with `journalctl -u expense-insights-backup`.
 
 What the dump contains: every table, including the Data Protection keys, so sessions survive a
@@ -310,7 +319,7 @@ not touched. Do it once now, and again after anything changes in the backup chai
 
 ```bash
 sudo -iu deploy
-cd /srv/expense-insights
+cd /opt/apps/expense-insights
 deploy/scripts/backup.sh                                   # fresh, so live and backup match
 # Off-site copy, to prove R2 and the key work, not just the local file:
 deploy/scripts/r2.sh copy "r2:expense-insights-backups/daily/expense-insights-$(date +%F).dump.age" /tmp/drill/
@@ -334,7 +343,7 @@ Drill log:
 
 New or rebuilt server: steps 1, 2 and 7 of the setup on the new machine (update `TAILSCALE_IP`,
 `DEPLOY_KNOWN_HOSTS` and the DNS record if they changed), run *Deploy* (it starts with an empty
-database), then restore over it as `deploy` in `/srv/expense-insights`:
+database), then restore over it as `deploy` in `/opt/apps/expense-insights`:
 
 ```bash
 deploy/scripts/r2.sh copy r2:expense-insights-backups/daily/<newest file> /tmp/restore/

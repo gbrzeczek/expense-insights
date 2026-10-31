@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The only thing the Deploy workflow's SSH key may run (a forced command in authorized_keys):
 #
-#   restrict,command="/srv/expense-insights/deploy/scripts/ci-deploy.sh" ssh-ed25519 AAAA… github-deploy
+#   restrict,command="/opt/apps/expense-insights/deploy/scripts/ci-deploy.sh" ssh-ed25519 AAAA… github-deploy
 #
 # Accepts exactly `deploy <commit>`. Reads a gzipped tar on stdin holding `deploy/` (compose file,
 # scripts, systemd units, the generated .env) and `registry-auth` (`<user>:<token>`, the job's
