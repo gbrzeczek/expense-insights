@@ -42,11 +42,13 @@ needed; tighten with Tailscale ACLs if the tailnet grows).
 
 ## How a deploy works
 
-Every merge to `main` that passes CI deploys itself (`.github/workflows/deploy.yml`):
+Every merge to `main` that passes CI deploys itself: on a push to `main`, CI's last job (`release`)
+calls `.github/workflows/deploy.yml` once every other job has passed. Pull requests, a fork's
+included, never reach it (D35):
 
 1. **Images.** GitHub's runners build the app image and the Caddy image and push both to the
    GitHub Container Registry, tagged with the commit (`ghcr.io/gbrzeczek/expense-insights:<sha>`).
-   The packages are private, like the repository.
+   The packages are private, whatever the repository's visibility (set separately per package).
 2. **Tailscale.** The deploy job joins the tailnet for its duration as `tag:ci`, through a
    Tailscale OAuth client, and may reach only the server's SSH port.
 3. **Settings.** It writes `deploy/.env` from the GitHub environment `production` (secrets and
@@ -60,7 +62,7 @@ Every merge to `main` that passes CI deploys itself (`.github/workflows/deploy.y
    the job.
 
 The server never builds anything and needs no access to GitHub. The deploy job is skipped until
-the repository variable `DEPLOY_HOST` is set, so the images build before the server is ready.
+the repository variable `DEPLOY_ENABLED` is `true`, so the images build before the server is ready.
 
 ## Production setup (once)
 
@@ -154,7 +156,7 @@ may reach port 22. If the key is ever rotated, update the secret in every reposi
 
 **Host key**, from a machine in the tailnet: `ssh-keyscan <name>` → secret `DEPLOY_KNOWN_HOSTS`,
 so the job knows it talks to the real server. SSH looks the server up by the exact name it
-connects to, so `<name>` must be the same string as the `DEPLOY_HOST` variable (step 8), e.g.
+connects to, so `<name>` must be the same string as the `DEPLOY_HOST` secret (step 8), e.g.
 `debianhome.<tailnet>.ts.net` as in sheetsolver; otherwise the job fails with
 `Host key verification failed`.
 
@@ -187,24 +189,25 @@ read these values. Then add:
 | Secret | `GOOGLE_CLIENT_SECRET` | Google OAuth client |
 | Secret | `CLOUDFLARE_API_TOKEN` | Step 3 |
 | Secret | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Step 6 |
+| Secret | `R2_ENDPOINT` | Step 6 (it holds the Cloudflare account id) |
 | Secret | `BACKUP_PING_URL`, `HEALTH_PING_URL` | healthchecks.io ping URLs (optional, see *Monitoring*) |
+| Secret | `DEPLOY_HOST` | The server's MagicDNS name, e.g. `debianhome.<tailnet>.ts.net`, the name `DEPLOY_KNOWN_HOSTS` was scanned with |
+| Secret | `AUTH_OWNER_EMAIL` | Your Google address |
 | Variable | `DEPLOY_USER` | `deploy` |
 | Variable | `DEPLOY_DIR` | Optional; default `/opt/apps/expense-insights` |
-| Variable | `AUTH_OWNER_EMAIL` | Your Google address |
 | Variable | `GOOGLE_CLIENT_ID` | Google OAuth client id (public) |
 | Variable | `APP_HOST` | `expenses.gbrzeczek.dev` |
 | Variable | `TAILSCALE_IP` | Step 2 |
 | Variable | `ACME_EMAIL` | Your email, for Let's Encrypt expiry notices |
 | Variable | `AGE_RECIPIENT` | The `age1…` public key (step 5) |
-| Variable | `R2_ENDPOINT` | Step 6 |
 | Variable | `RCLONE_REMOTE` | `r2:expense-insights-backups` |
 | Variable | `BACKUP_DIR` | Optional; default `/var/backups/expense-insights` |
 
+Variables are printed in the job log, which anyone can read in a public repository; secrets are
+masked. So anything personal or naming the tailnet is a secret, even when it isn't a credential.
 Values must not contain a single quote or a line break (the job refuses them). Finally, a
 **repository** variable (Settings → Secrets and variables → Actions → Variables), because the
-job's `if` is decided before the environment is loaded: `DEPLOY_HOST` = the server's MagicDNS name,
-e.g. `debianhome.<tailnet>.ts.net`, the same name `DEPLOY_KNOWN_HOSTS` was scanned with. Setting it
-turns deploys on.
+job's `if` is decided before the environment is loaded: `DEPLOY_ENABLED` = `true` turns deploys on.
 
 ### 9. First deploy, timers, first backup
 
@@ -237,8 +240,8 @@ invites the others from the app. Re-run `install.sh` only if a deploy changes th
 - **Normally:** merge to `main`. CI runs, then *Deploy*. While the API restarts, Caddy holds
   requests for up to 30 seconds instead of failing them.
 - **Again, e.g. after changing a secret:** Actions → Deploy → *Run workflow* (deploys `main`).
-- **Roll back:** open an older successful *Deploy* run → *Re-run all jobs*; it deploys that run's
-  commit, whose images are still in GHCR. A rollback doesn't undo database migrations; if the
+- **Roll back:** open an older successful *CI* run on `main` → *Re-run all jobs*; it tests and
+  deploys that run's commit, whose images are still in GHCR. A rollback doesn't undo database migrations; if the
   newer version migrated the schema, restore the backup taken before it (see *Disaster recovery*).
 - **By hand on the server**, e.g. with GitHub down: images already pulled are reused, a new tag
   needs a `docker login ghcr.io` with a token that can read packages first.

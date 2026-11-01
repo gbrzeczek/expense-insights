@@ -11,7 +11,8 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # A newer PR push replaces the run; a run on main may be deploying, so it is never cancelled.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   backend:
@@ -137,3 +138,15 @@ jobs:
           echo "Unpacked image size: $((size / 1024 / 1024)) MB" | tee -a "$GITHUB_STEP_SUMMARY"
           # 400 MB since plan 07: the embedding model (~135 MB) and ONNX Runtime (~30 MB) are built in (D33).
           test "$size" -lt $((400 * 1024 * 1024))
+
+  # Pushes to main only (PRs, forks included, never get here): build the images and deploy them,
+  # after every job above has passed. Manual redeploys: Actions → Deploy → Run workflow.
+  release:
+    name: Deploy
+    needs: [backend, frontend, deploy, image]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

@@ -1,40 +1,34 @@
 name: Deploy
 
-# After CI passes on main: build the app and Caddy images, push them to GHCR tagged with the
-# commit, then deploy them to the home server over SSH, reaching it through Tailscale.
-# Setup: deploy/README.md, "Automatic deploys".
+# Build the app and Caddy images, push them to GHCR tagged with the commit, then deploy them to
+# the home server over SSH, reaching it through Tailscale. Setup: deploy/README.md.
+#
+# CI calls this after its jobs pass on a push to main, like sheetsolver deploys on push: only
+# people who can push to main can start it. Never trigger it from workflow_run or
+# pull_request_target: those run a fork's code with this repository's secrets.
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  workflow_call:
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: deploy
-  cancel-in-progress: false
-
 env:
-  COMMIT: ${{ github.event.workflow_run.head_sha || github.sha }}
+  COMMIT: ${{ github.sha }}
   APP_IMAGE: ghcr.io/gbrzeczek/expense-insights
   CADDY_IMAGE: ghcr.io/gbrzeczek/expense-insights-caddy
 
 jobs:
   images:
     name: Build and push images
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ env.COMMIT }}
       - uses: docker/setup-buildx-action@v4
       - uses: docker/login-action@v4
         with:
@@ -59,28 +53,31 @@ jobs:
           cache-from: type=gha,scope=caddy
           cache-to: type=gha,mode=max,scope=caddy
 
-  # Skipped until the repository variable DEPLOY_HOST is set (a job-level `if` sees repository
-  # variables, not the environment's). Everything else comes from the `production` environment.
+  # Skipped until the repository variable DEPLOY_ENABLED is `true` (a job-level `if` sees
+  # repository variables, not the environment's). Everything else comes from the `production`
+  # environment. Anything personal or that names the tailnet is a secret there, not a variable:
+  # variables are printed in the job log, which is public.
   deploy:
     name: Deploy to the home server
     needs: images
-    if: vars.DEPLOY_HOST != ''
+    if: github.ref == 'refs/heads/main' && vars.DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment: production
     permissions:
       contents: read
       packages: read
+    concurrency:
+      group: deploy
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ env.COMMIT }}
 
       - uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
-          ping: ${{ vars.DEPLOY_HOST }}
+          ping: ${{ secrets.DEPLOY_HOST }}
 
       - name: Set up SSH
         env:
@@ -97,7 +94,7 @@ jobs:
       - name: Bundle deploy files and settings
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          AUTH_OWNER_EMAIL: ${{ vars.AUTH_OWNER_EMAIL }}
+          AUTH_OWNER_EMAIL: ${{ secrets.AUTH_OWNER_EMAIL }}
           GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           APP_HOST: ${{ vars.APP_HOST }}
@@ -107,7 +104,7 @@ jobs:
           BACKUP_DIR: ${{ vars.BACKUP_DIR || '/var/backups/expense-insights' }}
           AGE_RECIPIENT: ${{ vars.AGE_RECIPIENT }}
           RCLONE_REMOTE: ${{ vars.RCLONE_REMOTE }}
-          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           BACKUP_PING_URL: ${{ secrets.BACKUP_PING_URL }}
@@ -140,7 +137,7 @@ jobs:
       # ci-deploy.sh along instead of relying on a copy already on the server.
       - name: Deploy
         env:
-          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
           DEPLOY_DIR: ${{ vars.DEPLOY_DIR || '/opt/apps/expense-insights' }}
         run: |
           ssh_() { ssh -i ~/.ssh/id_deploy -o BatchMode=yes "$TARGET" "$@"; }
