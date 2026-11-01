@@ -44,7 +44,7 @@ needed; tighten with Tailscale ACLs if the tailnet grows).
 
 Every merge to `main` that passes CI deploys itself: on a push to `main`, CI's last job (`release`)
 calls `.github/workflows/deploy.yml` once every other job has passed. Pull requests, a fork's
-included, never reach it (D35):
+included, never reach it (D36):
 
 1. **Images.** GitHub's runners build the app image and the Caddy image and push both to the
    GitHub Container Registry, tagged with the commit (`ghcr.io/gbrzeczek/expense-insights:<sha>`).

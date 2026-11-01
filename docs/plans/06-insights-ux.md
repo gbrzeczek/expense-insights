@@ -146,7 +146,16 @@ one before). A subscription is the current segment (≥ 2 payments, cadence from
 7/30/365 ± 20%), possibly ending in one changed price (up to ±50%, on schedule, after ≥ 2 at the
 old price); every earlier segment must have held at least twice. So a varying bill (Tauron) or a
 shop with random baskets doesn't become a subscription by chance. Active until 1.5 cadences pass
-without a payment. "New" only when it starts at least a cadence after the imports do (otherwise
+without a payment.
+
+*Tuned after the first real import (Oct 2026)*: frequent coffee (Costa Coffee, most weeks, prices
+within 10%) was taken for a weekly subscription, since only the median gap had to fit. Now
+**every** gap of the run must be on the cadence (± 20%), and no payment to the merchant may ever
+come sooner than the cadence allows (also before the current price, so two coffees at a new price a
+month apart don't count). In **everyday categories** (groceries, restaurants) a subscription also
+needs ≥ 4 payments, all within ±2% of the latest (a meal-kit plan, not a lunch habit). The
+generator adds such a coffee shop to the fake exports, and the tests check it is not flagged while
+Netflix, Spotify, YouTube Premium and the rent still are. "New" only when it starts at least a cadence after the imports do (otherwise
 it may just predate the first import).
 
 **Ranking.** Score = min(robust z, 10) × ln(amount at stake). One insight per subject (a category's

@@ -4,7 +4,9 @@
 
 - `generate_ing_csv.py`: generates a fake ING Bank Śląski export that reproduces the real
   format's quirks: pending holds, apostrophe-wrapped ids, BLIK payments through payment
-  processors, foreign currency, and a consistent running balance. See the docstring.
+  processors, foreign currency, standing orders, express transfers and transfer orders, booked
+  rows without a number, some rows listed out of balance order, and a consistent running
+  balance. See the docstring.
 - `fake_ing.csv`: 6 months, seed 42, two accounts (current + savings), in the real export format.
   That means Windows-1250, `;`, LF line endings, the full preamble (fake name, address and
   account numbers, plus date range and totals), mixed quoting, 21 fields per line, and the

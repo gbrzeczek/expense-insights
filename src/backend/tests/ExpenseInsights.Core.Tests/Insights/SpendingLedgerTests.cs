@@ -26,10 +26,12 @@ public sealed class SpendingLedgerTests
     }
 
     [Fact]
-    public void OwnTransfers_ExpiredHolds_AndOtherCurrencies_DontCount()
+    public void OwnTransfers_Investments_ExpiredHolds_AndOtherCurrencies_DontCount()
     {
         var entries = Build(
             Tx(-2000, CategoryCatalog.OwnTransfer.Id),
+            Tx(-5000, CategoryCatalog.Investments.Id),
+            Tx(1200, CategoryCatalog.Investments.Id),
             Tx(-2000, null, kind: TransactionKind.OwnTransfer),
             Tx(-30, CategoryCatalog.Groceries.Id, status: TransactionStatus.Expired),
             Tx(-30, CategoryCatalog.Groceries.Id, currency: "EUR"));

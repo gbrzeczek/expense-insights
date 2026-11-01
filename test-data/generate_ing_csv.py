@@ -21,6 +21,14 @@ Mirrors the quirks seen in a real export:
   - BLIK e-commerce paid through intermediaries (PayU, Cashbill...), with the
     real shop only visible at the end of the title
   - transaction id = YYYY + day-of-year(booking) + 2-digit channel + 9 digits
+  - more "Szczegóły" codes: ST.ZLEC (standing order: the rent), EXPRESS (express
+    transfer to a friend), PZ (transfer order: a quarterly insurance premium)
+  - booked rows without a transaction number: a cluster of corrections that
+    cancel out (debits and credits of equal sums), with a running balance
+  - rows a little out of balance order: some same-day rows on one account are
+    listed swapped, so their "Saldo" values don't chain in file order
+  - frequent coffee at similar prices (Costa Coffee), which must not look like
+    a subscription
 
 Also writes a ground-truth labels file (one row per data row) so classifier
 accuracy can be measured.
@@ -34,7 +42,12 @@ Usage:
 
 Unverified (guessed): quoting of "Nazwa banku", "Szczegóły", "Konto" and
 currency columns; header quoting; whether the "Suma" totals include pending
-holds (we include them); interest/tax titles on the savings account.
+holds (we include them); interest/tax titles on the savings account; titles,
+codes and counterparties of the rows without a number (shaped like corrections
+here; in the real export they look like ordinary transactions).
+
+The newer quirks draw from their own random stream (seeded from --seed), so the
+rows that existed before them keep their values and ids.
 """
 import argparse
 import csv
@@ -138,6 +151,7 @@ class Tx:
     fx: tuple | None = None
     account: str = MAIN_ACCOUNT
     tx_id: str = ""  # preassigned in --overlap mode so both exports agree
+    no_id: bool = False  # booked without a transaction number
 
 
 def card_tx(rng, d, cp, cat, merchant, amount, fx=None):
@@ -147,7 +161,40 @@ def card_tx(rng, d, cp, cat, merchant, amount, fx=None):
               account_no=CARD_ACQUIRER, details="TR.KART  ", channel=rng.choice(["97", "99"]), fx=fx)
 
 
-def generate(rng, start, end):
+def quirk_id(quirks, book, channel):
+    return f"'{book:%Y}{book.timetuple().tm_yday:03d}{channel}{quirks.randint(0, 10**9 - 1):09d}'"
+
+
+def generate_quirks(quirks, d, start, end):
+    """The rows of one day that came with the newer quirks, from their own random stream."""
+    txs = []
+    if quirks.random() < 0.7 / 7:  # coffee most weeks, at a few similar prices
+        book = d + timedelta(days=quirks.choice([0, 1, 2]))
+        txs.append(Tx(d, book, " COSTA COFFEE GALERIA  KRAKOW  POL ", f"Płatność kartą {d:%d.%m.%Y} Nr karty {CARD}",
+                      "Restauracje i jedzenie na wynos", "Costa Coffee", "card",
+                      -quirks.choice([14.50, 14.90, 15.50, 15.90]), account_no=CARD_ACQUIRER,
+                      details="TR.KART  ", channel="97", tx_id=quirk_id(quirks, book, "97")))
+    if quirks.random() < 0.15 / 7:  # express transfer to a friend
+        friend = quirks.choice(FRIENDS)
+        txs.append(Tx(d, d, f" {friend} ", quirks.choice(["za bilety", "Zwrot za zakupy", "prezent"]),
+                      "Przelewy do osób", friend, "express", -float(quirks.choice([50, 80, 150, 200])),
+                      account_no=f"'{fake_nrb(quirks)} '", bank=quirks.choice(BANKS), details="EXPRESS  ",
+                      channel="98", tx_id=quirk_id(quirks, d, "98")))
+    if d.day == 15 and d.month % 3 == 0:  # quarterly insurance premium, paid by transfer order
+        txs.append(Tx(d, d, " PZU SA AL. JANA PAWŁA II 24 WARSZAWA ", f"Składka polisa {d:%m/%Y}",
+                      "Rachunki i opłaty", "PZU", "transfer_order", -186.00, account_no=f"'{INSURER_NRB} '",
+                      bank="PKO BP S.A.", details="PZ  ", channel="31", tx_id=quirk_id(quirks, d, "31")))
+    # Once, in exports of more than three months: bank corrections without a transaction number that
+    # cancel out. Early on, so the classifier tests count them among the user's first month of labels.
+    if (d - start).days == 20 and (end - start).days > 90:
+        for _ in range(3):
+            amount = round(quirks.uniform(20, 120), 2)
+            for sign, title in ((-1, "Korekta księgowania"), (1, "Storno korekty księgowania")):
+                txs.append(Tx(d, d, ING_COUNTERPARTY, title, "Inne", "ING", "correction", sign * amount, no_id=True))
+    return txs
+
+
+def generate(rng, start, end, quirks):
     txs = []
     stores = {i: rng.randint(1000, 9999) for i in range(len(CARD_MERCHANTS))}
     d = start
@@ -185,8 +232,8 @@ def generate(rng, start, end):
                           -round(interest * 0.19, 2), details="PODATEK  ", account=SAVINGS_ACCOUNT))
         if d.day == 1:
             txs.append(Tx(d, d, " SPÓŁDZIELNIA MIESZKANIOWA PODGÓRZE UL. WIELICKA 2 KRAKÓW ",
-                          f"CZYNSZ {d:%m/%Y} LOK. 15", "Rachunki i opłaty", "Czynsz", "transfer_out", -742.18,
-                          account_no=f"'{RENT_NRB} '", bank="PKO BP S.A.", details="PRZELEW  ", channel="97"))
+                          f"CZYNSZ {d:%m/%Y} LOK. 15", "Rachunki i opłaty", "Czynsz", "standing_order", -742.18,
+                          account_no=f"'{RENT_NRB} '", bank="PKO BP S.A.", details="ST.ZLEC  ", channel="97"))
         if d.day == 20:
             txs.append(Tx(d, d, " TAURON SPRZEDAŻ SP. Z O.O. ", f"Faktura P/{rng.randint(10**7, 10**8)}/{d:%m}/{d:%Y}",
                           "Rachunki i opłaty", "Tauron", "transfer_out", -round(rng.uniform(110, 240), 2),
@@ -209,6 +256,7 @@ def generate(rng, start, end):
             eur = round(rng.uniform(5, 60), 2)
             txs.append(card_tx(rng, d, " LIDL DIENSTLEISTUNG  Berlin  DEU ", "Spożywcze", "Lidl",
                                -round(eur * 4.27, 2), fx=(-eur, "EUR")))
+        txs += generate_quirks(quirks, d, start, end)
         d += timedelta(days=1)
     return txs
 
@@ -223,14 +271,16 @@ def finalize(txs, end):
     return txs
 
 
-def to_rows(rng, txs, balances):
+def to_rows(rng, txs, balances, quirks):
     balances = dict(balances)
     rows, labels = [], []
     for t in txs:
         balances[t.account] = round(balances[t.account] + t.amount, 2)
         pending = t.book_date is None
         tx_id = ""
-        if not pending and t.tx_id:
+        if t.no_id:
+            pass
+        elif not pending and t.tx_id:
             tx_id = t.tx_id
         elif not pending:
             tx_id = f"'{t.book_date:%Y}{t.book_date.timetuple().tm_yday:03d}{t.channel}{rng.randint(0, 10**9 - 1):09d}'"
@@ -248,6 +298,15 @@ def to_rows(rng, txs, balances):
         ])
         labels.append([t.tx_date.isoformat(), tx_id.strip("'"), fmt_amount(t.amount), t.account,
                        t.kind, "pending" if pending else "booked", t.merchant, t.category])
+    # Some same-day rows of one account are listed in a different order than their balances.
+    i = 0
+    while i < len(txs) - 1:
+        a, b = txs[i], txs[i + 1]
+        if a.tx_date == b.tx_date and a.account == b.account and quirks.random() < 0.04:
+            rows[i], rows[i + 1] = rows[i + 1], rows[i]
+            labels[i], labels[i + 1] = labels[i + 1], labels[i]
+            i += 1
+        i += 1
     rows.reverse()
     labels.reverse()
     return rows, labels
@@ -310,17 +369,19 @@ def main():
         args.delimiter = "\t"
 
     rng = random.Random(args.seed)
-    global MAIN_NRB, SAVINGS_NRB, RENT_NRB
+    quirks = random.Random(args.seed + 1_000_003)
+    global MAIN_NRB, SAVINGS_NRB, RENT_NRB, INSURER_NRB
     MAIN_NRB, SAVINGS_NRB, RENT_NRB = fake_nrb(rng), fake_nrb(rng), fake_nrb(rng)
+    INSURER_NRB = fake_nrb(quirks)
     opening = {MAIN_ACCOUNT: args.opening_balance, SAVINGS_ACCOUNT: args.savings_balance}
     start = args.end - timedelta(days=30 * args.months)
 
     if args.overlap:
-        write_overlapping(args, rng, start, opening)
+        write_overlapping(args, rng, quirks, start, opening)
         return
 
-    txs = finalize(generate(rng, start, args.end), args.end)
-    rows, labels = to_rows(rng, txs, opening)
+    txs = finalize(generate(rng, start, args.end, quirks), args.end)
+    rows, labels = to_rows(rng, txs, opening, quirks)
     write_export(args, args.out, start, args.end, txs, rows, labels)
 
 
@@ -344,11 +405,11 @@ def write_export(args, out, start, end, txs, rows, labels):
     print(f"{len(rows)} rows -> {out}, labels -> {labels_path}")
 
 
-def write_overlapping(args, rng, start, opening):
+def write_overlapping(args, rng, quirks, start, opening):
     """Two exports of one history: A ends 10 days before B, and B starts 14 days before A ends."""
-    full = generate(rng, start, args.end)
+    full = generate(rng, start, args.end, quirks)
     full.sort(key=lambda t: (t.tx_date, t.book_date))
-    for t in full:  # one id per transaction, shared by both exports
+    for t in (t for t in full if not t.tx_id and not t.no_id):  # one id per transaction, shared by both exports
         t.tx_id = f"'{t.book_date:%Y}{t.book_date.timetuple().tm_yday:03d}{t.channel}{rng.randint(0, 10**9 - 1):09d}'"
     end_a = args.end - timedelta(days=10)
     start_b = end_a - timedelta(days=14)
@@ -357,7 +418,7 @@ def write_overlapping(args, rng, start, opening):
         txs = finalize([replace(t) for t in full if lo <= t.tx_date <= hi], hi)
         balances = {a: round(b + sum(t.amount for t in full if t.account == a and t.tx_date < lo), 2)
                     for a, b in opening.items()}
-        rows, labels = to_rows(rng, txs, balances)
+        rows, labels = to_rows(rng, txs, balances, quirks)
         write_export(args, f"{stem}_{suffix}.csv", lo, hi, txs, rows, labels)
 
 

@@ -15,322 +15,354 @@ row;tx_date;tx_id;amount;account;kind;status;merchant;category
 14;2026-10-23;202629999946679291;-11,54;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
 15;2026-10-23;202629899669159960;-57,13;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
 16;2026-10-22;202629799857944228;-78,03;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-17;2026-10-21;202629464565783275;98,59;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
-18;2026-10-20;202629697183996190;-62,52;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-19;2026-10-20;202629599709645329;-163,04;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-20;2026-10-20;202629397399808042;-129,62;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
-21;2026-10-19;202629297869180872;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
-22;2026-10-18;202629297396898624;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
-23;2026-10-17;202629299257859027;-392,10;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-24;2026-10-17;202629299489844971;-34,81;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-25;2026-10-17;202629297327568970;-49,63;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-26;2026-10-16;202629099225740666;-28,93;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-27;2026-10-16;202628964363336272;11,46;KONTO Mobi pow.26;p2p_in;booked;Michał Wójcik;Przelewy od osób
-28;2026-10-15;202628997119152069;-146,31;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-29;2026-10-13;202628999950273893;293,35;KONTO Mobi pow.26;card;booked;Zalando;Zwroty
-30;2026-10-13;202628997845479430;-56,09;KONTO Mobi pow.26;card;booked;?;Inne
+17;2026-10-22;202629697534668095;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+18;2026-10-21;202629464565783275;98,59;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
+19;2026-10-20;202629697183996190;-62,52;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+20;2026-10-20;202629599709645329;-163,04;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+21;2026-10-20;202629397399808042;-129,62;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
+22;2026-10-19;202629297869180872;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
+23;2026-10-18;202629297396898624;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
+24;2026-10-17;202629299257859027;-392,10;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+25;2026-10-17;202629299489844971;-34,81;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+26;2026-10-17;202629297327568970;-49,63;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+27;2026-10-16;202629099225740666;-28,93;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+28;2026-10-16;202628964363336272;11,46;KONTO Mobi pow.26;p2p_in;booked;Michał Wójcik;Przelewy od osób
+29;2026-10-15;202628997119152069;-146,31;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+30;2026-10-13;202628999950273893;293,35;KONTO Mobi pow.26;card;booked;Zalando;Zwroty
 31;2026-10-13;202628999703160442;-158,35;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-32;2026-10-13;202628697406865213;-10,82;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-33;2026-10-12;202628797147364121;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
-34;2026-10-12;202628799727408955;-199,81;KONTO Mobi pow.26;card;booked;Orlen;Transport
-35;2026-10-11;202628699892758059;-11,19;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-36;2026-10-11;202628497022541876;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
-37;2026-10-11;202628497108652175;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
-38;2026-10-10;202628306977801865;10231,15;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
-39;2026-10-09;202628297281093372;-141,76;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-40;2026-10-08;202628399905037037;-126,43;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-41;2026-10-08;202628164189061692;37,83;KONTO Mobi pow.26;p2p_in;booked;Anna Nowak;Przelewy od osób
-42;2026-10-07;202628297023076889;-35,11;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
-43;2026-10-07;202628299210440043;-7,08;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-44;2026-10-07;202628297191707402;-107,61;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-45;2026-10-07;202628197264102119;-82,11;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-46;2026-10-05;202628099595395166;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
-47;2026-10-05;202628097910032902;-86,41;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-48;2026-10-04;202627764364876250;-27,11;KONTO Mobi pow.26;blik;booked;Koleo;Transport
-49;2026-10-04;202627764187136578;-215,61;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-50;2026-10-04;202627797771845007;-59,43;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-51;2026-10-03;202627897281319126;-88,82;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-52;2026-10-03;202627699950671929;-106,69;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-53;2026-10-02;202627799235090446;-30,17;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-54;2026-10-02;202627564186988502;-389,39;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-55;2026-10-01;202627699305051006;-25,25;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-56;2026-10-01;202627699212412969;-85,38;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-57;2026-10-01;202627497213806556;-742,18;KONTO Mobi pow.26;transfer_out;booked;Czynsz;Rachunki i opłaty
-58;2026-10-01;202627397031874640;-9,68;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
-59;2026-10-01;202627397047142443;50,95;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
-60;2026-09-30;202627597386449601;-290,59;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-61;2026-09-30;202627499821984514;-16,33;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-62;2026-09-29;202627397980013568;-23,12;KONTO Mobi pow.26;card;booked;Bolt;Transport
-63;2026-09-28;202627399628875974;-40,24;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-64;2026-09-26;202627197677890337;-44,62;KONTO Mobi pow.26;card;booked;?;Inne
-65;2026-09-26;202626997208739111;-171,22;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-66;2026-09-25;202626897472884620;-35,00;KONTO Mobi pow.26;p2p_out;booked;Katarzyna Zielińska;Przelewy do osób
-67;2026-09-25;202626899312003832;-108,05;KONTO Mobi pow.26;card;booked;Orlen;Transport
-68;2026-09-24;202626999152902956;-166,40;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
-69;2026-09-21;202626499123683564;-143,42;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-70;2026-09-20;202626597595595576;-30,42;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-71;2026-09-20;202626597032231138;-135,87;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-72;2026-09-20;202626397384277885;-149,63;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
-73;2026-09-19;202626497079168231;-116,88;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-74;2026-09-18;202626399010621558;-32,72;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-75;2026-09-18;202626199389571951;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
-76;2026-09-17;202626399007221330;-54,75;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-77;2026-09-17;202626197887001282;-95,23;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-78;2026-09-17;202626064197831034;-7,06;KONTO Mobi pow.26;blik;booked;Doci;Zdrowie
-79;2026-09-17;202626097429832349;-149,00;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-80;2026-09-16;202626297220456760;-81,74;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-81;2026-09-16;202625999403632224;-239,03;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
-82;2026-09-15;202626197794656343;-88,89;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-83;2026-09-15;202625864866800964;-326,70;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-84;2026-09-14;202626099355961632;-71,51;KONTO Mobi pow.26;card;booked;Reserved;Odzież i obuwie
-85;2026-09-14;202625999874726647;-22,42;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-86;2026-09-14;202625797825007816;-49,77;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-87;2026-09-13;202625899788755899;-114,96;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-88;2026-09-12;202625897516197305;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
-89;2026-09-12;202625899256644737;-49,79;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-90;2026-09-12;202625599228855734;-335,20;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-91;2026-09-11;202625699669929016;-135,97;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-92;2026-09-11;202625497500940025;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
-93;2026-09-11;202625497247254833;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
-94;2026-09-11;202625464744339911;-82,81;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-95;2026-09-11;202625464239471365;-277,83;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-96;2026-09-10;202625697685870900;-23,58;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-97;2026-09-10;202625599003969701;-373,48;KONTO Mobi pow.26;card;booked;IKEA;Dom i ogród
-98;2026-09-10;202625306987792653;9972,09;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
-99;2026-09-10;202625364235585271;-84,25;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-100;2026-09-09;202625397532501508;-109,37;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-101;2026-09-09;202625264045303473;-203,64;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-102;2026-09-08;202625397977688134;-100,10;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-103;2026-09-08;202625299847387796;-24,51;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-104;2026-09-07;202625064940711095;-221,88;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-105;2026-09-05;202624999487803152;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
-106;2026-09-04;202624764112579573;32,72;KONTO Mobi pow.26;p2p_in;booked;Tomasz Lewandowski;Przelewy od osób
-107;2026-09-04;202624797174246814;-120,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
-108;2026-09-03;202624897352852019;-151,84;KONTO Mobi pow.26;card;booked;Orlen;Transport
-109;2026-09-03;202624899449570641;-24,78;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-110;2026-09-02;202624697321726973;-89,34;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-111;2026-09-01;202624799661535711;-240,08;KONTO Mobi pow.26;card;booked;Orlen;Transport
-112;2026-09-01;202624797360412697;-16,85;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-113;2026-09-01;202624697607841924;-79,15;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-114;2026-09-01;202624497621063811;-20,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
-115;2026-09-01;202624497914837354;-742,18;KONTO Mobi pow.26;transfer_out;booked;Czynsz;Rachunki i opłaty
-116;2026-09-01;202624397355564697;-10,36;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
-117;2026-09-01;202624397743473702;54,52;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
-118;2026-08-31;202624497643989866;-158,34;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-119;2026-08-31;202624499501869492;-144,70;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-120;2026-08-31;202624364742858623;-35,92;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-121;2026-08-31;202624399746016035;-30,73;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-122;2026-08-30;202624499510805888;-72,66;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-123;2026-08-30;202624297717109365;-188,39;KONTO Mobi pow.26;card;booked;Orlen;Transport
-124;2026-08-28;202624097203318997;-20,00;KONTO Mobi pow.26;p2p_out;booked;Tomasz Lewandowski;Przelewy do osób
-125;2026-08-28;202624099366738585;-109,23;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-126;2026-08-27;202624197073447993;-66,23;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-127;2026-08-27;202624197843170597;-110,12;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-128;2026-08-25;202623899216102606;-83,18;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-129;2026-08-24;202623897975494683;-25,60;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-130;2026-08-24;202623697687790466;-35,00;KONTO Mobi pow.26;p2p_out;booked;Tomasz Lewandowski;Przelewy do osób
-131;2026-08-24;202623664215147688;-63,69;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-132;2026-08-22;202623597209816802;-126,33;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-133;2026-08-22;202623597369169730;-23,53;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-134;2026-08-21;202623697453184702;-147,34;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-135;2026-08-21;202623599058634129;-109,88;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-136;2026-08-21;202623397922024473;-35,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
-137;2026-08-20;202623497600704768;-50,68;KONTO Mobi pow.26;card;booked;?;Inne
-138;2026-08-20;202623499896762249;-35,36;KONTO Mobi pow.26;card;booked;Bolt;Transport
-139;2026-08-20;202623297879591893;-117,81;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
-140;2026-08-20;202623297544502921;-167,06;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-141;2026-08-19;202623397254892732;-84,82;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-142;2026-08-19;202623299061544356;-102,07;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
-143;2026-08-18;202623397155263481;-34,75;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-144;2026-08-18;202623197728319480;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
-145;2026-08-18;202623099706175094;-24,30;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-146;2026-08-17;202623199629685061;-49,28;KONTO Mobi pow.26;card;booked;Bolt;Transport
-147;2026-08-15;202623099555855297;-64,46;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-148;2026-08-15;202622797008677810;-150,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
-149;2026-08-14;202622899396028184;-37,30;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-150;2026-08-14;202622697312527533;-120,00;KONTO Mobi pow.26;p2p_out;booked;Piotr Wiśniewski;Przelewy do osób
-151;2026-08-13;202622797368186412;-50,16;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-152;2026-08-13;202622599647820107;-139,58;KONTO Mobi pow.26;card;booked;Orlen;Transport
-153;2026-08-12;202622799331436631;-65,80;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-154;2026-08-12;202622699504147303;-175,93;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-155;2026-08-12;202622599158279275;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
-156;2026-08-12;202622497156363319;-178,07;KONTO Mobi pow.26;card;booked;Bershka;Odzież i obuwie
-157;2026-08-11;202622599832682132;-47,75;KONTO Mobi pow.26;card;booked;Bolt;Transport
-158;2026-08-11;202622397581048625;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
-159;2026-08-11;202622397950499784;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
-160;2026-08-11;202622364626706507;-9,06;KONTO Mobi pow.26;blik;booked;Doci;Zdrowie
-161;2026-08-10;202622206334135828;10312,99;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
-162;2026-08-09;202622497384124308;-148,51;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-163;2026-08-07;202622199810002522;-105,77;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-164;2026-08-07;202622097699762892;-412,71;KONTO Mobi pow.26;card;booked;Media Expert;Elektronika
-165;2026-08-05;202621999550964560;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
-166;2026-08-04;202621997467988362;-41,99;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-167;2026-08-04;202621897627626038;-44,68;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-168;2026-08-04;202621664334649743;-164,67;KONTO Mobi pow.26;blik;booked;Zielone Sklepy;Zakupy online (inne)
-169;2026-08-03;202621599137096167;-20,88;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-170;2026-08-02;202621599064951915;-104,04;KONTO Mobi pow.26;card;booked;Decathlon;Sport, hobby i rozrywka
-171;2026-08-02;202621464047320653;19,63;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
-172;2026-08-01;202621699855799705;-126,50;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-173;2026-08-01;202621397147824939;-742,18;KONTO Mobi pow.26;transfer_out;booked;Czynsz;Rachunki i opłaty
-174;2026-08-01;202621364261082984;-67,34;KONTO Mobi pow.26;blik;booked;Koleo;Transport
-175;2026-08-01;202621297199633740;-8,88;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
-176;2026-08-01;202621297477411727;46,74;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
-177;2026-07-31;202621497666633565;-19,28;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-178;2026-07-31;202621499778058056;-149,12;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-179;2026-07-30;202621297516898564;-24,73;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-180;2026-07-30;202621164452052831;-58,94;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-181;2026-07-29;202621299381598412;-101,71;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-182;2026-07-28;202621197275185107;-25,20;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-183;2026-07-28;202621199546425072;-134,82;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-184;2026-07-28;202620964684364101;-230,23;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-185;2026-07-27;202621099135271742;-130,10;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-186;2026-07-27;202620899615481841;-12,02;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-187;2026-07-26;202621097971059887;-94,20;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-188;2026-07-26;202620764207892029;-98,66;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-189;2026-07-25;202620797902780078;-13,43;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-190;2026-07-24;202620899847629428;-82,55;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
-191;2026-07-23;202620799636607029;-56,32;KONTO Mobi pow.26;card;booked;?;Inne
-192;2026-07-23;202620797072525321;-45,62;KONTO Mobi pow.26;card;booked;Bolt;Transport
-193;2026-07-22;202620599765899399;-31,15;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-194;2026-07-22;202620497639064402;-39,69;KONTO Mobi pow.26;card;booked;Bolt;Transport
-195;2026-07-22;202620399013194760;-55,99;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-196;2026-07-21;202620597110262182;-48,18;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-197;2026-07-20;202620499115971195;-27,90;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-198;2026-07-20;202620499206675241;-56,72;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-199;2026-07-20;202620197631159790;-205,78;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
-200;2026-07-19;202620397352395271;-23,03;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
-201;2026-07-19;202620064555353112;-101,48;KONTO Mobi pow.26;blik;booked;Koleo;Transport
-202;2026-07-19;202620064487561211;-266,00;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-203;2026-07-19;202620097027887311;-86,76;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-204;2026-07-18;202620197840663765;-108,41;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
-205;2026-07-18;202620097725609063;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
-206;2026-07-18;202619964698921553;-173,29;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-207;2026-07-18;202619999364660414;-114,20;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-208;2026-07-15;202619699108746345;-30,89;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-209;2026-07-13;202619797664893749;-44,69;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-210;2026-07-13;202619697665946168;-45,06;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
-211;2026-07-13;202619697944826411;-15,28;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-212;2026-07-13;202619499459675039;-36,70;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-213;2026-07-12;202619497853801568;-98,82;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-214;2026-07-12;202619399498440715;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
-215;2026-07-11;202619499412230991;-135,14;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-216;2026-07-11;202619297486846620;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
-217;2026-07-11;202619297011388692;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
-218;2026-07-11;202619264670023660;-27,57;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-219;2026-07-10;202619397708373286;-10,78;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-220;2026-07-10;202619297845544638;-21,09;KONTO Mobi pow.26;card;booked;Bolt;Transport
-221;2026-07-10;202619106643789670;10029,50;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
-222;2026-07-09;202619299928338655;-115,71;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-223;2026-07-09;202619064250302083;100,21;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
-224;2026-07-08;202619299441423859;-6,93;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-225;2026-07-08;202619199807414505;-14,04;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-226;2026-07-07;202619097662822951;-27,56;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-227;2026-07-07;202619099102896950;-48,19;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-228;2026-07-07;202618864431303909;-234,25;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-229;2026-07-06;202618897409584709;-29,68;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-230;2026-07-05;202618797912604654;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
-231;2026-07-05;202618797316664467;-22,76;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-232;2026-07-04;202618897056052697;-31,80;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
-233;2026-07-03;202618697600498762;-183,42;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-234;2026-07-02;202618499059904013;-18,85;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-235;2026-07-01;202618499727529296;-134,62;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-236;2026-07-01;202618297109336534;-742,18;KONTO Mobi pow.26;transfer_out;booked;Czynsz;Rachunki i opłaty
-237;2026-07-01;202618197070641753;-8,04;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
-238;2026-07-01;202618197463683590;42,32;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
-239;2026-06-29;202618199672361249;-73,90;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-240;2026-06-29;202618064655775616;28,50;KONTO Mobi pow.26;p2p_in;booked;Piotr Wiśniewski;Przelewy od osób
-241;2026-06-28;202618297323702101;-21,43;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-242;2026-06-28;202617997058829061;-19,35;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-243;2026-06-27;202617864474506277;-61,56;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-244;2026-06-27;202617897861556586;-26,11;KONTO Mobi pow.26;card;booked;Bolt;Transport
-245;2026-06-26;202617799986893059;-128,78;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-246;2026-06-24;202617597066574389;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
-247;2026-06-24;202617597136940518;-55,31;KONTO Mobi pow.26;card;booked;?;Inne
-248;2026-06-21;202617397840360006;-273,48;KONTO Mobi pow.26;card;booked;Orlen;Transport
-249;2026-06-21;202617264069823516;-63,29;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-250;2026-06-21;202617297744493568;-27,51;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-251;2026-06-20;202617399910202507;-93,71;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-252;2026-06-20;202617197955720128;-235,65;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
-253;2026-06-20;202617199336381228;-114,29;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-254;2026-06-19;202617064405224939;-107,16;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-255;2026-06-19;202617099035802499;-131,25;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-256;2026-06-18;202617099984314571;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
-257;2026-06-17;202617099065162109;-391,72;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-258;2026-06-17;202616864091842179;-90,54;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-259;2026-06-17;202616864134031298;-34,59;KONTO Mobi pow.26;blik;booked;Koleo;Transport
-260;2026-06-15;202616999621626156;-23,74;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-261;2026-06-12;202616497479378686;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
-262;2026-06-12;202616499671463117;-294,26;KONTO Mobi pow.26;card;booked;Reserved;Odzież i obuwie
-263;2026-06-11;202616499102725681;-112,03;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-264;2026-06-11;202616297820444599;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
-265;2026-06-11;202616297470867440;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
-266;2026-06-10;202616106665254520;10304,70;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
-267;2026-06-09;202616299644207194;-119,67;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-268;2026-06-09;202616199832954653;-134,06;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-269;2026-06-08;202616197078287411;-49,43;KONTO Mobi pow.26;card;booked;Bolt;Transport
-270;2026-06-08;202616199254201569;-58,26;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-271;2026-06-08;202615964852670321;-79,81;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-272;2026-06-08;202615999557996830;-26,08;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-273;2026-06-07;202615897358187875;-102,94;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-274;2026-06-05;202615997882222571;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
-275;2026-06-04;202615799058446836;-30,27;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-276;2026-06-03;202615597893908879;-7,71;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-277;2026-06-03;202615497365933326;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
-278;2026-06-02;202615597255936253;-20,25;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-279;2026-06-02;202615399508498927;-50,07;KONTO Mobi pow.26;card;booked;?;Inne
-280;2026-06-02;202615397115793020;-29,27;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-281;2026-06-01;202615497265379125;-30,25;KONTO Mobi pow.26;card;booked;Bolt;Transport
-282;2026-06-01;202615297268875123;-742,18;KONTO Mobi pow.26;transfer_out;booked;Czynsz;Rachunki i opłaty
-283;2026-06-01;202615264902488149;-105,52;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-284;2026-06-01;202615197358954609;-7,56;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
-285;2026-06-01;202615197672481396;39,81;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
-286;2026-05-29;202615197856009427;-116,73;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-287;2026-05-29;202614999636225068;-95,82;KONTO Mobi pow.26;card;booked;Orlen;Transport
-288;2026-05-28;202614899025795071;-22,59;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
-289;2026-05-27;202615097867646831;-28,97;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-290;2026-05-27;202614997463801642;-80,09;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-291;2026-05-26;202614897515360022;-84,02;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-292;2026-05-25;202614697029928143;-97,53;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-293;2026-05-25;202614597103858858;-93,00;KONTO Mobi pow.26;p2p_out;booked;Tomasz Lewandowski;Przelewy do osób
-294;2026-05-25;202614564671405073;-18,72;KONTO Mobi pow.26;blik;booked;Doci;Zdrowie
-295;2026-05-24;202614464672156679;-233,44;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
-296;2026-05-23;202614697067478361;-128,72;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-297;2026-05-23;202614597333725254;-14,19;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
-298;2026-05-23;202614397353502263;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
-299;2026-05-22;202614264176610744;58,77;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
-300;2026-05-22;202614297211394879;-50,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
-301;2026-05-22;202614264268418452;-103,64;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-302;2026-05-21;202614397984616126;-169,03;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-303;2026-05-20;202614064079929734;84,54;KONTO Mobi pow.26;p2p_in;booked;Michał Wójcik;Przelewy od osób
-304;2026-05-20;202614097455073531;-213,50;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
-305;2026-05-18;202614199740397560;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
-306;2026-05-17;202613997242266216;-34,35;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
-307;2026-05-17;202613999791824663;-60,81;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-308;2026-05-16;202613999027242908;-36,91;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-309;2026-05-16;202613799867232189;-78,30;KONTO Mobi pow.26;card;booked;?;Inne
-310;2026-05-15;202613597613986637;-35,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
-311;2026-05-15;202613599944998525;-107,38;KONTO Mobi pow.26;card;booked;Orlen;Transport
-312;2026-05-14;202613464087841636;-55,57;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
-313;2026-05-13;202613599359387638;-6,49;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-314;2026-05-13;202613599208958898;-127,83;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-315;2026-05-13;202613397420755279;-93,00;KONTO Mobi pow.26;p2p_out;booked;Katarzyna Zielińska;Przelewy do osób
-316;2026-05-12;202613264005539736;23,88;KONTO Mobi pow.26;p2p_in;booked;Piotr Wiśniewski;Przelewy od osób
-317;2026-05-12;202613297339562230;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
-318;2026-05-11;202613399481961364;-18,90;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-319;2026-05-11;202613297571671189;-66,25;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-320;2026-05-11;202613197451038208;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
-321;2026-05-11;202613197986115359;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
-322;2026-05-10;202613006298428319;10350,48;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
-323;2026-05-09;202612999050427906;-104,23;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-324;2026-05-08;202613197241106805;283,63;KONTO Mobi pow.26;card;booked;Zalando;Zwroty
-325;2026-05-08;202613097774404381;-24,36;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
-326;2026-05-07;202612997948975640;-129,12;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
-327;2026-05-07;202612799046669835;-237,78;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
-328;2026-05-06;202612997814993363;-33,44;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-329;2026-05-05;202612897555400377;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
-330;2026-05-05;202612799388127434;-12,32;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-331;2026-05-05;202612564532119301;82,31;KONTO Mobi pow.26;p2p_in;booked;Anna Nowak;Przelewy od osób
-332;2026-05-02;202612397500993686;-155,84;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
-333;2026-05-02;202612299556515311;-203,11;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
-334;2026-05-01;202612499730330709;-15,62;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
-335;2026-05-01;202612197130693381;-742,18;KONTO Mobi pow.26;transfer_out;booked;Czynsz;Rachunki i opłaty
+32;2026-10-13;202628997845479430;-56,09;KONTO Mobi pow.26;card;booked;?;Inne
+33;2026-10-13;202628697406865213;-10,82;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+34;2026-10-12;202628797147364121;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
+35;2026-10-12;202628799727408955;-199,81;KONTO Mobi pow.26;card;booked;Orlen;Transport
+36;2026-10-11;202628699892758059;-11,19;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+37;2026-10-11;202628497022541876;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
+38;2026-10-11;202628497108652175;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
+39;2026-10-10;202628306977801865;10231,15;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
+40;2026-10-09;202628297281093372;-141,76;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+41;2026-10-08;202628399905037037;-126,43;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+42;2026-10-08;202628297764981744;-14,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+43;2026-10-08;202628164189061692;37,83;KONTO Mobi pow.26;p2p_in;booked;Anna Nowak;Przelewy od osób
+44;2026-10-07;202628297023076889;-35,11;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
+45;2026-10-07;202628299210440043;-7,08;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+46;2026-10-07;202628297191707402;-107,61;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+47;2026-10-07;202628197264102119;-82,11;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+48;2026-10-05;202628099595395166;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
+49;2026-10-05;202628097910032902;-86,41;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+50;2026-10-04;202627764364876250;-27,11;KONTO Mobi pow.26;blik;booked;Koleo;Transport
+51;2026-10-04;202627764187136578;-215,61;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+52;2026-10-04;202627797771845007;-59,43;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+53;2026-10-03;202627897281319126;-88,82;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+54;2026-10-03;202627699950671929;-106,69;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+55;2026-10-02;202627799235090446;-30,17;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+56;2026-10-02;202627564186988502;-389,39;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+57;2026-10-01;202627699305051006;-25,25;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+58;2026-10-01;202627699212412969;-85,38;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+59;2026-10-01;202627497213806556;-742,18;KONTO Mobi pow.26;standing_order;booked;Czynsz;Rachunki i opłaty
+60;2026-10-01;202627397031874640;-9,68;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
+61;2026-10-01;202627397047142443;50,95;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
+62;2026-09-30;202627499821984514;-16,33;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+63;2026-09-30;202627597386449601;-290,59;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+64;2026-09-29;202627397980013568;-23,12;KONTO Mobi pow.26;card;booked;Bolt;Transport
+65;2026-09-28;202627399628875974;-40,24;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+66;2026-09-27;202627097726596861;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+67;2026-09-26;202627197677890337;-44,62;KONTO Mobi pow.26;card;booked;?;Inne
+68;2026-09-26;202626997208739111;-171,22;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+69;2026-09-25;202626897472884620;-35,00;KONTO Mobi pow.26;p2p_out;booked;Katarzyna Zielińska;Przelewy do osób
+70;2026-09-25;202626899312003832;-108,05;KONTO Mobi pow.26;card;booked;Orlen;Transport
+71;2026-09-24;202626999152902956;-166,40;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
+72;2026-09-23;202626698511162869;-150,00;KONTO Mobi pow.26;express;booked;Michał Wójcik;Przelewy do osób
+73;2026-09-22;202626597422402996;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+74;2026-09-21;202626499123683564;-143,42;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+75;2026-09-20;202626597595595576;-30,42;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+76;2026-09-20;202626597032231138;-135,87;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+77;2026-09-20;202626397384277885;-149,63;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
+78;2026-09-19;202626497079168231;-116,88;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+79;2026-09-18;202626397915032042;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+80;2026-09-18;202626399010621558;-32,72;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+81;2026-09-18;202626199389571951;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
+82;2026-09-17;202626399007221330;-54,75;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+83;2026-09-17;202626197887001282;-95,23;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+84;2026-09-17;202626064197831034;-7,06;KONTO Mobi pow.26;blik;booked;Doci;Zdrowie
+85;2026-09-17;202626097429832349;-149,00;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+86;2026-09-16;202626297220456760;-81,74;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+87;2026-09-16;202625999403632224;-239,03;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
+88;2026-09-15;202626197794656343;-88,89;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+89;2026-09-15;202625831236443399;-186,00;KONTO Mobi pow.26;transfer_order;booked;PZU;Rachunki i opłaty
+90;2026-09-15;202625864866800964;-326,70;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+91;2026-09-14;202625999874726647;-22,42;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+92;2026-09-14;202626099355961632;-71,51;KONTO Mobi pow.26;card;booked;Reserved;Odzież i obuwie
+93;2026-09-14;202625797825007816;-49,77;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+94;2026-09-13;202625899788755899;-114,96;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+95;2026-09-12;202625897516197305;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
+96;2026-09-12;202625899256644737;-49,79;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+97;2026-09-12;202625797206301463;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+98;2026-09-12;202625599228855734;-335,20;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+99;2026-09-11;202625699669929016;-135,97;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+100;2026-09-11;202625497500940025;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
+101;2026-09-11;202625497247254833;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
+102;2026-09-11;202625464744339911;-82,81;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+103;2026-09-11;202625464239471365;-277,83;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+104;2026-09-10;202625697685870900;-23,58;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+105;2026-09-10;202625599003969701;-373,48;KONTO Mobi pow.26;card;booked;IKEA;Dom i ogród
+106;2026-09-10;202625306987792653;9972,09;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
+107;2026-09-10;202625364235585271;-84,25;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+108;2026-09-09;202625397532501508;-109,37;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+109;2026-09-09;202625297194316879;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+110;2026-09-09;202625264045303473;-203,64;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+111;2026-09-08;202625397977688134;-100,10;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+112;2026-09-08;202625299847387796;-24,51;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+113;2026-09-07;202625064940711095;-221,88;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+114;2026-09-05;202624999487803152;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
+115;2026-09-04;202624764112579573;32,72;KONTO Mobi pow.26;p2p_in;booked;Tomasz Lewandowski;Przelewy od osób
+116;2026-09-04;202624797174246814;-120,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
+117;2026-09-03;202624897352852019;-151,84;KONTO Mobi pow.26;card;booked;Orlen;Transport
+118;2026-09-03;202624899449570641;-24,78;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+119;2026-09-02;202624697321726973;-89,34;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+120;2026-09-01;202624799661535711;-240,08;KONTO Mobi pow.26;card;booked;Orlen;Transport
+121;2026-09-01;202624797360412697;-16,85;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+122;2026-09-01;202624697607841924;-79,15;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+123;2026-09-01;202624497621063811;-20,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
+124;2026-09-01;202624497914837354;-742,18;KONTO Mobi pow.26;standing_order;booked;Czynsz;Rachunki i opłaty
+125;2026-09-01;202624397355564697;-10,36;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
+126;2026-09-01;202624397743473702;54,52;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
+127;2026-08-31;202624497643989866;-158,34;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+128;2026-08-31;202624499501869492;-144,70;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+129;2026-08-31;202624399746016035;-30,73;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+130;2026-08-31;202624364742858623;-35,92;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+131;2026-08-30;202624499510805888;-72,66;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+132;2026-08-30;202624297717109365;-188,39;KONTO Mobi pow.26;card;booked;Orlen;Transport
+133;2026-08-28;202624097203318997;-20,00;KONTO Mobi pow.26;p2p_out;booked;Tomasz Lewandowski;Przelewy do osób
+134;2026-08-28;202624099366738585;-109,23;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+135;2026-08-27;202624197073447993;-66,23;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+136;2026-08-27;202624197843170597;-110,12;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+137;2026-08-25;202623899216102606;-83,18;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+138;2026-08-24;202623897975494683;-25,60;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+139;2026-08-24;202623697687790466;-35,00;KONTO Mobi pow.26;p2p_out;booked;Tomasz Lewandowski;Przelewy do osób
+140;2026-08-24;202623664215147688;-63,69;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+141;2026-08-22;202623697463637656;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+142;2026-08-22;202623597209816802;-126,33;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+143;2026-08-22;202623597369169730;-23,53;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+144;2026-08-21;202623697453184702;-147,34;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+145;2026-08-21;202623599058634129;-109,88;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+146;2026-08-21;202623397922024473;-35,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
+147;2026-08-20;202623497600704768;-50,68;KONTO Mobi pow.26;card;booked;?;Inne
+148;2026-08-20;202623499896762249;-35,36;KONTO Mobi pow.26;card;booked;Bolt;Transport
+149;2026-08-20;202623297879591893;-117,81;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
+150;2026-08-20;202623297544502921;-167,06;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+151;2026-08-19;202623397254892732;-84,82;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+152;2026-08-19;202623297910774944;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+153;2026-08-19;202623299061544356;-102,07;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
+154;2026-08-18;202623397155263481;-34,75;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+155;2026-08-18;202623197728319480;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
+156;2026-08-18;202623099706175094;-24,30;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+157;2026-08-17;202623199629685061;-49,28;KONTO Mobi pow.26;card;booked;Bolt;Transport
+158;2026-08-15;202623099555855297;-64,46;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+159;2026-08-15;202622797008677810;-150,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
+160;2026-08-14;202622899396028184;-37,30;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+161;2026-08-14;202622697312527533;-120,00;KONTO Mobi pow.26;p2p_out;booked;Piotr Wiśniewski;Przelewy do osób
+162;2026-08-13;202622797368186412;-50,16;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+163;2026-08-13;202622599647820107;-139,58;KONTO Mobi pow.26;card;booked;Orlen;Transport
+164;2026-08-12;202622799331436631;-65,80;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+165;2026-08-12;202622699504147303;-175,93;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+166;2026-08-12;202622599158279275;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
+167;2026-08-12;202622497156363319;-178,07;KONTO Mobi pow.26;card;booked;Bershka;Odzież i obuwie
+168;2026-08-11;202622597100667792;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+169;2026-08-11;202622599832682132;-47,75;KONTO Mobi pow.26;card;booked;Bolt;Transport
+170;2026-08-11;202622397581048625;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
+171;2026-08-11;202622397950499784;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
+172;2026-08-11;202622364626706507;-9,06;KONTO Mobi pow.26;blik;booked;Doci;Zdrowie
+173;2026-08-10;202622206334135828;10312,99;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
+174;2026-08-09;202622497384124308;-148,51;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+175;2026-08-07;202622199810002522;-105,77;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+176;2026-08-07;202622097699762892;-412,71;KONTO Mobi pow.26;card;booked;Media Expert;Elektronika
+177;2026-08-05;202621999550964560;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
+178;2026-08-04;202621997467988362;-41,99;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+179;2026-08-04;202621897627626038;-44,68;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+180;2026-08-04;202621664334649743;-164,67;KONTO Mobi pow.26;blik;booked;Zielone Sklepy;Zakupy online (inne)
+181;2026-08-03;202621599137096167;-20,88;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+182;2026-08-02;202621597307451541;-14,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+183;2026-08-02;202621599064951915;-104,04;KONTO Mobi pow.26;card;booked;Decathlon;Sport, hobby i rozrywka
+184;2026-08-02;202621464047320653;19,63;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
+185;2026-08-01;202621699855799705;-126,50;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+186;2026-08-01;202621397147824939;-742,18;KONTO Mobi pow.26;standing_order;booked;Czynsz;Rachunki i opłaty
+187;2026-08-01;202621364261082984;-67,34;KONTO Mobi pow.26;blik;booked;Koleo;Transport
+188;2026-08-01;202621297199633740;-8,88;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
+189;2026-08-01;202621297477411727;46,74;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
+190;2026-07-31;202621497666633565;-19,28;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+191;2026-07-31;202621499778058056;-149,12;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+192;2026-07-30;202621297516898564;-24,73;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+193;2026-07-30;202621164452052831;-58,94;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+194;2026-07-29;202621299381598412;-101,71;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+195;2026-07-28;202621197275185107;-25,20;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+196;2026-07-28;202621199546425072;-134,82;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+197;2026-07-28;202620964684364101;-230,23;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+198;2026-07-27;202620899615481841;-12,02;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+199;2026-07-27;202621099135271742;-130,10;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+200;2026-07-26;202621097971059887;-94,20;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+201;2026-07-26;202620764207892029;-98,66;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+202;2026-07-25;202620797902780078;-13,43;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+203;2026-07-24;202620899847629428;-82,55;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
+204;2026-07-23;202620799636607029;-56,32;KONTO Mobi pow.26;card;booked;?;Inne
+205;2026-07-23;202620797072525321;-45,62;KONTO Mobi pow.26;card;booked;Bolt;Transport
+206;2026-07-22;202620599765899399;-31,15;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+207;2026-07-22;202620497639064402;-39,69;KONTO Mobi pow.26;card;booked;Bolt;Transport
+208;2026-07-22;202620398313490559;-80,00;KONTO Mobi pow.26;express;booked;Piotr Wiśniewski;Przelewy do osób
+209;2026-07-22;202620399013194760;-55,99;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+210;2026-07-21;202620597110262182;-48,18;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+211;2026-07-20;202620499115971195;-27,90;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+212;2026-07-20;202620499206675241;-56,72;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+213;2026-07-20;202620197631159790;-205,78;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
+214;2026-07-19;202620397352395271;-23,03;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
+215;2026-07-19;202620097313573583;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+216;2026-07-19;202620064555353112;-101,48;KONTO Mobi pow.26;blik;booked;Koleo;Transport
+217;2026-07-19;202620097027887311;-86,76;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+218;2026-07-19;202620064487561211;-266,00;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+219;2026-07-18;202620197840663765;-108,41;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
+220;2026-07-18;202620097725609063;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
+221;2026-07-18;202619997353381110;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+222;2026-07-18;202619964698921553;-173,29;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+223;2026-07-18;202619999364660414;-114,20;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+224;2026-07-15;202619699108746345;-30,89;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+225;2026-07-13;202619797664893749;-44,69;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+226;2026-07-13;202619697665946168;-45,06;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
+227;2026-07-13;202619697944826411;-15,28;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+228;2026-07-13;202619499459675039;-36,70;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+229;2026-07-12;202619497853801568;-98,82;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+230;2026-07-12;202619399498440715;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
+231;2026-07-11;202619497099701516;-15,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+232;2026-07-11;202619499412230991;-135,14;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+233;2026-07-11;202619297486846620;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
+234;2026-07-11;202619297011388692;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
+235;2026-07-11;202619264670023660;-27,57;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+236;2026-07-10;202619397708373286;-10,78;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+237;2026-07-10;202619297845544638;-21,09;KONTO Mobi pow.26;card;booked;Bolt;Transport
+238;2026-07-10;202619106643789670;10029,50;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
+239;2026-07-09;202619299928338655;-115,71;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+240;2026-07-09;202619064250302083;100,21;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
+241;2026-07-08;202619299441423859;-6,93;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+242;2026-07-08;202619199807414505;-14,04;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+243;2026-07-07;202619097662822951;-27,56;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+244;2026-07-07;202619099102896950;-48,19;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+245;2026-07-07;202618864431303909;-234,25;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+246;2026-07-06;202618897409584709;-29,68;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+247;2026-07-05;202618797912604654;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
+248;2026-07-05;202618797316664467;-22,76;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+249;2026-07-04;202618897056052697;-31,80;KONTO Mobi pow.26;card;booked;Apteka DOZ;Zdrowie
+250;2026-07-03;202618697600498762;-183,42;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+251;2026-07-02;202618499059904013;-18,85;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+252;2026-07-01;202618499727529296;-134,62;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+253;2026-07-01;202618297109336534;-742,18;KONTO Mobi pow.26;standing_order;booked;Czynsz;Rachunki i opłaty
+254;2026-07-01;202618197070641753;-8,04;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
+255;2026-07-01;202618197463683590;42,32;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
+256;2026-06-29;202618199672361249;-73,90;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+257;2026-06-29;202618064655775616;28,50;KONTO Mobi pow.26;p2p_in;booked;Piotr Wiśniewski;Przelewy od osób
+258;2026-06-28;202618297323702101;-21,43;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+259;2026-06-28;202617997058829061;-19,35;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+260;2026-06-27;202617997450017889;-14,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+261;2026-06-27;202617864474506277;-61,56;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+262;2026-06-27;202617897861556586;-26,11;KONTO Mobi pow.26;card;booked;Bolt;Transport
+263;2026-06-26;202617799986893059;-128,78;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+264;2026-06-24;202617697317074807;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+265;2026-06-24;202617597066574389;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
+266;2026-06-24;202617597136940518;-55,31;KONTO Mobi pow.26;card;booked;?;Inne
+267;2026-06-21;202617397840360006;-273,48;KONTO Mobi pow.26;card;booked;Orlen;Transport
+268;2026-06-21;202617298545015806;-200,00;KONTO Mobi pow.26;express;booked;Katarzyna Zielińska;Przelewy do osób
+269;2026-06-21;202617297153548203;-14,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+270;2026-06-21;202617264069823516;-63,29;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+271;2026-06-21;202617297744493568;-27,51;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+272;2026-06-20;202617197955720128;-235,65;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
+273;2026-06-20;202617399910202507;-93,71;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+274;2026-06-20;202617199336381228;-114,29;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+275;2026-06-19;202617064405224939;-107,16;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+276;2026-06-19;202617099035802499;-131,25;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+277;2026-06-18;202617099984314571;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
+278;2026-06-17;202617099065162109;-391,72;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+279;2026-06-17;202616897338415669;-15,50;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+280;2026-06-17;202616864091842179;-90,54;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+281;2026-06-17;202616864134031298;-34,59;KONTO Mobi pow.26;blik;booked;Koleo;Transport
+282;2026-06-15;202616999621626156;-23,74;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+283;2026-06-15;202616631415713234;-186,00;KONTO Mobi pow.26;transfer_order;booked;PZU;Rachunki i opłaty
+284;2026-06-12;202616499671463117;-294,26;KONTO Mobi pow.26;card;booked;Reserved;Odzież i obuwie
+285;2026-06-12;202616497479378686;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
+286;2026-06-11;202616499102725681;-112,03;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+287;2026-06-11;202616297451559350;-15,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+288;2026-06-11;202616297820444599;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
+289;2026-06-11;202616297470867440;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
+290;2026-06-10;202616106665254520;10304,70;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
+291;2026-06-09;202616299644207194;-119,67;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+292;2026-06-09;202616199832954653;-134,06;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+293;2026-06-08;202616197078287411;-49,43;KONTO Mobi pow.26;card;booked;Bolt;Transport
+294;2026-06-08;202616199254201569;-58,26;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+295;2026-06-08;202615964852670321;-79,81;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+296;2026-06-08;202615999557996830;-26,08;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+297;2026-06-07;202615897358187875;-102,94;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+298;2026-06-05;202615997882222571;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
+299;2026-06-04;202615799058446836;-30,27;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+300;2026-06-03;202615597893908879;-7,71;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+301;2026-06-03;202615497365933326;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
+302;2026-06-02;202615597255936253;-20,25;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+303;2026-06-02;202615399508498927;-50,07;KONTO Mobi pow.26;card;booked;?;Inne
+304;2026-06-02;202615397115793020;-29,27;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+305;2026-06-01;202615497265379125;-30,25;KONTO Mobi pow.26;card;booked;Bolt;Transport
+306;2026-06-01;202615297268875123;-742,18;KONTO Mobi pow.26;standing_order;booked;Czynsz;Rachunki i opłaty
+307;2026-06-01;202615264902488149;-105,52;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+308;2026-06-01;202615197358954609;-7,56;Otwarte Konto Oszczędnościowe;interest_tax;booked;ING;Odsetki
+309;2026-06-01;202615197672481396;39,81;Otwarte Konto Oszczędnościowe;interest;booked;ING;Odsetki
+310;2026-05-29;202615197856009427;-116,73;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+311;2026-05-29;202615097936496485;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+312;2026-05-29;202614999636225068;-95,82;KONTO Mobi pow.26;card;booked;Orlen;Transport
+313;2026-05-28;202614899025795071;-22,59;KONTO Mobi pow.26;card;booked;Rossmann;Drogeria i uroda
+314;2026-05-27;202615097867646831;-28,97;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+315;2026-05-27;202614997463801642;-80,09;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+316;2026-05-26;202614897515360022;-84,02;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+317;2026-05-25;202614697029928143;-97,53;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+318;2026-05-25;202614597103858858;-93,00;KONTO Mobi pow.26;p2p_out;booked;Tomasz Lewandowski;Przelewy do osób
+319;2026-05-25;202614564671405073;-18,72;KONTO Mobi pow.26;blik;booked;Doci;Zdrowie
+320;2026-05-24;202614464672156679;-233,44;KONTO Mobi pow.26;blik;booked;Allegro;Zakupy online (inne)
+321;2026-05-23;202614697067478361;-128,72;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+322;2026-05-23;202614597333725254;-14,19;KONTO Mobi pow.26;card;booked;Pepco;Dom i ogród
+323;2026-05-23;202614397353502263;-93,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
+324;2026-05-22;202614264176610744;58,77;KONTO Mobi pow.26;p2p_in;booked;Katarzyna Zielińska;Przelewy od osób
+325;2026-05-22;202614297211394879;-50,00;KONTO Mobi pow.26;p2p_out;booked;Michał Wójcik;Przelewy do osób
+326;2026-05-22;202614264268418452;-103,64;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+327;2026-05-21;202614397984616126;-169,03;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+328;2026-05-21;;84,40;KONTO Mobi pow.26;correction;booked;ING;Inne
+329;2026-05-21;;-84,40;KONTO Mobi pow.26;correction;booked;ING;Inne
+330;2026-05-21;;74,49;KONTO Mobi pow.26;correction;booked;ING;Inne
+331;2026-05-21;;-74,49;KONTO Mobi pow.26;correction;booked;ING;Inne
+332;2026-05-21;;37,89;KONTO Mobi pow.26;correction;booked;ING;Inne
+333;2026-05-21;;-37,89;KONTO Mobi pow.26;correction;booked;ING;Inne
+334;2026-05-20;202614064079929734;84,54;KONTO Mobi pow.26;p2p_in;booked;Michał Wójcik;Przelewy od osób
+335;2026-05-20;202614097455073531;-213,50;KONTO Mobi pow.26;transfer_out;booked;Tauron;Rachunki i opłaty
+336;2026-05-18;202614199740397560;-29,99;KONTO Mobi pow.26;card;booked;YouTube Premium;Subskrypcje
+337;2026-05-17;202613997242266216;-34,35;KONTO Mobi pow.26;card;booked;McDonald's;Restauracje i jedzenie na wynos
+338;2026-05-17;202613999791824663;-60,81;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+339;2026-05-16;202613999027242908;-36,91;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+340;2026-05-16;202613799867232189;-78,30;KONTO Mobi pow.26;card;booked;?;Inne
+341;2026-05-15;202613597613986637;-35,00;KONTO Mobi pow.26;p2p_out;booked;Anna Nowak;Przelewy do osób
+342;2026-05-15;202613599944998525;-107,38;KONTO Mobi pow.26;card;booked;Orlen;Transport
+343;2026-05-14;202613464087841636;-55,57;KONTO Mobi pow.26;blik;booked;Pyszne.pl;Restauracje i jedzenie na wynos
+344;2026-05-13;202613599359387638;-6,49;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+345;2026-05-13;202613599208958898;-127,83;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+346;2026-05-13;202613397420755279;-93,00;KONTO Mobi pow.26;p2p_out;booked;Katarzyna Zielińska;Przelewy do osób
+347;2026-05-12;202613264005539736;23,88;KONTO Mobi pow.26;p2p_in;booked;Piotr Wiśniewski;Przelewy od osób
+348;2026-05-12;202613297339562230;-23,99;KONTO Mobi pow.26;card;booked;Spotify;Subskrypcje
+349;2026-05-11;202613399481961364;-18,90;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+350;2026-05-11;202613297571671189;-66,25;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+351;2026-05-11;202613197451038208;2000,00;Otwarte Konto Oszczędnościowe;own_transfer;booked;Własne konto;Przelew własny
+352;2026-05-11;202613197986115359;-2000,00;KONTO Mobi pow.26;own_transfer;booked;Własne konto;Przelew własny
+353;2026-05-10;202613006298428319;10350,48;KONTO Mobi pow.26;transfer_in;booked;ACME Software;Wynagrodzenie
+354;2026-05-09;202612999050427906;-104,23;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+355;2026-05-08;202613197241106805;283,63;KONTO Mobi pow.26;card;booked;Zalando;Zwroty
+356;2026-05-08;202613097774404381;-24,36;KONTO Mobi pow.26;card;booked;Starbucks;Restauracje i jedzenie na wynos
+357;2026-05-07;202612997948975640;-129,12;KONTO Mobi pow.26;card;booked;Lidl;Spożywcze
+358;2026-05-07;202612799046669835;-237,78;KONTO Mobi pow.26;card;booked;Kaufland;Spożywcze
+359;2026-05-06;202612997814993363;-33,44;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+360;2026-05-05;202612897555400377;-49,00;KONTO Mobi pow.26;card;booked;Netflix;Subskrypcje
+361;2026-05-05;202612799388127434;-12,32;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+362;2026-05-05;202612564532119301;82,31;KONTO Mobi pow.26;p2p_in;booked;Anna Nowak;Przelewy od osób
+363;2026-05-02;202612397500993686;-155,84;KONTO Mobi pow.26;card;booked;Biedronka;Spożywcze
+364;2026-05-02;202612297648240582;-14,90;KONTO Mobi pow.26;card;booked;Costa Coffee;Restauracje i jedzenie na wynos
+365;2026-05-02;202612299556515311;-203,11;KONTO Mobi pow.26;card;booked;Castorama;Dom i ogród
+366;2026-05-01;202612499730330709;-15,62;KONTO Mobi pow.26;card;booked;Żabka;Spożywcze
+367;2026-05-01;202612197130693381;-742,18;KONTO Mobi pow.26;standing_order;booked;Czynsz;Rachunki i opłaty

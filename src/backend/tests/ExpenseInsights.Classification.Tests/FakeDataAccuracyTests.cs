@@ -14,7 +14,7 @@ public sealed class FakeDataAccuracyTests
     {
         var report = await EvaluateAsync("fake_ing.csv", "fake_ing.labels.csv");
 
-        Assert.Equal(335, report.Rows.Count);
+        Assert.Equal(367, report.Rows.Count);
         Assert.True(report.Coverage >= 0.90, $"Coverage {report.Coverage:P1}");
         Assert.True(report.Precision >= 0.97, $"Precision {report.Precision:P1}");
     }

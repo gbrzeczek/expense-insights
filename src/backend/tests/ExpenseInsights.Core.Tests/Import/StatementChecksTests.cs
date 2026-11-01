@@ -41,6 +41,64 @@ public sealed class StatementChecksTests
     }
 
     [Fact]
+    public void Balances_Pass_WhenRowsAreListedOutOfBalanceOrder()
+    {
+        // Newest first. In balance order -79.24 comes before -10, but the export lists it after, with
+        // a row of the other account between them.
+        ImportedTransaction[] rows =
+        [
+            Imported(-5m, 905.76m, line: 1),
+            Imported(-79.24m, 920.76m, line: 2),
+            Imported(500m, 1500m, account: "Savings", line: 3),
+            Imported(-10m, 910.76m, line: 4),
+            Imported(0m, 1000m, account: "Savings", line: 5),
+            Imported(-20m, 1000m, line: 6),
+        ];
+
+        var (result, issues) = StatementChecks.CheckBalances(rows);
+
+        Assert.Equal(CheckResult.Passed, result);
+        Assert.Empty(issues);
+    }
+
+    [Fact]
+    public void Balances_MissingRow_IsOneMismatch_AndTheChainGoesOn()
+    {
+        // A row of -30 between lines 2 and 3 is missing (e.g. it failed to parse).
+        ImportedTransaction[] rows =
+        [
+            Imported(-5m, 855m, line: 1),
+            Imported(-10m, 860m, line: 2),
+            Imported(-20m, 900m, line: 3),
+            Imported(-1m, 920m, line: 4),
+        ];
+
+        var (result, issues) = StatementChecks.CheckBalances(rows);
+
+        Assert.Equal(CheckResult.Failed, result);
+        var issue = Assert.Single(issues);
+        Assert.Equal(2, issue.LineNumber);
+        Assert.Equal(890m, issue.Expected);
+        Assert.Equal(860m, issue.Actual);
+    }
+
+    [Fact]
+    public void Balances_RowFarFromItsPlace_IsAMismatch()
+    {
+        // In balance order: a first row (balance 1000), the -50 row, then 30 rows of -1. The export
+        // lists the -50 row after all of them, beyond the window.
+        var chain = new List<ImportedTransaction> { Imported(-1m, 1000m, line: 99) };
+        for (var i = 1; i <= StatementChecks.ReorderWindow + 10; i++)
+        {
+            chain.Insert(0, Imported(-1m, 950m - i, line: 99 - i));
+        }
+
+        chain.Insert(0, Imported(-50m, 950m, line: 1));
+
+        Assert.Equal(CheckResult.Failed, StatementChecks.CheckBalances(chain).Result);
+    }
+
+    [Fact]
     public void Balances_AreNotAvailable_WithoutBalances()
     {
         Assert.Equal(CheckResult.NotAvailable, StatementChecks.CheckBalances([Imported(-1m), Imported(-2m)]).Result);

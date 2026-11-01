@@ -27,6 +27,7 @@ public static class ImportIssueCodes
     public const string InvalidAmount = "invalidAmount";
     public const string MissingAmount = "missingAmount";
     public const string MissingCurrency = "missingCurrency";
+    /// <summary>No longer raised (booked rows without a number get a content key); kept for older batches.</summary>
     public const string MissingTransactionId = "missingTransactionId";
     public const string UnknownAccount = "unknownAccount";
 

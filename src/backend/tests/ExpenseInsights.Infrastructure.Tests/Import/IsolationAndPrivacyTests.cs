@@ -52,7 +52,7 @@ public sealed class IsolationAndPrivacyTests(PostgresFixture postgres) : ImportT
         var (batch, alreadyImported) = await ImportAsync(second, "fake_ing.csv");
 
         Assert.False(alreadyImported);
-        Assert.Equal(335, batch.NewCount);
+        Assert.Equal(367, batch.NewCount);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public sealed class IsolationAndPrivacyTests(PostgresFixture postgres) : ImportT
 
         await using var db = CreateDbContext(user);
         var debits = await db.Transactions.Where(t => t.Amount < 0).SumAsync(t => t.Amount, CancellationToken);
-        Assert.Equal(-42189.51m, debits);
+        Assert.Equal(-43506.39m, debits);
         Assert.Equal(4, await db.Transactions.CountAsync(t => t.Status == TransactionStatus.Pending && t.ExternalId == null, CancellationToken));
     }
 }

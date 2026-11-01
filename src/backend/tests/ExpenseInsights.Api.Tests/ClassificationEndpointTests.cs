@@ -26,7 +26,7 @@ public sealed class ClassificationEndpointTests(PostgresFixture postgres) : Inte
         var items = first.GetProperty("items").EnumerateArray().Concat(rest.GetProperty("items").EnumerateArray()).ToList();
         Assert.Equal(200, first.GetProperty("items").GetArrayLength());
         Assert.Equal(JsonValueKind.Null, rest.GetProperty("nextOffset").ValueKind);
-        Assert.Equal(335, items.Count);
+        Assert.Equal(367, items.Count);
         Assert.True(items.Count(i => i.GetProperty("categoryId").ValueKind != JsonValueKind.Null) >= 300);
         var pyszne = items.First(i => i.GetProperty("merchantKey").GetString() == "pyszne");
         Assert.Equal("pyszne.pl", pyszne.GetProperty("merchant").GetString());
@@ -145,7 +145,7 @@ public sealed class ClassificationEndpointTests(PostgresFixture postgres) : Inte
         Assert.Equal(HttpStatusCode.BadRequest, empty.StatusCode);
         var other = all.EnumerateArray().Single(c => c.GetProperty("id").GetGuid() == Other);
         Assert.Equal(("other", "Różne", true), (other.GetProperty("key").GetString(), other.GetProperty("name").GetString(), other.GetProperty("hidden").GetBoolean()));
-        Assert.Equal(21, all.GetArrayLength());
+        Assert.Equal(22, all.GetArrayLength());
     }
 
     [Fact]
