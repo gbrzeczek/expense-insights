@@ -12,7 +12,8 @@
     "e2e": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "screenshots": "node scripts/capture-screenshots.mjs"
   },
   "private": true,
   "packageManager": "npm@11.17.0",
