@@ -36,7 +36,7 @@ outside the home network, with backups that have actually been restored once.
       passed locally on fake data; still to do once on the server from an R2 copy.
 - [x] Deploy script: `git pull && docker compose build && docker compose up -d`, run over SSH.
       Optionally a GitHub Actions self-hosted runner later. Done as in sheetsolver instead (D30):
-      after CI passes on `main`, the Deploy workflow builds the images on GitHub, pushes them to
+      after CI passes on a push to `main` (D36), the Deploy workflow builds the images on GitHub, pushes them to
       GHCR, joins the tailnet as `tag:ci` and runs `deploy.sh` on the server over SSH with the
       server's shared deploy key (pull, backup before migrations, start, wait for `/health`).
 - [x] Basic monitoring: the `/health` endpoint, plus an uptime check (e.g. Uptime Kuma or a
